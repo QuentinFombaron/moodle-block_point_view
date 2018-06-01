@@ -34,72 +34,72 @@
     opacity: 1;
 }
 
-/* source tooltip : https://www.w3schools.com/css/css_tooltip.asp */
+/* source for tooltip : https://www.w3schools.com/css/css_tooltip.asp */
 
 .group {
-  position: absolute;
-  top: 3px;
-  left: 480px;
+    position: absolute;
+    top: 3px;
+    left: 480px;
 }
 
 .group_img {
-  height: 20px;
-  position: absolute;
+    height: 20px;
+    position: absolute;
 }
 
 .group_nb {
-  position: absolute;
-  top: 3px;
-  left: 50px;
+    position: absolute;
+    top: 3px;
+    left: 50px;
 }
 
 .reactions {
-  position: absolute;
-  left: 450px;
-  top: 3px;
+    position: absolute;
+    left: 450px;
+    top: 3px;
 }
 
 .easy {
-  height: 0px;
-  position: absolute;
-  top: -7.5px;
-  left: -10px;
-  pointer-events: none;
+    height: 0;
+    position: absolute;
+    top: -7.5px;
+    left: -10px;
+    pointer-events: none;
 }
 
 .easy_nb {
-  display: none;
-  position: absolute;
-  top: 3px;
-  left: 5px;
+    display: none;
+    position: absolute;
+    top: 3px;
+    left: 5px;
 }
 
 .better {
-  height: 0px;
-  position: absolute;
-  top: -7.5px;
-  left: 35px;
-  pointer-events: none;
+    height: 0;
+    position: absolute;
+    top: -7.5px;
+    left: 35px;
+    pointer-events: none;
 }
 
 .better_nb {
-  display: none;
-  position: absolute;
-  top: 3px;
-  left: 55px;
+    display: none;
+    position: absolute;
+    top: 3px;
+    left: 55px;
 }
 
 .hard {
-  height: 0px;
-  position: absolute;
-  top: -7.5px;
-  left: 80px;
-  pointer-events: none;
+    height: 0;
+    position: absolute;
+    top: -7.5px;
+    left: 80px;
+    pointer-events: none;
 }
 
 .hard_nb {
-  display: none;
-  position: absolute;
-  top: 3px;
-  left: 102px;
+    display: none;
+    position: absolute;
+    top: 3px;
+    left: 102px;
 }
