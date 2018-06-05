@@ -17,14 +17,14 @@
 /**
  * Current user info block.
  *
- * @package    block_myprofile
- * @copyright  2010 Remote-Learner.net
- * @author     Olav Jordan <olav.jordan@remote-learner.ca>
+ * @package    block_like
+ * @copyright  [TODO]
+ * @author     [TODO]
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017111307;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2017111317;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2017110800;        // Requires this Moodle version
 $plugin->component = 'block_like';      // Full name of the plugin (used for diagnostics)
