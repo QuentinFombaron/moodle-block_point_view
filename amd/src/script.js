@@ -1,52 +1,57 @@
 /* Injection CSS ? Pas mon propre fichier ? */
 
 /* Include JQuery */
-define(["jquery"], function ($) {
+define(['jquery'], function($) {
     return {
-        init: function (likes, userid) {
-
-            /* [OLD]
-            window.addEventListener("load", function(event) {
-            */
+        init: function(likes, userid) {
 
             /* Wait that the DOM is fully loaded. */
-            $(function () {
+            $(function() {
                     var likesSQL = likes;
                     var userId = userid;
 
-                    /* [OLD]
-                    * Import result from PHP
-                    * $.ajax({
-                    *     method: 'POST',
-                    *     url: '../blocks/like/database.php',
-                    *     data: {},
-                    *     success: function(output) {
-                    *         console.log('Data : ' + output);
-                    *     },
-                    *     dataType: 'json'
-                    * });
-                    */
+                    var likesM19;
+                    var assign = false;
+
+                    likesSQL.forEach(function(element) {
+                        if (element.cmid === '19') {
+                            likesM19 = element;
+                            assign = true;
+                        }
+                    });
+
+                    if (!assign) {
+                        likesM19 = {
+                            'cmid': '19',
+                            'type': '1',
+                            'total': '0',
+                            'typeone': '0',
+                            'typetwo': '0',
+                            'typethree': '0',
+                            'uservote': '0'
+                        };
+                    }
 
                     /* Create the HTML block necessary to each activity */
                     var htmlBlock = '<div class="reactions">' +
-                        '<!-- EASY ! --><span class="tooltip">' +
-                        '<img src="../blocks/like/img//easy.png" alt=" " ' + 'class="easy"/>' +
-                        '<span class="tooltiptext easy_txt">Fastoche !</span></span>' +
-                        '<span class="easy_nb">' + likesSQL.typeone + '</span>' +
-                        '<!-- I\'M GETTING BETTER --><span class="tooltip">' +
-                        '<img src="../blocks/like/img//better.png" alt=" " class="better"/>' +
-                        '<span class="tooltiptext better_txt">Je m\'améliore !</span></span>' +
-                        '<span class="better_nb">' + likesSQL.typetwo + '</span>' +
-                        '<!-- SO HARD... --><span class="tooltip">' +
-                        '<img src="../blocks/like/img//hard.png" alt=" " class="hard"/>' +
-                        '<span class="tooltiptext hard_txt">Dur dur...</span></span>' +
-                        '<span class="hard_nb">' + likesSQL.typethree + '</span></div>' +
-                        '<!-- GROUP --><div class="group">' +
-                        '<img src="" alt=" " class="group_img"/>' +
-                        '<span class="group_nb">' + likesSQL.total + '</span></div>';
+                    '<!-- EASY ! --><span class="tooltip">' +
+                    '<img src="../blocks/like/img/easy.png" alt=" " ' + 'class="easy"/>' +
+                    '<span class="tooltiptext easy_txt">Fastoche !</span></span>' +
+                    '<span class="easy_nb">' + likesM19.typeone + '</span>' +
+                    '<!-- I\'M GETTING BETTER --><span class="tooltip">' +
+                    '<img src="../blocks/like/img/better.png" alt=" " class="better"/>' +
+                    '<span class="tooltiptext better_txt">Je m\'améliore !</span></span>' +
+                    '<span class="better_nb">' + likesM19.typetwo + '</span>' +
+                    '<!-- SO HARD... --><span class="tooltip">' +
+                    '<img src="../blocks/like/img/hard.png" alt=" " class="hard"/>' +
+                    '<span class="tooltiptext hard_txt">Dur dur...</span></span>' +
+                    '<span class="hard_nb">' + likesM19.typethree + '</span></div>' +
+                    '<!-- GROUP --><div class="group">' +
+                    '<img src="" alt=" " class="group_img"/>' +
+                    '<span class="group_nb">' + likesM19.total + '</span></div>';
 
-                    /* Export the HTML block */
-                    $("#module-19 .activityinstance").append(htmlBlock);
+                /* Export the HTML block */
+                    $('#module-19 .activityinstance').append(htmlBlock);
 
                     /* Timer to see how long the mouse stay over the reaction group image */
                     var timerGroupImgM19;
@@ -69,24 +74,24 @@ define(["jquery"], function ($) {
                     * it need to be read in the database
                     */
                     var reactionVotedM19;
-                    switch (parseInt(likesSQL.uservote)) {
-                        case 0:
-                            reactionVotedM19 = Reactions.NULL;
-                            break;
+                    switch (parseInt(likesM19.uservote)) {
                         case 1:
                             reactionVotedM19 = Reactions.EASY;
                             /* Update the text appearance to know that this is the selected reaction */
-                            $("#module-19 .easy_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                            $('#module-19 .easy_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
                             break;
                         case 2:
                             reactionVotedM19 = Reactions.BETTER;
                             /* Update the text appearance to know that this is the selected reaction */
-                            $("#module-19 .better_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                            $('#module-19 .better_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
                             break;
                         case 3:
                             reactionVotedM19 = Reactions.HARD;
                             /* Update the text appearance to know that this is the selected reaction */
-                            $("#module-19 .hard_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                            $('#module-19 .hard_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
+                            break;
+                        default:
+                            reactionVotedM19 = Reactions.NULL;
                             break;
                     }
 
@@ -96,8 +101,8 @@ define(["jquery"], function ($) {
                     */
                     var totalVoteM19;
 
-                    /* Shortcut to select the "module-19" ID in the page */
-                    var module19 = document.getElementById("module-19");
+                    /* Shortcut to select the 'module-19' ID in the page */
+                    var module19 = document.getElementById('module-19');
 
                     /**
                      * Function which modify the reaction group image in terms of kind of vote
@@ -105,36 +110,36 @@ define(["jquery"], function ($) {
                     function updateGroupImg() {
 
                         /* Get the number of reaction for each one of it */
-                        var easyVoteM19 = parseInt(module19.getElementsByClassName("easy_nb")[0].innerText);
-                        var betterVoteM19 = parseInt(module19.getElementsByClassName("better_nb")[0].innerText);
-                        var hardVoteM19 = parseInt(module19.getElementsByClassName("hard_nb")[0].innerText);
-                        var groupImgM19 = "";
+                        var easyVoteM19 = parseInt(module19.getElementsByClassName('easy_nb')[0].innerText);
+                        var betterVoteM19 = parseInt(module19.getElementsByClassName('better_nb')[0].innerText);
+                        var hardVoteM19 = parseInt(module19.getElementsByClassName('hard_nb')[0].innerText);
+                        var groupImgM19 = '';
 
                         /* Add the image suffix if there is at least 1 vote for the selected reaction */
                         if (easyVoteM19) {
-                            groupImgM19 += "E";
+                            groupImgM19 += 'E';
                         }
                         if (betterVoteM19) {
-                            groupImgM19 += "B";
+                            groupImgM19 += 'B';
                         }
                         if (hardVoteM19) {
-                            groupImgM19 += "H";
+                            groupImgM19 += 'H';
                         }
 
                         /* Modify the image source of the reaction group */
-                        $("#module-19 .group_img").attr("src", "../blocks/like/img/group_" + groupImgM19 + ".png");
+                        $('#module-19 .group_img').attr('src', '../blocks/like/img/group_' + groupImgM19 + '.png');
                     }
 
                     updateGroupImg();
 
                     /* Management of the reaction group */
-                    $("#module-19 .group_img")
+                    $('#module-19 .group_img')
 
                     /* MOUSE OVER */
                         .mouseover(function GroupImgMouseOver() {
 
                             /* Pointer modification to inform a possible click or interaction */
-                            $(this).css({"cursor": "pointer"});
+                            $(this).css({'cursor': 'pointer'});
 
                             /* Widen a little to inform that the image is mouse over */
                             $(this).animate({
@@ -149,17 +154,17 @@ define(["jquery"], function ($) {
                             var snapShotGroupImg = this;
 
                             /* IF the mouse stay over at least 0.3 seconds */
-                            timerGroupImgM19 = setTimeout(function () {
+                            timerGroupImgM19 = setTimeout(function() {
 
                                 /* Reactions images modifications to black and white if no reaction has been made */
-                                if (parseInt(module19.getElementsByClassName("easy_nb")[0].innerText) === 0) {
-                                    $("#module-19 .easy").attr("src", "../blocks/like/img//easy_BW.png");
+                                if (parseInt(module19.getElementsByClassName('easy_nb')[0].innerText) === 0) {
+                                    $('#module-19 .easy').attr('src', '../blocks/like/img//easy_BW.png');
                                 }
-                                if (parseInt(module19.getElementsByClassName("better_nb")[0].innerText) === 0) {
-                                    $("#module-19 .better").attr("src", "../blocks/like/img//better_BW.png");
+                                if (parseInt(module19.getElementsByClassName('better_nb')[0].innerText) === 0) {
+                                    $('#module-19 .better').attr('src', '../blocks/like/img//better_BW.png');
                                 }
-                                if (parseInt(module19.getElementsByClassName("hard_nb")[0].innerText) === 0) {
-                                    $("#module-19 .hard").attr("src", "../blocks/like/img//hard_BW.png");
+                                if (parseInt(module19.getElementsByClassName('hard_nb')[0].innerText) === 0) {
+                                    $('#module-19 .hard').attr('src', '../blocks/like/img//hard_BW.png');
                                 }
 
                                 /* Hide the reaction group image with nice animation */
@@ -173,45 +178,45 @@ define(["jquery"], function ($) {
                                 $(snapShotGroupImg).hide(0);
 
                                 /* Also hide the number of total reaction */
-                                $("#module-19 .group_nb").delay(50).hide(300);
+                                $('#module-19 .group_nb').delay(50).hide(300);
 
                                 /* Enable the pointer events for each reactions images */
 
-                                /* After a short delay, show the "Easy !" reaction image with nice animation */
-                                $("#module-19 .easy").delay(50).animate({
+                                /* After a short delay, show the 'Easy !' reaction image with nice animation */
+                                $('#module-19 .easy').delay(50).animate({
                                     top: -15,
                                     left: -20,
                                     height: 20
                                 }, 300)
-                                    .css({"pointer-events": "auto"});
+                                    .css({'pointer-events': 'auto'});
 
-                                /* Also show the number of "Easy !" reaction */
-                                $("#module-19 .easy_nb").delay(50).show(300);
+                                /* Also show the number of 'Easy !' reaction */
+                                $('#module-19 .easy_nb').delay(50).show(300);
 
                                 /*
-                                * After a delay, show the "I'm getting better !" reaction image with nice
+                                * After a delay, show the 'I'm getting better !' reaction image with nice
                                 * animation
                                 */
-                                $("#module-19 .better").delay(200).animate({
+                                $('#module-19 .better').delay(200).animate({
                                     top: -15,
                                     left: 25,
                                     height: 20
                                 }, 300)
-                                    .css({"pointer-events": "auto"});
+                                    .css({'pointer-events': 'auto'});
 
-                                /* Also show the number of "I'm getting better !" reaction */
-                                $("#module-19 .better_nb").delay(200).show(300);
+                                /* Also show the number of 'I'm getting better !' reaction */
+                                $('#module-19 .better_nb').delay(200).show(300);
 
-                                /* After a delay, show the "So Hard..." reaction image with nice animation */
-                                $("#module-19 .hard").delay(400).animate({
+                                /* After a delay, show the 'So Hard...' reaction image with nice animation */
+                                $('#module-19 .hard').delay(400).animate({
                                     top: -15,
                                     left: 70,
                                     height: 20
                                 }, 300)
-                                    .css({"pointer-events": "auto"});
+                                    .css({'pointer-events': 'auto'});
 
-                                /* Also show the number of "So Hard..." reaction */
-                                $("#module-19 .hard_nb").delay(400).show(300);
+                                /* Also show the number of 'So Hard...' reaction */
+                                $('#module-19 .hard_nb').delay(400).show(300);
                             }, 500);
 
                             /* Snapshot the current state */
@@ -221,7 +226,7 @@ define(["jquery"], function ($) {
                             clearTimeout(timerReactionsM19);
 
                             /* IF the mouse stay over at least 3 seconds... */
-                            timerReactionsM19 = setTimeout(function () {
+                            timerReactionsM19 = setTimeout(function() {
 
                                 /* BUT the mouse is not in the reaction zone */
                                 if (!reactionM19) {
@@ -233,43 +238,43 @@ define(["jquery"], function ($) {
                                     */
 
                                     /*
-                                    * After a short delay, hide the "So Hard..." reaction image with nice
+                                    * After a short delay, hide the 'So Hard...' reaction image with nice
                                     * animation
                                     */
-                                    $("#module-19 .hard").css({"pointer-events": "none"})
+                                    $('#module-19 .hard').css({'pointer-events': 'none'})
                                         .delay(50).animate({
                                         top: -7.5,
                                         left: 80,
                                         height: 0
                                     }, 500);
 
-                                    /* Also hide the number of "So Hard..." reaction */
-                                    $("#module-19 .hard_nb").delay(50).hide(300);
+                                    /* Also hide the number of 'So Hard...' reaction */
+                                    $('#module-19 .hard_nb').delay(50).hide(300);
 
                                     /*
-                                    * After a delay, show the "I'm getting better !" reaction image with nice
+                                    * After a delay, show the 'I'm getting better !' reaction image with nice
                                     * animation
                                     */
-                                    $("#module-19 .better").css({"pointer-events": "none"})
+                                    $('#module-19 .better').css({'pointer-events': 'none'})
                                         .delay(300).animate({
                                         top: -7.5,
                                         left: 35,
                                         height: 0
                                     }, 500);
 
-                                    /* Also hide the number of "I'm getting better !" reaction */
-                                    $("#module-19 .better_nb").delay(300).hide(300);
+                                    /* Also hide the number of 'I'm getting better !' reaction */
+                                    $('#module-19 .better_nb').delay(300).hide(300);
 
-                                    /* After a delay, hide the "Easy !" reaction image with nice animation */
-                                    $("#module-19 .easy").css({"pointer-events": "none"})
+                                    /* After a delay, hide the 'Easy !' reaction image with nice animation */
+                                    $('#module-19 .easy').css({'pointer-events': 'none'})
                                         .delay(600).animate({
                                         top: -7.5,
                                         left: -10,
                                         height: 0
                                     }, 500);
 
-                                    /* Also hide the number of "Easy !" reaction */
-                                    $("#module-19 .easy_nb").delay(600).hide(300);
+                                    /* Also hide the number of 'Easy !' reaction */
+                                    $('#module-19 .easy_nb').delay(600).hide(300);
 
                                     updateGroupImg();
 
@@ -282,7 +287,7 @@ define(["jquery"], function ($) {
                                     }, 300);
 
                                     /* Also show the number of total reaction */
-                                    $("#module-19 .group_nb").delay(600).show(300);
+                                    $('#module-19 .group_nb').delay(600).show(300);
                                 }
                             }, 3000);
                         })
@@ -294,7 +299,7 @@ define(["jquery"], function ($) {
                             clearTimeout(timerGroupImgM19);
 
                             /* IF the mouse out before the reaction group hide */
-                            if ($("#module-19 .easy").css("height") === "0px") {
+                            if ($('#module-19 .easy').css('height') === '0px') {
                                 /* Come back to the original size to inform that the image is mouse out */
                                 $(this).animate({
                                     top: 0,
@@ -307,21 +312,21 @@ define(["jquery"], function ($) {
                             }
                         });
 
-                    /* Management of the "Easy !" reaction */
-                    $("#module-19 .easy")
+                    /* Management of the 'Easy !' reaction */
+                    $('#module-19 .easy')
 
                     /* MOUSE OVER */
                         .mouseover(function EasyMouseOver() {
 
                             /* Length of the text inside the toolbox to have a correct size */
-                            var easyTxt = module19.getElementsByClassName("easy_txt")[0].innerText;
+                            var easyTxt = module19.getElementsByClassName('easy_txt')[0].innerText;
                             var easyTxtLength = easyTxt.length;
 
                             /* Modification of the toolbox width */
-                            $("#module-19 .tooltip .tooltiptext").css({"width": easyTxtLength * 7 + "px", "left": "15px"});
+                            $('#module-19 .tooltip .tooltiptext').css({'width': easyTxtLength * 7 + 'px', 'left': '15px'});
 
                             /* Pointer modification to know that we can click or interact */
-                            $(this).css({"cursor": "pointer"});
+                            $(this).css({'cursor': 'pointer'});
 
                             /* Widen a little to inform that the image is mouse over */
                             $(this).animate({
@@ -351,15 +356,15 @@ define(["jquery"], function ($) {
                         /* ON CLICK */
                         .click(function EasyClick() {
 
-                            /* Get the number of "Easy !" reaction */
-                            var easyNb = parseInt(module19.getElementsByClassName("easy_nb")[0].innerText);
+                            /* Get the number of 'Easy !' reaction */
+                            var easyNb = parseInt(module19.getElementsByClassName('easy_nb')[0].innerText);
 
                             /* Get the total number of reaction */
-                            totalVoteM19 = parseInt(module19.getElementsByClassName("group_nb")[0].innerText);
+                            totalVoteM19 = parseInt(module19.getElementsByClassName('group_nb')[0].innerText);
 
-                            /* IF there is no "Easy !" reaction, change the emoji in black and white */
+                            /* IF there is no 'Easy !' reaction, change the emoji in black and white */
                             if (easyNb === 0) {
-                                $("#module-19 .easy").attr("src", "../blocks/like/img//easy.png");
+                                $('#module-19 .easy').attr('src', '../blocks/like/img//easy.png');
                             }
 
                             /* It depends now of the previous reaction vote */
@@ -368,7 +373,7 @@ define(["jquery"], function ($) {
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'remove', userid: userId, cmid: 19, type: 1, vote: Reactions.EASY},
@@ -380,36 +385,36 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Decrement the number of "Easy !" of 1 */
+                                    /* Decrement the number of 'Easy !' of 1 */
                                     easyNb = easyNb - 1;
 
-                                    /* Update the number of "Easy !" reaction */
-                                    module19.getElementsByClassName("easy_nb")[0].innerText = easyNb;
+                                    /* Update the number of 'Easy !' reaction */
+                                    module19.getElementsByClassName('easy_nb')[0].innerText = easyNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .easy_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .easy_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "Easy !" reaction is 0
+                                    * IF after the decrementation, the number of 'Easy !' reaction is 0
                                     * THEN change the emoji in black and white
                                     */
                                     if (easyNb === 0) {
-                                        $("#module-19 .easy").attr("src", "../blocks/like/img//easy_BW.png");
+                                        $('#module-19 .easy').attr('src', '../blocks/like/img//easy_BW.png');
                                     }
 
                                     /* Update the value of total number reaction with an decrement of 1 */
-                                    module19.getElementsByClassName("group_nb")[0].innerText = (totalVoteM19 - 1);
+                                    module19.getElementsByClassName('group_nb')[0].innerText = (totalVoteM19 - 1);
 
-                                    /* Update the current reaction with "none reaction" */
+                                    /* Update the current reaction with 'none reaction' */
                                     reactionVotedM19 = Reactions.NULL;
                                     break;
 
-                                /* IF the previous was "I'm getting better !"*/
+                                /* IF the previous was 'I'm getting better !'*/
                                 case Reactions.BETTER:
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'update', userid: userId, cmid: 19, type: 1, vote: Reactions.EASY},
@@ -421,39 +426,39 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "Easy !" reaction of 1 */
-                                    module19.getElementsByClassName("easy_nb")[0].innerText = (easyNb + 1);
+                                    /* Increment the number of 'Easy !' reaction of 1 */
+                                    module19.getElementsByClassName('easy_nb')[0].innerText = (easyNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .easy_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .easy_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
-                                    /*  Get the current number of "I'm getting better !" reaction and decrement it of 1 */
-                                    var betterNb = parseInt(module19.getElementsByClassName("better_nb")[0].innerText) - 1;
+                                    /*  Get the current number of 'I'm getting better !' reaction and decrement it of 1 */
+                                    var betterNb = parseInt(module19.getElementsByClassName('better_nb')[0].innerText) - 1;
 
-                                    /* Update the value of "I'm getting better !" reaction */
-                                    module19.getElementsByClassName("better_nb")[0].innerText = betterNb;
+                                    /* Update the value of 'I'm getting better !' reaction */
+                                    module19.getElementsByClassName('better_nb')[0].innerText = betterNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .better_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .better_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "I'm getting better !"
+                                    * IF after the decrementation, the number of 'I'm getting better !'
                                     * reaction is 0 THEN change the emoji in black and white
                                     */
                                     if (betterNb === 0) {
-                                        $("#module-19 .better").attr("src", "../blocks/like/img//better_BW.png");
+                                        $('#module-19 .better').attr('src', '../blocks/like/img//better_BW.png');
                                     }
 
-                                    /* Update the current reation with "Easy !" */
+                                    /* Update the current reation with 'Easy !' */
                                     reactionVotedM19 = Reactions.EASY;
                                     break;
 
-                                /* IF the previous was "So hard..."*/
+                                /* IF the previous was 'So hard...'*/
                                 case Reactions.HARD:
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'update', userid: userId, cmid: 19, type: 1, vote: Reactions.EASY},
@@ -465,30 +470,30 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "Easy !" reaction of 1 */
-                                    module19.getElementsByClassName("easy_nb")[0].innerText = (easyNb + 1);
+                                    /* Increment the number of 'Easy !' reaction of 1 */
+                                    module19.getElementsByClassName('easy_nb')[0].innerText = (easyNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .easy_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .easy_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
-                                    /*  Get the current number of "So hard..." reaction and decrement it of 1 */
-                                    var hardNb = parseInt(module19.getElementsByClassName("hard_nb")[0].innerText) - 1;
+                                    /*  Get the current number of 'So hard...' reaction and decrement it of 1 */
+                                    var hardNb = parseInt(module19.getElementsByClassName('hard_nb')[0].innerText) - 1;
 
-                                    /* Update the value of "So hard..." reaction */
-                                    module19.getElementsByClassName("hard_nb")[0].innerText = hardNb;
+                                    /* Update the value of 'So hard...' reaction */
+                                    module19.getElementsByClassName('hard_nb')[0].innerText = hardNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .hard_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .hard_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "So hard..." reaction is 0
+                                    * IF after the decrementation, the number of 'So hard...' reaction is 0
                                     * THEN change the emoji in black and white
                                     */
                                     if (hardNb === 0) {
-                                        $("#module-19 .hard").attr("src", "../blocks/like/img//hard_BW.png");
+                                        $('#module-19 .hard').attr('src', '../blocks/like/img//hard_BW.png');
                                     }
 
-                                    /* Update the current reation with "Easy !" */
+                                    /* Update the current reation with 'Easy !' */
                                     reactionVotedM19 = Reactions.EASY;
                                     break;
 
@@ -497,7 +502,7 @@ define(["jquery"], function ($) {
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'insert', userid: userId, cmid: 19, type: 1, vote: Reactions.EASY},
@@ -508,39 +513,39 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "Easy !" reaction of 1 */
-                                    module19.getElementsByClassName("easy_nb")[0].innerText = (easyNb + 1);
+                                    /* Increment the number of 'Easy !' reaction of 1 */
+                                    module19.getElementsByClassName('easy_nb')[0].innerText = (easyNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .easy_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .easy_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
                                     /* Update the value of total number reaction with an increment of 1 */
-                                    module19.getElementsByClassName("group_nb")[0].innerText = (totalVoteM19 + 1);
+                                    module19.getElementsByClassName('group_nb')[0].innerText = (totalVoteM19 + 1);
 
-                                    /* Update the current reation with "Easy !" */
+                                    /* Update the current reation with 'Easy !' */
                                     reactionVotedM19 = Reactions.EASY;
                                     break;
                             }
                         });
 
-                    /* Management of the "I'm getting better !" reaction */
-                    $("#module-19 .better")
+                    /* Management of the 'I'm getting better !' reaction */
+                    $('#module-19 .better')
 
                     /* MOUSE OVER */
                         .mouseover(function BetterMouseOver() {
 
                             /* Length of the text inside the toolbox to have a correct size */
-                            var betterTxt = document.getElementById("module-19").getElementsByClassName("better_txt")[0].innerText;
+                            var betterTxt = document.getElementById('module-19').getElementsByClassName('better_txt')[0].innerText;
                             var betterTxtLength = betterTxt.length;
 
                             /* Modification of the toolbox width */
-                            $("#module-19 .tooltip .tooltiptext").css({
-                                "width": betterTxtLength * 7 + "px",
-                                "left": "40px"
+                            $('#module-19 .tooltip .tooltiptext').css({
+                                'width': betterTxtLength * 7 + 'px',
+                                'left': '40px'
                             });
 
                             /* Pointer modification to know that we can click or interact */
-                            $(this).css({"cursor": "pointer"});
+                            $(this).css({'cursor': 'pointer'});
 
                             /* Widen a little to inform that the image is mouse over */
                             $(this).animate({
@@ -570,15 +575,15 @@ define(["jquery"], function ($) {
                         /* ON CLICK */
                         .click(function BetterClick() {
 
-                            /* Get the number of "I'm getting better" reaction */
-                            var betterNb = parseInt(module19.getElementsByClassName("better_nb")[0].innerText);
+                            /* Get the number of 'I'm getting better' reaction */
+                            var betterNb = parseInt(module19.getElementsByClassName('better_nb')[0].innerText);
 
                             /* Get the total number of reaction */
-                            totalVoteM19 = parseInt(module19.getElementsByClassName("group_nb")[0].innerText);
+                            totalVoteM19 = parseInt(module19.getElementsByClassName('group_nb')[0].innerText);
 
-                            /* IF there is no "I'm getting better" reaction, change the emoji in black and white */
+                            /* IF there is no 'I'm getting better' reaction, change the emoji in black and white */
                             if (betterNb === 0) {
-                                $("#module-19 .better").attr("src", "../blocks/like/img//better.png");
+                                $('#module-19 .better').attr('src', '../blocks/like/img//better.png');
                             }
 
                             /* It depends now of the previous reaction vote */
@@ -587,7 +592,7 @@ define(["jquery"], function ($) {
                                 case Reactions.BETTER:
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'remove', userid: userId, cmid: 19, type: 1, vote: Reactions.BETTER},
@@ -598,37 +603,37 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Decrement the number of "I'm getting better !" of 1 */
+                                    /* Decrement the number of 'I'm getting better !' of 1 */
                                     betterNb = betterNb - 1;
 
-                                    /* Update the number of "I'm getting better !" reaction */
-                                    module19.getElementsByClassName("better_nb")[0].innerText = betterNb;
+                                    /* Update the number of 'I'm getting better !' reaction */
+                                    module19.getElementsByClassName('better_nb')[0].innerText = betterNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .better_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .better_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "I'm getting better !" reaction
+                                    * IF after the decrementation, the number of 'I'm getting better !' reaction
                                     * is 0 THEN change the emoji in black and white
                                     */
                                     if (betterNb === 0) {
-                                        $("#module-19 .better").attr("src", "../blocks/like/img//better_BW.png");
+                                        $('#module-19 .better').attr('src', '../blocks/like/img//better_BW.png');
                                     }
 
                                     /* Update the value of total number reaction with an decrement of 1 */
-                                    module19.getElementsByClassName("group_nb")[0].innerText = (totalVoteM19 - 1);
+                                    module19.getElementsByClassName('group_nb')[0].innerText = (totalVoteM19 - 1);
 
-                                    /* Update the current reaction with "none reaction" */
+                                    /* Update the current reaction with 'none reaction' */
                                     reactionVotedM19 = Reactions.NULL;
 
                                     break;
 
-                                /* IF the previous was "Easy !"*/
+                                /* IF the previous was 'Easy !'*/
                                 case Reactions.EASY:
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'update', userid: userId, cmid: 19, type: 1, vote: Reactions.BETTER},
@@ -639,39 +644,39 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "I'm getting better !" reaction of 1 */
-                                    module19.getElementsByClassName("better_nb")[0].innerText = (betterNb + 1);
+                                    /* Increment the number of 'I'm getting better !' reaction of 1 */
+                                    module19.getElementsByClassName('better_nb')[0].innerText = (betterNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .better_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .better_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
-                                    /*  Get the current number of "Easy !" reaction and decrement it of 1 */
-                                    var easyNb = parseInt(module19.getElementsByClassName("easy_nb")[0].innerText) - 1;
+                                    /*  Get the current number of 'Easy !' reaction and decrement it of 1 */
+                                    var easyNb = parseInt(module19.getElementsByClassName('easy_nb')[0].innerText) - 1;
 
-                                    /* Update the value of "Easy !" reaction */
-                                    module19.getElementsByClassName("easy_nb")[0].innerText = easyNb;
+                                    /* Update the value of 'Easy !' reaction */
+                                    module19.getElementsByClassName('easy_nb')[0].innerText = easyNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .easy_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .easy_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "Easy !" reaction is 0
+                                    * IF after the decrementation, the number of 'Easy !' reaction is 0
                                     * THEN change the emoji in black and white
                                     */
                                     if (easyNb === 0) {
-                                        $("#module-19 .easy").attr("src", "../blocks/like/img//easy_BW.png");
+                                        $('#module-19 .easy').attr('src', '../blocks/like/img//easy_BW.png');
                                     }
 
-                                    /* Update the current reation with "I'm getting better !" */
+                                    /* Update the current reation with 'I'm getting better !' */
                                     reactionVotedM19 = Reactions.BETTER;
                                     break;
 
-                                /* IF the previous was "So hard..."*/
+                                /* IF the previous was 'So hard...'*/
                                 case Reactions.HARD:
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'update', userid: userId, cmid: 19, type: 1, vote: Reactions.BETTER},
@@ -682,30 +687,30 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "I'm getting better !" reaction of 1 */
-                                    module19.getElementsByClassName("better_nb")[0].innerText = (betterNb + 1);
+                                    /* Increment the number of 'I'm getting better !' reaction of 1 */
+                                    module19.getElementsByClassName('better_nb')[0].innerText = (betterNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .better_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .better_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
-                                    /*  Get the current number of "So hard..." reaction and decrement it of 1 */
-                                    var hardNb = parseInt(module19.getElementsByClassName("hard_nb")[0].innerText) - 1;
+                                    /*  Get the current number of 'So hard...' reaction and decrement it of 1 */
+                                    var hardNb = parseInt(module19.getElementsByClassName('hard_nb')[0].innerText) - 1;
 
-                                    /* Update the value of "So hard..." reaction */
-                                    module19.getElementsByClassName("hard_nb")[0].innerText = hardNb;
+                                    /* Update the value of 'So hard...' reaction */
+                                    module19.getElementsByClassName('hard_nb')[0].innerText = hardNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .hard_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .hard_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "So hard..." reaction is 0
+                                    * IF after the decrementation, the number of 'So hard...' reaction is 0
                                     * THEN change the emoji in black and white
                                     */
                                     if (hardNb === 0) {
-                                        $("#module-19 .hard").attr("src", "../blocks/like/img//hard_BW.png");
+                                        $('#module-19 .hard').attr('src', '../blocks/like/img//hard_BW.png');
                                     }
 
-                                    /* Update the current reation with "I'm getting better !" */
+                                    /* Update the current reation with 'I'm getting better !' */
                                     reactionVotedM19 = Reactions.BETTER;
 
                                     break;
@@ -715,7 +720,7 @@ define(["jquery"], function ($) {
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'insert', userid: userId, cmid: 19, type: 1, vote: Reactions.BETTER},
@@ -726,37 +731,37 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "I'm getting better !" reaction of 1 */
-                                    module19.getElementsByClassName("better_nb")[0].innerText = (betterNb + 1);
+                                    /* Increment the number of 'I'm getting better !' reaction of 1 */
+                                    module19.getElementsByClassName('better_nb')[0].innerText = (betterNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .better_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .better_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
                                     /* Update the value of total number reaction with an increment of 1 */
-                                    module19.getElementsByClassName("group_nb")[0].innerText = (totalVoteM19 + 1);
+                                    module19.getElementsByClassName('group_nb')[0].innerText = (totalVoteM19 + 1);
 
-                                    /* Update the current reation with "I'm getting better !" */
+                                    /* Update the current reation with 'I'm getting better !' */
                                     reactionVotedM19 = Reactions.BETTER;
 
                                     break;
                             }
                         });
 
-                    /* Management of the "So hard..." reaction */
-                    $("#module-19 .hard")
+                    /* Management of the 'So hard...' reaction */
+                    $('#module-19 .hard')
 
                     /* MOUSE OVER */
                         .mouseover(function HardMouseOver() {
 
                             /* Length of the text inside the toolbox to have a correct size */
-                            var hardTxt = module19.getElementsByClassName("hard_txt")[0].innerText;
+                            var hardTxt = module19.getElementsByClassName('hard_txt')[0].innerText;
                             var hardTxtLength = hardTxt.length;
 
                             /* Modification of the toolbox width */
-                            $("#module-19 .tooltip .tooltiptext").css({"width": hardTxtLength * 7 + "px", "left": "105px"});
+                            $('#module-19 .tooltip .tooltiptext').css({'width': hardTxtLength * 7 + 'px', 'left': '105px'});
 
                             /* Pointer modification to know that we can click or interact */
-                            $(this).css({"cursor": "pointer"});
+                            $(this).css({'cursor': 'pointer'});
 
                             /* Widen a little to inform that the image is mouse over */
                             $(this).animate({
@@ -786,15 +791,15 @@ define(["jquery"], function ($) {
                         /* ON CLICK */
                         .click(function HardClick() {
 
-                            /* Get the number of "So hard..." reaction */
-                            var hardNb = parseInt(module19.getElementsByClassName("hard_nb")[0].innerText);
+                            /* Get the number of 'So hard...' reaction */
+                            var hardNb = parseInt(module19.getElementsByClassName('hard_nb')[0].innerText);
 
                             /* Get the total number of reaction */
-                            totalVoteM19 = parseInt(module19.getElementsByClassName("group_nb")[0].innerText);
+                            totalVoteM19 = parseInt(module19.getElementsByClassName('group_nb')[0].innerText);
 
-                            /* IF there is no "So hard... reaction, change the emoji in black and white */
+                            /* IF there is no 'So hard... reaction, change the emoji in black and white */
                             if (hardNb === 0) {
-                                $("#module-19 .hard").attr("src", "../blocks/like/img//hard.png");
+                                $('#module-19 .hard').attr('src', '../blocks/like/img//hard.png');
                             }
 
                             /* It depends now of the previous reaction vote */
@@ -803,7 +808,7 @@ define(["jquery"], function ($) {
                                 case Reactions.HARD:
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'remove', userid: userId, cmid: 19, type: 1, vote: Reactions.HARD},
@@ -815,37 +820,37 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Decrement the number of So hard..." of 1 */
+                                    /* Decrement the number of So hard...' of 1 */
                                     hardNb = hardNb - 1;
 
-                                    /* Update the number of "So hard..." reaction */
-                                    module19.getElementsByClassName("hard_nb")[0].innerText = hardNb;
+                                    /* Update the number of 'So hard...' reaction */
+                                    module19.getElementsByClassName('hard_nb')[0].innerText = hardNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .hard_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .hard_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "So hard..." reaction is 0
+                                    * IF after the decrementation, the number of 'So hard...' reaction is 0
                                     * THEN change the emoji in black and white
                                     */
                                     if (hardNb === 0) {
-                                        $("#module-19 .hard").attr("src", "../blocks/like/img//hard_BW.png");
+                                        $('#module-19 .hard').attr('src', '../blocks/like/img//hard_BW.png');
                                     }
 
                                     /* Update the value of total number reaction with an decrement of 1 */
-                                    module19.getElementsByClassName("group_nb")[0].innerText = (totalVoteM19 - 1);
+                                    module19.getElementsByClassName('group_nb')[0].innerText = (totalVoteM19 - 1);
 
-                                    /* Update the current reaction with "none reaction" */
+                                    /* Update the current reaction with 'none reaction' */
                                     reactionVotedM19 = Reactions.NULL;
 
                                     break;
 
-                                /* IF the previous was "Easy !"*/
+                                /* IF the previous was 'Easy !'*/
                                 case Reactions.EASY:
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'update', userid: userId, cmid: 19, type: 1, vote: Reactions.HARD},
@@ -857,39 +862,39 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "So hard..." reaction of 1 */
-                                    module19.getElementsByClassName("hard_nb")[0].innerText = (hardNb + 1);
+                                    /* Increment the number of 'So hard...' reaction of 1 */
+                                    module19.getElementsByClassName('hard_nb')[0].innerText = (hardNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .hard_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .hard_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
-                                    /*  Get the current number of "Easy !" reaction and decrement it of 1 */
-                                    var easyNb = parseInt(module19.getElementsByClassName("easy_nb")[0].innerText) - 1;
+                                    /*  Get the current number of 'Easy !' reaction and decrement it of 1 */
+                                    var easyNb = parseInt(module19.getElementsByClassName('easy_nb')[0].innerText) - 1;
 
-                                    /* Update the value of "Easy !" reaction */
-                                    module19.getElementsByClassName("easy_nb")[0].innerText = easyNb;
+                                    /* Update the value of 'Easy !' reaction */
+                                    module19.getElementsByClassName('easy_nb')[0].innerText = easyNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .easy_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .easy_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "Easy !" reaction is 0
+                                    * IF after the decrementation, the number of 'Easy !' reaction is 0
                                     * THEN change the emoji in black and white
                                     */
                                     if (easyNb === 0) {
-                                        $("#module-19 .easy").attr("src", "../blocks/like/img//easy_BW.png");
+                                        $('#module-19 .easy').attr('src', '../blocks/like/img//easy_BW.png');
                                     }
 
-                                    /* Update the current reation with "So hard..." */
+                                    /* Update the current reation with 'So hard...' */
                                     reactionVotedM19 = Reactions.HARD;
                                     break;
 
-                                /* IF the previous was "I'm getting better !"*/
+                                /* IF the previous was 'I'm getting better !'*/
                                 case Reactions.BETTER:
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'update', userid: userId, cmid: 19, type: 1, vote: Reactions.HARD},
@@ -901,30 +906,30 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "So hard..." reaction of 1 */
-                                    module19.getElementsByClassName("hard_nb")[0].innerText = (hardNb + 1);
+                                    /* Increment the number of 'So hard...' reaction of 1 */
+                                    module19.getElementsByClassName('hard_nb')[0].innerText = (hardNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .hard_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .hard_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
-                                    /*  Get the current number of "I'm getting better !" reaction and decrement it of 1 */
-                                    var betterNb = parseInt(module19.getElementsByClassName("better_nb")[0].innerText) - 1;
+                                    /*  Get the current number of 'I'm getting better !' reaction and decrement it of 1 */
+                                    var betterNb = parseInt(module19.getElementsByClassName('better_nb')[0].innerText) - 1;
 
-                                    /* Update the value of "I'm getting better !" reaction */
-                                    module19.getElementsByClassName("better_nb")[0].innerText = betterNb;
+                                    /* Update the value of 'I'm getting better !' reaction */
+                                    module19.getElementsByClassName('better_nb')[0].innerText = betterNb;
 
                                     /* Update the text appearance to know that this is no longer the selected reaction */
-                                    $("#module-19 .better_nb").css({"font-weight": "normal", "color": "black"});
+                                    $('#module-19 .better_nb').css({'font-weight': 'normal', 'color': 'black'});
 
                                     /*
-                                    * IF after the decrementation, the number of "I'm getting better !"
+                                    * IF after the decrementation, the number of 'I'm getting better !'
                                     * reaction is 0 THEN change the emoji in black and white
                                     */
                                     if (betterNb === 0) {
-                                        $("#module-19 .better").attr("src", "../blocks/like/img//better_BW.png");
+                                        $('#module-19 .better').attr('src', '../blocks/like/img//better_BW.png');
                                     }
 
-                                    /* Update the current reation with "So hard..." */
+                                    /* Update the current reation with 'So hard...' */
                                     reactionVotedM19 = Reactions.HARD;
                                     break;
 
@@ -933,7 +938,7 @@ define(["jquery"], function ($) {
 
                                     /* [TODO] Comment */
                                     $.ajax({
-                                        type: "POST",
+                                        type: 'POST',
                                         url: '../blocks/like/update_db.php',
                                         dataType: 'json',
                                         data: {func: 'insert', userid: userId, cmid: 19, type: 1, vote: Reactions.HARD},
@@ -945,16 +950,16 @@ define(["jquery"], function ($) {
                                         }
                                     });
 
-                                    /* Increment the number of "So hard..." reaction of 1 */
-                                    module19.getElementsByClassName("hard_nb")[0].innerText = (hardNb + 1);
+                                    /* Increment the number of 'So hard...' reaction of 1 */
+                                    module19.getElementsByClassName('hard_nb')[0].innerText = (hardNb + 1);
 
                                     /* Update the text appearance to know that this is the selected reaction */
-                                    $("#module-19 .hard_nb").css({"font-weight": "bold", "color": "#5585B6"});
+                                    $('#module-19 .hard_nb').css({'font-weight': 'bold', 'color': '#5585B6'});
 
                                     /* Update the value of total number reaction with an increment of 1 */
-                                    module19.getElementsByClassName("group_nb")[0].innerText = (totalVoteM19 + 1);
+                                    module19.getElementsByClassName('group_nb')[0].innerText = (totalVoteM19 + 1);
 
-                                    /* Update the current reation with "So hard..." */
+                                    /* Update the current reation with 'So hard...' */
                                     reactionVotedM19 = Reactions.HARD;
                                     break;
                             }
@@ -962,17 +967,17 @@ define(["jquery"], function ($) {
 
 
                     /* Management of the reaction zone */
-                    $("#module-19 .reactions")
+                    $('#module-19 .reactions')
 
                     /* MOUSE OVER */
-                        .mouseover(function () {
+                        .mouseover(function() {
 
                             /* The mouse is over the reaction zone */
                             reactionM19 = true;
                         })
 
                         /* MOUSE OUT */
-                        .mouseout(function () {
+                        .mouseout(function() {
 
                             /* The mouse is out the reaction zone */
                             reactionM19 = false;
@@ -981,7 +986,7 @@ define(["jquery"], function ($) {
                             clearTimeout(timerReactionsM19);
 
                             /* IF the mouse stay over at least 3 seconds... */
-                            timerReactionsM19 = setTimeout(function () {
+                            timerReactionsM19 = setTimeout(function() {
 
                                 /* BUT that the mouse is note in the reaction zone */
                                 if (!reactionM19) {
@@ -993,63 +998,61 @@ define(["jquery"], function ($) {
                                     */
 
                                     /*
-                                    * After a short delay, hide the "So Hard..." reaction image with nice
+                                    * After a short delay, hide the 'So Hard...' reaction image with nice
                                     * animation
                                     */
 
-                                    $("#module-19 .hard").css({"pointer-events": "none"})
+                                    $('#module-19 .hard').css({'pointer-events': 'none'})
                                         .delay(50).animate({
                                         top: -7.5,
                                         left: 80,
                                         height: 0
                                     }, 500);
 
-                                    /* Also hide the number of "So Hard..." reaction */
-                                    $("#module-19 .hard_nb").delay(50).hide(300);
+                                    /* Also hide the number of 'So Hard...' reaction */
+                                    $('#module-19 .hard_nb').delay(50).hide(300);
 
                                     /*
-                                    * After a delay, show the "I'm getting better !" reaction image with nice
+                                    * After a delay, show the 'I'm getting better !' reaction image with nice
                                     * animation
                                     */
-                                    $("#module-19 .better").css({"pointer-events": "none"})
+                                    $('#module-19 .better').css({'pointer-events': 'none'})
                                         .delay(300).animate({
                                         top: -7.5,
                                         left: 35,
                                         height: 0
                                     }, 500);
 
-                                    /* Also hide the number of "I'm getting better !" reaction */
-                                    $("#module-19 .better_nb").delay(300).hide(300);
+                                    /* Also hide the number of 'I'm getting better !' reaction */
+                                    $('#module-19 .better_nb').delay(300).hide(300);
 
-                                    /* After a delay, hide the "Easy !" reaction image with nice animation */
-                                    $("#module-19 .easy").css({"pointer-events": "none"})
+                                    /* After a delay, hide the 'Easy !' reaction image with nice animation */
+                                    $('#module-19 .easy').css({'pointer-events': 'none'})
                                         .delay(600).animate({
                                         top: -7.5,
                                         left: -10,
                                         height: 0
                                     }, 500);
 
-                                    /* Also hide the number of "Easy !" reaction */
-                                    $("#module-19 .easy_nb").delay(600).hide(300);
+                                    /* Also hide the number of 'Easy !' reaction */
+                                    $('#module-19 .easy_nb').delay(600).hide(300);
 
                                     updateGroupImg();
 
                                     /* Show the reaction group image with nice animation */
-                                    $("#module-19 .group_img").show(0).delay(500).animate({
+                                    $('#module-19 .group_img').show(0).delay(500).animate({
                                         top: 0,
                                         left: 0,
                                         height: 20
                                     }, 300);
 
                                     /* Also show the number of total reaction */
-                                    $("#module-19 .group_nb").delay(600).show(300);
+                                    $('#module-19 .group_nb').delay(600).show(300);
                                 }
                             }, 1000);
                         });
                 }
             );
         }
-    }
-        ;
-})
-;
+    };
+});

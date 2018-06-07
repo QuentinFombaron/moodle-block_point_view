@@ -49,11 +49,10 @@ switch ($_POST['func']) {
 
         try {
             $DB->update_record($table, $target);
+            echo json_encode('Update OK');
         } catch (dml_exception $e) {
             echo json_encode('Exception : ', $e->getMessage(), '\n');
         }
-
-        echo json_encode('Update OK');
 
         break;
 }
