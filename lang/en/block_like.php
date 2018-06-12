@@ -24,3 +24,9 @@
  */
 
 $string['pluginname'] = "Like";
+
+$string['contentinputlabel'] = "Block Content";
+$string['footerinputlabel'] = "Block Footer";
+
+$string['defaulttext'] = "Blabla123";
+$string['defaultfooter'] = "Foot foot";
