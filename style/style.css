@@ -103,3 +103,17 @@
     top: 3px;
     left: 102px;
 }
+
+a #submit_link {
+    background-color: rgba(191, 191, 191, .8);
+    width: 37px;
+    height: 29px;
+    position: fixed;
+    top: 106px;
+    right: 98px;
+    padding-left: 6px;
+    padding-top: 4px;
+    font-weight: bold;
+    color: white;
+    border-radius: 3px;
+}
