@@ -104,16 +104,21 @@
     left: 102px;
 }
 
-a #submit_link {
-    background-color: rgba(191, 191, 191, .8);
-    width: 37px;
-    height: 29px;
+:target {
+    padding-top: 0.5rem!important;
+    margin-top: 0!important;
+}
+
+#id_go_to_save {
     position: fixed;
-    top: 106px;
-    right: 98px;
-    padding-left: 6px;
-    padding-top: 4px;
-    font-weight: bold;
-    color: white;
-    border-radius: 3px;
+    top: 390px;
+    right: 100px;
+    z-index: 9999;
+}
+
+#id_close_field {
+    position: fixed;
+    top: 430px;
+    right: 100px;
+    z-index: 9999;
 }

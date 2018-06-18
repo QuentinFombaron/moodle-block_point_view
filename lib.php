@@ -98,10 +98,12 @@ function block_like_manage_types($mform, $types) {
                 get_string('enable' . $type, 'block_like'));
             $manage[] =& $mform->createElement('button', 'disable' . ucfirst($type),
                 get_string('disable' . $type, 'block_like'));
+            $mform->addGroup($manage, $type, get_string('manage', 'block_like') . ucfirst($type),
+                array(' '), false);
+
         } catch (coding_exception $e) {
             echo 'Exception coding_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";
 
         }
-        $mform->addGroup($manage, 'manage_' . $type, '', array(' '), false);
     }
 }
