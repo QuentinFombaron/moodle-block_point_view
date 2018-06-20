@@ -15,25 +15,22 @@ try {
     echo 'Exception moodle_exception (require_login() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";
 }
 
-class block_like_edit_form extends block_edit_form
-{
+class block_like_edit_form extends block_edit_form {
 
     protected function specific_definition($mform) {
         global $CFG, $COURSE, $OUTPUT, $PAGE;
 
         try {
             $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/like/style/style.css'));
+            $mform->addElement('header', 'config_header', get_string('blocksettings', 'block'));
+            $mform->addElement('text', 'config_text', get_string('contentinputlabel', 'block_like'));
+            $mform->addHelpButton('config_text', 'howto_text', 'block_like');
         } catch (coding_exception $e) {
             echo 'Exception coding_exception (get_content() -> blocks/like/block_like.php) : ', $e->getMessage(), "\n";
-            die();
         } catch (moodle_exception $e) {
             echo 'Exception moodle_exception (get_content() -> blocks/like/block_like.php) : ', $e->getMessage(), "\n";
-            die();
         }
 
-        $mform->addElement('header', 'config_header', get_string('blocksettings', 'block'));
-
-        $mform->addElement('text', 'config_text', get_string('contentinputlabel', 'block_like'));
         $mform->setDefault('config_text', '');
         $mform->setType('config_text', PARAM_RAW);
 
@@ -108,6 +105,8 @@ class block_like_edit_form extends block_edit_form
 
                     $mform->addGroup($enabledisable, 'manage_checkbox_' . $sectionid, '<br><h4>'.(string)$sectionname.'</h4>',
                         array(' '), false);
+
+                    $mform->addElement('html', '<br>');
                 }
 
                 $attributes = ['class' => 'iconlarge activityicon'];
@@ -119,6 +118,7 @@ class block_like_edit_form extends block_edit_form
 
                 $mform->addGroup($activityarray, 'config_activity_' . $activity['id'],
                     $icon . format_string($activity['name']), array(' '), false);
+
             }
 
             /* Imports */

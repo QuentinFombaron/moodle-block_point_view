@@ -122,3 +122,14 @@
     right: 100px;
     z-index: 9999;
 }
+
+.voted {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    font-size: 13px;
+    color: white;
+    line-height: 15px;
+    text-align: center;
+    background: #66ad89;
+}

@@ -40,7 +40,6 @@ define(['jquery'], function($) {
                         timerGroupImgArray[moduleId] = null;
                     });
 
-
                     /**
                      * Function which modify the reaction group image in terms of kind of vote
                      * @param {Object} module
@@ -64,8 +63,15 @@ define(['jquery'], function($) {
                         if (hardVote) {
                             groupImg += 'H';
                         }
+
                         if (reactionVotedArray[moduleId] !== Reactions.NULL) {
-                            groupImg += 'V';
+                            var groupNb = $('#module-' + moduleId + ' .group_nb');
+                            groupNb.addClass('voted');
+                            if (totalVoteArray[moduleId] >= 10) {
+                                groupNb.css({'font-size': '10px'});
+                            }
+                        } else {
+                            $('#module-' + moduleId + ' .group_nb').removeClass('voted');
                         }
 
                         /* Modify the image source of the reaction group */
@@ -132,13 +138,17 @@ define(['jquery'], function($) {
 
                             /* Reactions images modifications to black and white if no reaction has been made */
                             if (parseInt((event.data.module).getElementsByClassName('easy_nb')[0].innerText) === 0) {
-                                $('#module-' + (event.data.moduleId) + ' .easy').attr('src', '../blocks/like/pix/easy_BW.png');
+                                $('#module-' + (event.data.moduleId) + ' .easy')
+                                    .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
                             }
                             if (parseInt((event.data.module).getElementsByClassName('better_nb')[0].innerText) === 0) {
-                                $('#module-' + (event.data.moduleId) + ' .better').attr('src', '../blocks/like/pix/better_BW.png');
+                                $('#module-' + (event.data.moduleId) + ' .better')
+                                    .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
+                                    // .attr('src', '../blocks/like/pix/better_BW.png');
                             }
                             if (parseInt((event.data.module).getElementsByClassName('hard_nb')[0].innerText) === 0) {
-                                $('#module-' + (event.data.moduleId) + ' .hard').attr('src', '../blocks/like/pix/hard_BW.png');
+                                $('#module-' + (event.data.moduleId) + ' .hard')
+                                    .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
                             }
 
                             /*
@@ -310,7 +320,7 @@ define(['jquery'], function($) {
                         /* To have the bigger image in color if there is no vote */
                         if (nbReation === 0) {
                             $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                .attr('src', '../blocks/like/pix/' + event.data.reactionName + '.png');
+                                .css({'-webkit-filter': '', 'filter': ''});
                         }
 
                         /* Pointer modification to know that we can click or interact */
@@ -346,7 +356,7 @@ define(['jquery'], function($) {
                         /* Restore the image in black and white if there is no vote */
                         if (nbReation === 0) {
                             $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                .attr('src', '../blocks/like/pix/' + event.data.reactionName + '_BW.png');
+                                .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
                         }
 
                         /* Clear the animation queue to avoid image blinking */
@@ -370,7 +380,7 @@ define(['jquery'], function($) {
                         /* IF there is no 'reactionName' reaction, change the emoji in black and white */
                         if (nbReation === 0) {
                             $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                .attr('src', '../blocks/like/pix/' + event.data.reactionName + '.png');
+                                .css({'-webkit-filter': '', 'filter': ''});
                         }
 
                         /* IF this is a new vote for the user */
@@ -454,7 +464,7 @@ define(['jquery'], function($) {
                                         */
                                     if (nbReation === 0) {
                                         $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                            .attr('src', '../blocks/like/pix/' + event.data.reactionName + '_BW.png');
+                                            .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
                                     }
 
                                     /* Update the value of total number reaction with an decrement of 1 */
@@ -530,7 +540,7 @@ define(['jquery'], function($) {
                                     */
                                     if (nbReationSelect === 0) {
                                         $('#module-' + (event.data.moduleId) + ' .' + reationSelectName)
-                                            .attr('src', '../blocks/like/pix/' + reationSelectName + '_BW.png');
+                                            .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
                                     }
 
                                     /* Update the current reation with the new one */

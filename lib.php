@@ -26,6 +26,9 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once(__DIR__ . '/../../config.php');
 
+const DEFAULT_LIKE_ENABLELIKES = 1;
+const DEFAULT_LIKE_ENABLECUSTOMPIX = 0;
+
 try {
     require_login();
 } catch (coding_exception $e) {
@@ -100,6 +103,9 @@ function block_like_manage_types($mform, $types) {
                 get_string('disable' . $type, 'block_like'));
             $mform->addGroup($manage, $type, get_string('manage', 'block_like') . ucfirst($type),
                 array(' '), false);
+
+            $mform->addHelpButton($type, 'howto_'.$type, 'block_like');
+
 
         } catch (coding_exception $e) {
             echo 'Exception coding_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";

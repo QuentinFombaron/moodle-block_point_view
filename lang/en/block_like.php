@@ -44,5 +44,14 @@ $manage = array('books', 'chats', 'files', 'forums', 'glossaries', 'pages', 'qui
 foreach ($manage as $type) {
     $string['enable'.$type] = "Enable all ".ucfirst($type);
     $string['disable'.$type] = "Disable all ".ucfirst($type);
+    $string['howto_'.$type] = "management of ".substr(ucfirst($type), 0, -1)." activities";
+    $string['howto_'.$type.'_help'] = "This buttons gives the possibility to enable or disable all  ".substr(ucfirst($type), 0, -1)." activities";
 }
 
+$string['enablelikes'] = "Enable likes";
+$string['enablecustompix'] = "Use custom like emojis";
+$string['likepix'] = "Emojis";
+$string['likepixdesc'] = "Name the files <b>[emoji_name].png</b> for the emoji pictures, for instance: easy.png, better.png and hard.png. Also need groups of emojis <b>group_[emojis_initials].png</b>, for instance: group_EB.png for the group of Easy and Better. The recommended image size is 200x200.";
+
+$string['howto_text'] = "text visible in the block";
+$string['howto_text_help'] = "This field gives the possibility to modify the text visible in the block";

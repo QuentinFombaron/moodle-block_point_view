@@ -36,7 +36,7 @@ $string['enableall'] = "Tout activer dans ";
 $string['disableall'] = "Tout désactiver dans ";
 $string['go_to_save'] = "Aller à <b>Sauvegarder</b>";
 $string['close_field'] = "<b>Fermer</b> l'onglet";
-$string['manage'] = "Gérer ";
+$string['manage'] = "Gérer les ";
 
 
 $manage = array('books', 'chats', 'files', 'forums', 'glossaries', 'pages', 'quizs', 'resources', 'urls', 'vpls', 'wikis');
