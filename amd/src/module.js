@@ -1,6 +1,6 @@
 define(['jquery'], function($) {
     return {
-        init: function(idmax, types, moduleidmax) {
+        init: function(idmax, types, moduleids) {
 
             /* Shortcut to the "SAVE" button at the bottom of the page */
             $('#id_go_to_save').click(function() {
@@ -106,6 +106,42 @@ define(['jquery'], function($) {
                 }
             }
 
+            /**
+             *
+             * @param event
+             */
+            function selectChange(event) {
+                var value = parseInt(this.value);
+
+                if (value !== 0) {
+                    var difficulty;
+                    switch (value) {
+                        case 1:
+                            difficulty = '#129800';
+                            break;
+                        case 2:
+                            difficulty = '#0b619f';
+                            break;
+                        case 3:
+                            difficulty = '#bd0f29';
+                            break;
+                        case 4:
+                            difficulty = '#01262e';
+                            break;
+                    }
+
+                    (event.data.module).css({
+                        'background-color': difficulty,
+                        'color': 'white'
+                    });
+                } else {
+                    (event.data.module).css({
+                        'background-color': '',
+                        'color': ''
+                    });
+                }
+            }
+
             $('#id_close_field').click(function() {
                 $('#id_activities').addClass('collapsed');
                 document.body.scrollTop = 0; // For Safari
@@ -113,14 +149,47 @@ define(['jquery'], function($) {
             });
 
             /* TODO Commenter : Quand une checkbox est coché/décoché, je met à jour l'affachage des boutons Enable/Disable */
-            for (var i = 0; i <= moduleidmax; i++) {
-                var classList = $('#id_config_moduleselectm' + i).attr('class');
+            moduleids.forEach(function(moduleId) {
+                var classList = $('#id_config_moduleselectm' + moduleId).attr('class');
                 if (classList !== undefined) {
                     var type = classList.split(" ")[0];
                     var id = classList.split(" ")[2].slice(13);
-                    $('#id_config_moduleselectm' + i).click({id: id, type: type}, manageButton);
+                    $('#id_config_moduleselectm' + moduleId).click({id: id, type: type}, manageButton);
                 }
-            }
+
+                var value = parseInt($('#id_config_difficulty_' + moduleId + ' :selected').val());
+                var idConfigDifficulty = $('#id_config_difficulty_' + moduleId);
+
+                if (value !== 0) {
+                    var difficulty;
+                    switch (value) {
+                        case 1:
+                            difficulty = '#129800';
+                            break;
+                        case 2:
+                            difficulty = '#0b619f';
+                            break;
+                        case 3:
+                            difficulty = '#bd0f29';
+                            break;
+                        case 4:
+                            difficulty = '#01262e';
+                            break;
+                    }
+
+                    idConfigDifficulty.css({
+                        'background-color': difficulty,
+                        'color': 'white'
+                    });
+                } else {
+                    idConfigDifficulty.css({
+                        'background-color': '',
+                        'color': ''
+                    });
+                }
+
+                idConfigDifficulty.change({module: idConfigDifficulty}, selectChange);
+            });
 
             /* TODO Commenter : Les boutons Enable/Disable sont mis à jour au chargement de la page */
             for (var j = 2; j <= idmax; j++) {
@@ -149,7 +218,6 @@ define(['jquery'], function($) {
                     $('#id_enable' + jsUcfirst(type) + 's').removeClass('active');
                     manageButtonSection();
                 }).removeClass('btn-secondary').addClass('btn-outline-danger');
-
                 manageButtonGroup();
             });
         }

@@ -93,23 +93,58 @@ function block_like_compare_activities($a, $b) {
     }
 }
 
+/**
+ * Create a group of buttons to Enable/Disable activities by types
+ * @param $mform
+ * @param $types
+ */
 function block_like_manage_types($mform, $types) {
     foreach ($types as $type) {
+        $typename = $type.'s';
         $manage = array();
         try {
-            $manage[] =& $mform->createElement('button', 'enable' . ucfirst($type),
-                get_string('enable' . $type, 'block_like'));
-            $manage[] =& $mform->createElement('button', 'disable' . ucfirst($type),
-                get_string('disable' . $type, 'block_like'));
-            $mform->addGroup($manage, $type, get_string('manage', 'block_like') . ucfirst($type),
-                array(' '), false);
+            $manage[] =& $mform->createElement(
+                'button',
+                'enable' . ucfirst($typename),
+                get_string('enable' . $typename, 'block_like')
+            );
+            $manage[] =& $mform->createElement(
+                'button',
+                'disable' . ucfirst($typename),
+                get_string('disable' . $typename, 'block_like')
+            );
+            $mform->addGroup(
+                $manage,
+                $typename.'_group_type',
+                get_string('manage', 'block_like') . ucfirst($typename),
+                array(' '),
+                false
+            );
+            $mform->addHelpButton($typename.'_group_type', 'howto_'.$typename, 'block_like');
 
-            $mform->addHelpButton($type, 'howto_'.$type, 'block_like');
-
-
+            $mform->hideIf(
+                $typename.'_group_type',
+                'config_enable_likes_checkbox',
+                'notchecked'
+            );
         } catch (coding_exception $e) {
             echo 'Exception coding_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";
-
         }
+    }
+}
+
+/**
+ * Hide all elements in array passed in parameter if config_enable_likes_checkbox is not checked
+ * @param $mform
+ * @param $elementarray
+ * @param $checkbox
+ */
+function block_like_hide($mform, $elementarray, $checkbox) {
+    foreach ($elementarray as $element) {
+        $mform->hideIf(
+            $element,
+            $checkbox,
+            'notchecked'
+        );
     }
 }

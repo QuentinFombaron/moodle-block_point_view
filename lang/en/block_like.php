@@ -29,7 +29,8 @@ $string['contentinputlabel'] = "Block Content";
 
 $string['defaulttext'] = "This plugin gives the possibility to react to activities</br></br>It is important to know that you are testing the Alpha version.</br>This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).</br>Thank you in advance for your returns and bug reports.</br></br><i>June 18<SUP>th</SUP> 2018 (version 0.6.0)</i>";
 
-$string['config_header_activities'] = "On which activities are likes activated";
+$string['config_header_activities'] = "Likes/Difficulties configuration";
+$string['config_header_images'] = "Image configuration";
 $string['no_activities_config_message'] = "There is no activities";
 
 $string['enableall'] = "Enable all in ";
@@ -49,9 +50,17 @@ foreach ($manage as $type) {
 }
 
 $string['enablelikes'] = "Enable likes";
+$string['enabledifficulties'] = "Enable difficulty tracks";
 $string['enablecustompix'] = "Use custom like emojis";
 $string['likepix'] = "Emojis";
-$string['likepixdesc'] = "Name the files <b>[emoji_name].png</b> for the emoji pictures, for instance: easy.png, better.png and hard.png. Also need groups of emojis <b>group_[emojis_initials].png</b>, for instance: group_EB.png for the group of Easy and Better. The recommended image size is 200x200.";
+$string['likepixdesc'] = "<h5 style='color:red'>Important :</h5> Name the files <b><span style='font-family: Courier'>[emoji_name].png</span></b> for the emoji pictures, for instance: <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span> and <span style='font-family: Courier'>hard.png</span>. Also need groups of emojis <b><span style='font-family: Courier'>group_[emojis_initials].png</span></b>, for instance: <span style='font-family: Courier'>group_EB.png</span> for the group of Easy and Better reactions. Don't forget the file <b><span style='font-family: Courier'>group_.png</span></b>  for the none vote image. The recommended image size is 200x200.";
+$string['enableimgperso'] = "Enable image personalisation";
 
 $string['howto_text'] = "text visible in the block";
 $string['howto_text_help'] = "This field gives the possibility to modify the text visible in the block";
+
+$string['nonetrack'] = "None track";
+$string['greentrack'] = "Green track";
+$string['bluetrack'] = "Blue track";
+$string['redtrack'] = "Red track";
+$string['blacktrack'] = "Black track";

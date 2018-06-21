@@ -133,3 +133,35 @@
     text-align: center;
     background: #66ad89;
 }
+
+.selectDifficulty {
+    margin-left: 30px;
+}
+
+.activityinstance {
+    display: inline-flex!important;
+}
+
+.track {
+    height: 25px;
+    width: 10px;
+    display: inline-block;
+    margin-right: 10px;
+    border-radius: 10%;
+}
+
+.greentrack {
+    background-color: #129800;
+}
+
+.bluetrack {
+    background-color: #0b619f;
+}
+
+.redtrack {
+    background-color: #bd0f29;
+}
+
+.blacktrack {
+    background-color: #01262e;
+}

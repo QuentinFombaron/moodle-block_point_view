@@ -1,10 +1,10 @@
 /* Include JQuery */
 define(['jquery'], function($) {
     return {
-        init: function(likessql, userid, moduleselect) {
+        init: function(likessql, userid, moduleselect, difficultylevels) {
+
             /* Wait that the DOM is fully loaded. */
             $(function() {
-
                     /* Array with all the needed data about the likes of the page */
                     var likesSQL = likessql;
                     /* ID of the current user */
@@ -32,7 +32,8 @@ define(['jquery'], function($) {
                     var timerGroupImgArray = {};
 
                     /* Initialisation of the different arrays */
-                    moduleSelect.forEach(function(moduleId) {
+                    moduleSelect.forEach(function(moduleIdParam) {
+                        var moduleId = parseInt(moduleIdParam);
                         reactionArray[moduleId] = false;
                         reactionVotedArray[moduleId] = null;
                         totalVoteArray[moduleId] = null;
@@ -643,8 +644,8 @@ define(['jquery'], function($) {
                     }
 
                     /* For each selected module, create a like zone */
-                    moduleSelect.forEach(function(moduleId) {
-
+                    moduleSelect.forEach(function(moduleIdParam) {
+                        var moduleId = parseInt(moduleIdParam);
                         if (document.getElementById('module-' + moduleId) !== null) {
 
                             var likesModule = searchModule(moduleId);
@@ -794,8 +795,31 @@ define(['jquery'], function($) {
                                 .mouseout({module: module, moduleId: moduleId}, reactionMouseOut);
                         }
                     });
-                }
-            );
+
+                    $.each(difficultylevels, function(key, value) {
+                        if (value !== 0) {
+                            var difficulty;
+                            switch (parseInt(value)) {
+                                case 1:
+                                    difficulty = 'green';
+                                    break;
+                                case 2:
+                                    difficulty = 'blue';
+                                    break;
+                                case 3:
+                                    difficulty = 'red';
+                                    break;
+                                case 4:
+                                    difficulty = 'black';
+                                    break;
+                            }
+
+                            var difficultyBlock = '<span class="track ' + difficulty + 'track"></span>';
+
+                            $('#module-' + key + ' .activityinstance').prepend(difficultyBlock);
+                        }
+                    });
+            });
         }
     };
 });
