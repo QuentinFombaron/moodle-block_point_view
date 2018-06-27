@@ -1,7 +1,6 @@
 define(['jquery'], function($) {
     return {
         init: function(idmax, types, moduleids) {
-
             /* Shortcut to the "SAVE" button at the bottom of the page */
             $('#id_go_to_save').click(function() {
                 window.location = '#id_submitbutton';

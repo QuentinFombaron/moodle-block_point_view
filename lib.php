@@ -52,7 +52,7 @@ function block_like_get_activities($courseid, $config = null) {
     $sections = $modinfo->get_sections();
     $activities = array();
     foreach ($modinfo->instances as $module => $instances) {
-        $modulename = get_string('pluginname', $module);
+        $modulename = get_string('config_default_title', $module);
         foreach ($instances as $index => $cm) {
             if (in_array($module, $config->moduletype) || $config == null) {
                 $activities[] = array(

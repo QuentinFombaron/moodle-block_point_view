@@ -819,6 +819,24 @@ define(['jquery'], function($) {
                             $('#module-' + key + ' .activityinstance').prepend(difficultyBlock);
                         }
                     });
+
+                    $('#menu_like_img')
+                        .mouseover(function() {
+                            $(this).animate({
+                                top: '-=30',
+                                left: '-=3',
+                                width: 45
+                            }, 100);
+                            $(this).clearQueue();
+                        })
+                        .mouseout(function() {
+                            $(this).animate({
+                                top: '+=2.5',
+                                left: '+=3',
+                                width: 40
+                            }, 100);
+                            $(this).clearQueue();
+                        });
             });
         }
     };

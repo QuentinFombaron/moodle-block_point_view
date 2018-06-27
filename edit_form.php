@@ -42,9 +42,12 @@ class block_like_edit_form extends block_edit_form {
             );
             $enablelikes = array();
             $enablelikes[] =& $mform->createElement(
-                'checkbox',
+                'advcheckbox',
                 'config_enable_likes_checkbox',
-                ''
+                '',
+                null,
+                array(),
+                array(0, 1)
             );
             $mform->addGroup(
                 $enablelikes,
@@ -55,9 +58,12 @@ class block_like_edit_form extends block_edit_form {
             );
             $enabledifficulties = array();
             $enabledifficulties[] =& $mform->createElement(
-                'checkbox',
+                'advcheckbox',
                 'config_enable_difficulties_checkbox',
-                ''
+                '',
+                null,
+                array(),
+                array(0, 1)
             );
             $mform->addGroup(
                 $enabledifficulties,
@@ -215,9 +221,12 @@ class block_like_edit_form extends block_edit_form {
                 );
                 $enableperso = array();
                 $enableperso[] =& $mform->createElement(
-                    'checkbox',
+                    'advcheckbox',
                     'config_enable_pix_checkbox',
-                    ''
+                    '',
+                    null,
+                    array(),
+                    array(0, 1)
                 );
                 $mform->addGroup(
                     $enableperso,
@@ -230,9 +239,11 @@ class block_like_edit_form extends block_edit_form {
                     'config_likes_pix',
                     get_string('likepix', 'block_like'),
                     null,
-                    array('subdirs' => 0, 'maxfiles' => 20, 'accepted_types' => '.png'));
+                    array('subdirs' => 0, 'maxfiles' => 20, 'accepted_types' => '.png')
+                );
+
                 $mform->disabledIf(
-                    'config_likes_pix_disableif',
+                    'config_likes_pix',
                     'config_enable_pix_checkbox',
                     'notchecked'
                 );
@@ -248,6 +259,27 @@ class block_like_edit_form extends block_edit_form {
         } catch (moodle_exception $e) {
             echo 'Exception moodle_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";
         }
+
+        /*$form = new my_custom_form();
+        $dataforform = [whatever you need to do to get the current data for the form];
+        $dataforform = file_prepare_standard_filemanger($dataforform, ...);
+        $form->set_data($dataforform);
+
+        if ($form->is_cancelled()) {
+            ...
+        } else if ($submitdata = $form->get_data()) {
+            ...
+            file_postupdate_standard_filemanager(...);
+            ...
+        } else {
+            $form->display();
+        }
+
+        if ($data = $mform->get_data()) {
+            // ... store or update $entry
+            file_save_draft_area_files($data->attachments, $context->id, 'mod_glossary', 'attachment',
+                $entry->id, array('subdirs' => 0, 'maxbytes' => $maxbytes, 'maxfiles' => 50));
+        }*/
 
         /* Imports */
         $params = array($sectionid, $managetypesparams, $moduleids);

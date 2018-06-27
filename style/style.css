@@ -165,3 +165,10 @@
 .blacktrack {
     background-color: #01262e;
 }
+
+#menu_like_img {
+    width: 40px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

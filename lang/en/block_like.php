@@ -23,11 +23,11 @@
  * @license [TODO]
  */
 
-$string['pluginname'] = "Like";
+$string['config_default_title'] = "Like";
 
 $string['contentinputlabel'] = "Block Content";
 
-$string['defaulttext'] = "This plugin gives the possibility to react to activities</br></br>It is important to know that you are testing the Alpha version.</br>This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).</br>Thank you in advance for your returns and bug reports.</br></br><i>June 18<SUP>th</SUP> 2018 (version 0.6.0)</i>";
+$string['defaulttext'] = "This plugin gives the possibility to react to activities<br /><br />It is important to know that you are testing the Alpha version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>June 18<SUP>th</SUP> 2018 (version 0.6.0)</i><br /><br />";
 
 $string['config_header_activities'] = "Likes/Difficulties configuration";
 $string['config_header_images'] = "Image configuration";
@@ -64,3 +64,10 @@ $string['greentrack'] = "Green track";
 $string['bluetrack'] = "Blue track";
 $string['redtrack'] = "Red track";
 $string['blacktrack'] = "Black track";
+
+$string['menu'] = 'Menu';
+$string['overview_title_tab'] = "Overview";
+$string['export_title_tab'] = "Export";
+
+$string['no_activities_message'] = 'No activities or resources are being monitored. Use configuration to set up monitoring';
+$string['no_visible_activities_message'] = 'None of the monitored activities are currently visible';
