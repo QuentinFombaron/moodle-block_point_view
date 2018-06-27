@@ -23,6 +23,7 @@
  * @license [TODO]
  */
 
+$string['pluginname'] = "Like";
 $string['config_default_title'] = "Like";
 
 $string['contentinputlabel'] = "Block Content";
