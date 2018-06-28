@@ -172,3 +172,19 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.overview_img {
+    width: 30px
+}
+
+.c5 {
+    font-weight: bold;
+    font-size: 1.5em;
+    -moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
