@@ -1,9 +1,8 @@
 /* Include JQuery */
 define(['jquery'], function($) {
     return {
-        init: function(likessql, userid, moduleselect, difficultylevels) {
-
-            /* Wait that the DOM is fully loaded. */
+        init: function(likessql, userid, moduleselect, difficultylevels, pix, trackscolor) {
+            /* Wait that the DOM is fully loaded */
             $(function() {
                     /* Array with all the needed data about the likes of the page */
                     var likesSQL = likessql;
@@ -52,7 +51,7 @@ define(['jquery'], function($) {
                         var easyVote = parseInt(module.getElementsByClassName('easy_nb')[0].innerText);
                         var betterVote = parseInt(module.getElementsByClassName('better_nb')[0].innerText);
                         var hardVote = parseInt(module.getElementsByClassName('hard_nb')[0].innerText);
-                        var groupImg = '';
+                        var groupImg = 'group_';
 
                         /* Add the image suffix if there is at least 1 vote for the selected reaction */
                         if (easyVote) {
@@ -76,7 +75,7 @@ define(['jquery'], function($) {
                         }
 
                         /* Modify the image source of the reaction group */
-                        $('#module-' + moduleId + ' .group_img').attr('src', '../blocks/like/pix/group_' + groupImg + '.png');
+                        $('#module-' + moduleId + ' .group_img').attr('src', pix[groupImg]);
                     }
 
                     /**
@@ -303,14 +302,8 @@ define(['jquery'], function($) {
                      * @param {Object} event
                      */
                     function mouseOver(event) {
-
-                        /* Length of the text inside the toolbox to have a correct size */
-                        var txt = (event.data.module).getElementsByClassName(event.data.className)[0].innerText;
-                        var txtLength = txt.length;
-
                         /* Modification of the toolbox width */
                         $('#module-' + (event.data.moduleId) + ' .tooltipreaction .tooltiptextreaction').css({
-                            'width': txtLength * 8,
                             'left': event.data.leftTxt
                         });
 
@@ -653,16 +646,16 @@ define(['jquery'], function($) {
                             /* Create the HTML block necessary to each activity */
                             var htmlBlock = '<div class="reactions">' +
                                 '<!-- EASY ! --><span class="tooltipreaction">' +
-                                '<img src="../blocks/like/pix/easy.png" alt=" " class="easy"/>' +
-                                '<span class="tooltiptextreaction easy_txt">Fastoche !</span></span>' +
+                                '<img src="' + pix.easy + '" alt=" " class="easy"/>' +
+                                '<span class="tooltiptextreaction easy_txt">' + pix.easytxt + '</span></span>' +
                                 '<span class="easy_nb">' + likesModule.typeone + '</span>' +
                                 '<!-- I\'M GETTING BETTER --><span class="tooltipreaction">' +
-                                '<img src="../blocks/like/pix/better.png" alt=" " class="better"/>' +
-                                '<span class="tooltiptextreaction better_txt">Je m\'améliore !</span></span>' +
+                                '<img src="' + pix.better + '" alt=" " class="better"/>' +
+                                '<span class="tooltiptextreaction better_txt">' + pix.bettertxt + '</span></span>' +
                                 '<span class="better_nb">' + likesModule.typetwo + '</span>' +
                                 '<!-- SO HARD... --><span class="tooltipreaction">' +
-                                '<img src="../blocks/like/pix/hard.png" alt=" " class="hard"/>' +
-                                '<span class="tooltiptextreaction hard_txt">Dur dur...</span></span>' +
+                                '<img src="' + pix.hard + '" alt=" " class="hard"/>' +
+                                '<span class="tooltiptextreaction hard_txt">' + pix.hardtxt + '</span></span>' +
                                 '<span class="hard_nb">' + likesModule.typethree + '</span></div>' +
                                 '<!-- GROUP --><div class="group">' +
                                 '<img src="" alt=" " class="group_img"/>' +
@@ -837,6 +830,11 @@ define(['jquery'], function($) {
                             }, 100);
                             $(this).clearQueue();
                         });
+
+                    $('.greentrack').css({'background-color': trackscolor.green});
+                    $('.bluetrack').css({'background-color': trackscolor.blue});
+                    $('.redtrack').css({'background-color': trackscolor.red});
+                    $('.blacktrack').css({'background-color': trackscolor.black});
             });
         }
     };

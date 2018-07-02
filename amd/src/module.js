@@ -141,6 +141,24 @@ define(['jquery'], function($) {
                 }
             }
 
+            /**
+             *
+             */
+            function checkConf() {
+                if ($('#id_config_enable_likes_checkbox').is(':checked')
+                    || $('#id_config_enable_difficulties_checkbox').is(':checked')) {
+                    $('#id_activities').css({'display': ''});
+                } else {
+                    $('#id_activities').css({'display': 'none'});
+                }
+
+                if (!$('#id_config_enable_likes_checkbox').is(':checked')) {
+                    $('#id_config_images').css({'display': 'none'});
+                } else {
+                    $('#id_config_images').css({'display': ''});
+                }
+            }
+
             $('#id_close_field').click(function() {
                 $('#id_activities').addClass('collapsed');
                 document.body.scrollTop = 0; // For Safari
@@ -219,6 +237,18 @@ define(['jquery'], function($) {
                 }).removeClass('btn-secondary').addClass('btn-outline-danger');
                 manageButtonGroup();
             });
+
+            /* Reset images buttun  */
+            $('#id_config_reset_pix').click(function() {
+                $('#id_config_enable_pix_checkbox:checked').prop('checked', false);
+                $('#mform1').submit();
+            });
+
+            /* Hide fieldsets if Like or Difficulties checkboxes are disabled */
+            checkConf();
+
+            $('#id_config_enable_likes_checkbox').click(checkConf);
+            $('#id_config_enable_difficulties_checkbox').click(checkConf);
         }
     };
 });

@@ -8,12 +8,12 @@
 /* Tooltip text */
 .tooltipreaction .tooltiptextreaction {
     visibility: hidden;
-    width: 100px;
+    width: max-content;
     background-color: #555;
     color: #fff;
     text-align: center;
     font-weight: bold;
-    padding: 5px 0;
+    padding: 5px 10px;
     border-radius: 20px;
 
     /* Position the tooltip text */
@@ -148,22 +148,6 @@
     display: inline-block;
     margin-right: 10px;
     border-radius: 10%;
-}
-
-.greentrack {
-    background-color: #129800;
-}
-
-.bluetrack {
-    background-color: #0b619f;
-}
-
-.redtrack {
-    background-color: #bd0f29;
-}
-
-.blacktrack {
-    background-color: #01262e;
 }
 
 #menu_like_img {

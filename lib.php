@@ -148,3 +148,49 @@ function block_like_hide($mform, $elementarray, $checkbox) {
         );
     }
 }
+
+/**
+ * File serving.
+ *
+ * @param stdClass $course The course object.
+ * @param stdClass $bi Block instance record.
+ * @param context $context The context object.
+ * @param string $filearea The file area.
+ * @param array $args List of arguments.
+ * @param bool $forcedownload Whether or not to force the download of the file.
+ * @param array $options Array of options.
+ * @return void|false
+ */
+function block_like_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    $fs = get_file_storage();
+    $file = null;
+
+    if (($filearea == 'likes_pix') || ($filearea == 'likes_pix_admin')) {
+        $itemid = array_shift($args);
+        $filename = array_shift($args);
+        $filepath = '/';
+        $file = $fs->get_file($context->id, 'block_like', $filearea, $itemid, $filepath, $filename . '.png');
+    }
+
+    if (!$file) {
+        return false;
+    }
+
+    send_stored_file($file);
+}
+
+/**
+ * @param $context
+ * @param $react
+ * @return string
+ */
+function block_like_pix_url($context, $filearea, $react) {
+    return strval(moodle_url::make_pluginfile_url(
+        $context,
+        'block_like',
+        $filearea,
+        0,
+        '/',
+        $react)
+    );
+}

@@ -27,7 +27,6 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/blocks/like/lib.php');
 
 
-
 try {
     $id = required_param('instanceid', PARAM_INT);
     $courseid = required_param('courseid', PARAM_INT);
@@ -110,43 +109,48 @@ try {
         echo 'Exception : ', $e->getMessage(), "\n";
     }
 
-    $table = new html_table();
-    $table->head = array('Cours', 'Modules', '', 'Réactions', '', '');
-    $table->attributes['class'] = 'generaltable';
-    $table->rowclasses = array();
-    $table->data = array();
+    if (!empty($result)) {
 
-    foreach ($activities as $index => $activity) {
-        if ($activity['type'] != 'label' && !is_null($result[($activity['id'])]->cmid)) {
-            array_push($table->rowclasses,
-                'row_module' . $activity['id'],
-                'row_module' . $activity['id'] . '_details'
-            );
-            $attributes = ['class' => 'iconlarge activityicon'];
-            $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
-            array_push($table->data,
-                array(
-                    get_section_name($COURSE, $activity['section']),
-                    $icon . format_string($activity['name']),
-                    html_writer::empty_tag(
-                        'img',
-                        array('src' => $CFG->wwwroot . '/blocks/like/pix/easy.png', 'class' => 'overview_img')).' '.
-                    100 * intval($result[($activity['id'])]->typeone) / intval($result[($activity['id'])]->total).'% ',
-                    html_writer::empty_tag(
-                        'img',
-                        array('src' => $CFG->wwwroot . '/blocks/like/pix/better.png', 'class' => 'overview_img')).' '.
-                    100 * intval($result[($activity['id'])]->typetwo) / intval($result[($activity['id'])]->total).'% ',
-                    html_writer::empty_tag(
-                        'img',
-                        array('src' => $CFG->wwwroot . '/blocks/like/pix/hard.png', 'class' => 'overview_img')).' '.
-                    100 * intval($result[($activity['id'])]->typethree) / intval($result[($activity['id'])]->total).'% ',
-                    '+'
-                ),
-                array('', '', '', '', '', ''));
+        $table = new html_table();
+        $table->head = array('Cours', 'Modules', '', 'Réactions', '', '');
+        $table->attributes['class'] = 'generaltable';
+        $table->rowclasses = array();
+        $table->data = array();
+
+        foreach ($activities as $index => $activity) {
+            if ($activity['type'] != 'label' && !is_null($result[($activity['id'])]->cmid)) {
+                array_push($table->rowclasses,
+                    'row_module' . $activity['id'],
+                    'row_module' . $activity['id'] . '_details'
+                );
+                $attributes = ['class' => 'iconlarge activityicon'];
+                $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+                array_push($table->data,
+                    array(
+                        get_section_name($COURSE, $activity['section']),
+                        $icon . format_string($activity['name']),
+                        html_writer::empty_tag(
+                            'img',
+                            array('src' => $CFG->wwwroot . '/blocks/like/pix/easy.png', 'class' => 'overview_img')) . ' ' .
+                        100 * intval($result[($activity['id'])]->typeone) / intval($result[($activity['id'])]->total) . '% ',
+                        html_writer::empty_tag(
+                            'img',
+                            array('src' => $CFG->wwwroot . '/blocks/like/pix/better.png', 'class' => 'overview_img')) . ' ' .
+                        100 * intval($result[($activity['id'])]->typetwo) / intval($result[($activity['id'])]->total) . '% ',
+                        html_writer::empty_tag(
+                            'img',
+                            array('src' => $CFG->wwwroot . '/blocks/like/pix/hard.png', 'class' => 'overview_img')) . ' ' .
+                        100 * intval($result[($activity['id'])]->typethree) / intval($result[($activity['id'])]->total) . '% ',
+                        '+'
+                    ),
+                    array('', '', '', '', '', ''));
+            }
         }
-    }
 
-    echo html_writer::table($table);
+        echo html_writer::table($table);
+    } else {
+        html_writer::tag('h3', 'Aucune activité');
+    }
 
     echo $OUTPUT->container_end();
     echo $OUTPUT->footer();

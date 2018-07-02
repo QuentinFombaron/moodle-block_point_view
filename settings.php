@@ -16,7 +16,7 @@
 
 /**
  * TODO
- *
+ *0b619f
  * @copyright TODO
  * @license   TODO
  */
@@ -28,27 +28,64 @@ require_once($CFG->dirroot . '/blocks/like/lib.php');
 if ($ADMIN->fulltree) {
     try {
         $settings->add(new admin_setting_configcheckbox(
-            'block_like/enable_likes',
+            'block_like/enable_likes_admin',
             get_string('enablelikes', 'block_like'),
             '',
             DEFAULT_LIKE_ENABLELIKES
         ));
 
         $settings->add(new admin_setting_configcheckbox(
-            'block_like/enable_custom_likes_pix',
+            'block_like/enable_pix_admin',
             get_string('enablecustompix', 'block_like'),
             '',
             DEFAULT_LIKE_ENABLECUSTOMPIX
         ));
 
         $settings->add(new admin_setting_configstoredfile(
-            'block_like/likes_pix',
+            'block_like/likes_pix_admin',
             new lang_string('likepix', 'block_like'),
             new lang_string('likepixdesc', 'block_like'),
-            'preset',
+            'likes_pix_admin',
             0,
-            ['subdirs' => 0, 'maxfiles' => 20, 'accepted_types' => '.png']
+            ['subdirs' => 0, 'maxfiles' => 11, 'accepted_types' => '.png']
         ));
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_like/green_track_color_admin',
+            'Green track color',
+            '',
+            '#129800',
+            null,
+            true
+        ));
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_like/blue_track_color_admin',
+            'Blue track color',
+            '',
+            '#0B619F',
+            null,
+            true
+        ));
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_like/red_track_color_admin',
+            'Red track color',
+            '',
+            '#BD0F29',
+            null,
+            true
+        ));
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_like/black_track_color_admin',
+            'Black track color',
+            '',
+            '#01262E',
+            null,
+            true
+        ));
+
     } catch (coding_exception $e) {
         echo 'Exception coding_exception -> blocks/like/settings.php) : ', $e->getMessage(), "\n";
     }

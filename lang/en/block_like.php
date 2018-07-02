@@ -28,10 +28,10 @@ $string['config_default_title'] = "Like";
 
 $string['contentinputlabel'] = "Block Content";
 
-$string['defaulttext'] = "This plugin gives the possibility to react to activities<br /><br />It is important to know that you are testing the Alpha version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>June 18<SUP>th</SUP> 2018 (version 0.6.0)</i><br /><br />";
+$string['defaulttext'] = "This plugin gives the possibility to react to activities<br /><br />It is important to know that you are testing the Alpha version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>July 2<SUP>nd</SUP> 2018 (version 0.6.0)</i><br /><br />";
 
 $string['config_header_activities'] = "Likes/Difficulties configuration";
-$string['config_header_images'] = "Image configuration";
+$string['config_header_images'] = "Emojis configuration";
 $string['no_activities_config_message'] = "There is no activities";
 
 $string['enableall'] = "Enable all in ";
@@ -41,7 +41,7 @@ $string['close_field'] = "<b>Close</b> field";
 $string['manage'] = "Manage ";
 
 
-$manage = array('books', 'chats', 'files', 'forums', 'glossaries', 'pages', 'quizs', 'resources', 'urls', 'vpls', 'wikis');
+$manage = array('books', 'chats', 'files', 'forums', 'pages', 'quizs', 'resources', 'urls', 'vpls', 'wikis');
 
 foreach ($manage as $type) {
     $string['enable'.$type] = "Enable all ".ucfirst($type);
@@ -49,6 +49,11 @@ foreach ($manage as $type) {
     $string['howto_'.$type] = "management of ".substr(ucfirst($type), 0, -1)." activities";
     $string['howto_'.$type.'_help'] = "This buttons gives the possibility to enable or disable all  ".substr(ucfirst($type), 0, -1)." activities";
 }
+
+$string['enableglossarys'] = "Enable all Glossaries";
+$string['disableglossarys'] = "Disable all Glossaries";
+$string['howto_glossarys'] = "management of Glossarie activities";
+$string['howto_glossarys'] = "This buttons gives the possibility to enable or disable all  Glossarie activities";
 
 $string['enablelikes'] = "Enable likes";
 $string['enabledifficulties'] = "Enable difficulty tracks";
@@ -70,5 +75,20 @@ $string['menu'] = 'Menu';
 $string['overview_title_tab'] = "Overview";
 $string['export_title_tab'] = "Export";
 
-$string['no_activities_message'] = 'No activities or resources are being monitored. Use configuration to set up monitoring';
-$string['no_visible_activities_message'] = 'None of the monitored activities are currently visible';
+$string['no_activities_message'] = "No activities or resources are being monitored. Use configuration to set up monitoring";
+$string['no_visible_activities_message'] = "None of the monitored activities are currently visible";
+
+$string['texteasy'] = "<b>Easy !</b> text";
+$string['textbetter'] = "<b>I'm getting better !</b> text";
+$string['texthard'] = "<b>So hard...</b> text";
+$string['defaulttexteasy'] = "Easy !";
+$string['defaulttextbetter'] = "I'm getting better !";
+$string['defaulttexthard'] = "So hard...";
+
+$string['pixcurrently'] = "Currently used";
+$string['pixreset'] = "Reset pictures";
+$string['pixresettext'] = "<i style='font-size: 0.8em'>(You will be redirected in course page)</i>";
+
+$string['blockdisabled'] = "<h3 style=\"color: red\">Like block is disabled</h3>";
+
+$string['emojidesc'] = " Emoji description";
