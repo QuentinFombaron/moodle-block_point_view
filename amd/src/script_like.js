@@ -1,13 +1,15 @@
 /* Include JQuery */
 define(['jquery'], function($) {
     return {
-        init: function(likessql, userid, courseid, moduleselect, difficultylevels, pix, trackscolor) {
+        init: function(likessql, moduleselect, difficultylevels, pix, envconf) {
             /* Wait that the DOM is fully loaded */
             $(function() {
                     /* Array with all the needed data about the likes of the page */
                     var likesSQL = likessql;
                     /* ID of the current user */
-                    var userId = userid;
+                    var userId = envconf.userid;
+
+                    var courseId = envconf.courseid;
                     /* Array of the modules which have the likes activated */
                     var moduleSelect = moduleselect;
 
@@ -102,7 +104,7 @@ define(['jquery'], function($) {
                         if (!assign) {
                             resultSearch = {
                                 'cmid': moduleId.toString(),
-                                'courseid': courseid,
+                                'courseid': courseId,
                                 'total': '0',
                                 'typeone': '0',
                                 'typetwo': '0',
@@ -388,7 +390,7 @@ define(['jquery'], function($) {
                                 data: {
                                     func: 'insert',
                                     userid: userId,
-                                    courseid: courseid,
+                                    courseid: courseId,
                                     cmid: event.data.moduleId,
                                     vote: event.data.reactionSelect
                                 },
@@ -428,7 +430,7 @@ define(['jquery'], function($) {
                                 data: {
                                     func: 'remove',
                                     userid: userId,
-                                    courseid: courseid,
+                                    courseid: courseId,
                                     cmid: event.data.moduleId,
                                     vote: event.data.reactionSelect
                                 },
@@ -480,7 +482,7 @@ define(['jquery'], function($) {
                                 data: {
                                     func: 'update',
                                     userid: userId,
-                                    courseid: courseid,
+                                    courseid: courseId,
                                     cmid: event.data.moduleId,
                                     vote: event.data.reactionSelect
                                 },
@@ -832,10 +834,10 @@ define(['jquery'], function($) {
                             $(this).clearQueue();
                         });
 
-                    $('.greentrack').css({'background-color': trackscolor.green});
-                    $('.bluetrack').css({'background-color': trackscolor.blue});
-                    $('.redtrack').css({'background-color': trackscolor.red});
-                    $('.blacktrack').css({'background-color': trackscolor.black});
+                    $('.greentrack').css({'background-color': envconf.greentrack});
+                    $('.bluetrack').css({'background-color': envconf.bluetrack});
+                    $('.redtrack').css({'background-color': envconf.redtrack});
+                    $('.blacktrack').css({'background-color': envconf.blacktrack});
             });
         }
     };
