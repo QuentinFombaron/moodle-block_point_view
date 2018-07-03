@@ -7,12 +7,14 @@ require(__DIR__ . '/../../config.php');
 try {
     require_login();
 } catch (coding_exception $e) {
-    echo 'Exception coding_exception (require_login() -> blocks/like/update_db.php) : ', $e->getMessage(), "\n";
+    echo json_encode('Exception coding_exception (require_login() -> blocks/like/update_db.php) : ', $e->getMessage(), "\n");
 } catch (require_login_exception $e) {
-    echo 'Exception require_login_exception (require_login() -> blocks/like/update_db.php) : ', $e->getMessage(), "\n";
+    echo json_encode('Exception require_login_exception (require_login() -> blocks/like/update_db.php) : ', $e->getMessage(), "\n");
 } catch (moodle_exception $e) {
-    echo 'Exception moodle_exception (require_login() -> blocks/like/update_db.php) : ', $e->getMessage(), "\n";
+    echo json_encode('Exception moodle_exception (require_login() -> blocks/like/update_db.php) : ', $e->getMessage(), "\n");
 }
+
+echo json_encode('File founded');
 
 /* Get all the received parameters */
 $table = 'block_like';
