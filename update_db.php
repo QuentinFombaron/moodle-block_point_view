@@ -14,8 +14,6 @@ try {
     echo json_encode('Exception moodle_exception (require_login() -> blocks/like/update_db.php) : ', $e->getMessage(), "\n");
 }
 
-echo json_encode('File founded');
-
 /* Get all the received parameters */
 $table = 'block_like';
 
