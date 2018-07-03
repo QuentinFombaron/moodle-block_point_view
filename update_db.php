@@ -8,16 +8,16 @@ require(__DIR__ . '/../../config.php');
 $table = 'block_like';
 
 $userid = $_POST['userid'];
+$courseid = $_POST['courseid'];
 $cmid = $_POST['cmid'];
-$type = $_POST['type'];
 $vote = $_POST['vote'];
 
 switch ($_POST['func']) {
     case 'insert':
         $dataobject = new stdClass();
         $dataobject->userid = $userid;
+        $dataobject->courseid = $courseid;
         $dataobject->cmid = $cmid;
-        $dataobject->type = $type;
         $dataobject->vote = $vote;
 
         try {
@@ -29,7 +29,7 @@ switch ($_POST['func']) {
         break;
 
     case 'remove':
-        $conditions = array('userid' => $userid, 'cmid' => $cmid, 'type' => $type, 'vote' => $vote);
+        $conditions = array('userid' => $userid, 'courseid' => $courseid, 'cmid' => $cmid, 'vote' => $vote);
 
         try {
             $DB->delete_records($table, $conditions);
@@ -42,7 +42,7 @@ switch ($_POST['func']) {
     case 'update':
         try {
             /* Get the good record to have the ID (ask by 'update_record' function)*/
-            $target = $DB->get_record('block_like', array('userid' => $userid, 'cmid' => $cmid, 'type' => $type));
+            $target = $DB->get_record('block_like', array('userid' => $userid, 'courseid' => $courseid, 'cmid' => $cmid));
         } catch (dml_exception $e) {
             echo json_encode('Exception : ', $e->getMessage(), '\n');
         }

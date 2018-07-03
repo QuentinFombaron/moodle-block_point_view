@@ -1,7 +1,7 @@
 /* Include JQuery */
 define(['jquery'], function($) {
     return {
-        init: function(likessql, userid, moduleselect, difficultylevels, pix, trackscolor) {
+        init: function(likessql, userid, courseid, moduleselect, difficultylevels, pix, trackscolor) {
             /* Wait that the DOM is fully loaded */
             $(function() {
                     /* Array with all the needed data about the likes of the page */
@@ -102,7 +102,7 @@ define(['jquery'], function($) {
                         if (!assign) {
                             resultSearch = {
                                 'cmid': moduleId.toString(),
-                                'type': '1',
+                                'courseid': courseid,
                                 'total': '0',
                                 'typeone': '0',
                                 'typetwo': '0',
@@ -388,8 +388,8 @@ define(['jquery'], function($) {
                                 data: {
                                     func: 'insert',
                                     userid: userId,
+                                    courseid: courseid,
                                     cmid: event.data.moduleId,
-                                    type: 1,
                                     vote: event.data.reactionSelect
                                 },
                                 success: function(output) {
@@ -428,8 +428,8 @@ define(['jquery'], function($) {
                                 data: {
                                     func: 'remove',
                                     userid: userId,
+                                    courseid: courseid,
                                     cmid: event.data.moduleId,
-                                    type: 1,
                                     vote: event.data.reactionSelect
                                 },
 
@@ -480,8 +480,8 @@ define(['jquery'], function($) {
                                 data: {
                                     func: 'update',
                                     userid: userId,
+                                    courseid: courseid,
                                     cmid: event.data.moduleId,
-                                    type: 1,
                                     vote: event.data.reactionSelect
                                 },
 
@@ -710,6 +710,7 @@ define(['jquery'], function($) {
 
                             /* MOUSE OVER */
                                 .mouseover({module: module, moduleId: moduleId}, groupImgMouseOver)
+                                .click({module: module, moduleId: moduleId}, groupImgMouseOver)
 
                                 /* MOUSE OUT */
                                 .mouseout({moduleId: moduleId}, groupImgMouseOut);

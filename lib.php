@@ -194,3 +194,12 @@ function block_like_pix_url($context, $filearea, $react) {
         $react)
     );
 }
+
+function tostring($output, $data, $users, $course) {
+    $string = '';
+    foreach ($data as $item) {
+        $string .= $output->user_picture($users[$item], array('course' => $course->id)) .
+            $users[$item]->firstname . ' ' . $users[$item]->lastname . '<br />';
+    }
+    return $string;
+}

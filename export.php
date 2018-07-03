@@ -66,6 +66,7 @@ try {
     );
 
     $PAGE->set_context($context);
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/like/style/style.css'));
     $title = get_string('menu', 'block_like');
     $PAGE->set_title($title);
     $PAGE->set_heading(get_string('config_default_title', 'block_like'));
@@ -74,9 +75,35 @@ try {
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading($title, 2);
-    echo $OUTPUT->container_start('block_like');
+    echo $OUTPUT->container_start('block_like_export');
 
     require("tabs.php");
+
+    echo html_writer::start_div('buttons');
+
+    $parameters = ['contextid' => $context->id, 'courseid' => $course->id , 'instanceid' => $id, 'format' => 'csv'];
+    $url        = new moodle_url('/blocks/like/export_lib.php', $parameters);
+    $label      = "Export CSV";
+    $options    = ['class' => 'exportCSVButton'];
+    echo $OUTPUT->single_button($url, $label, 'post', $options);
+
+    echo html_writer::tag('p', '&nbsp;');
+
+    $parameters = ['contextid' => $context->id, 'courseid' => $course->id , 'instanceid' => $id, 'format' => 'ods'];
+    $url        = new moodle_url('/blocks/like/export_lib.php', $parameters);
+    $label      = "Export ODS";
+    $options    = ['class' => 'exportODSButton'];
+    echo $OUTPUT->single_button($url, $label, 'post', $options);
+
+    echo html_writer::tag('p', '&nbsp;');
+
+    $parameters = ['contextid' => $context->id, 'courseid' => $course->id , 'instanceid' => $id, 'format' => 'xls'];
+    $url        = new moodle_url('/blocks/like/export_lib.php', $parameters);
+    $label      = "Export XLS";
+    $options    = ['class' => 'exportXLSButton'];
+    echo $OUTPUT->single_button($url, $label, 'post', $options);
+
+    echo html_writer::end_div();
 
     echo $OUTPUT->container_end();
     echo $OUTPUT->footer();
@@ -85,4 +112,5 @@ try {
     echo 'Exception coding_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
 } catch (dml_exception $e) {
     echo 'Exception dml_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
+} catch (moodle_exception $e) {
 }

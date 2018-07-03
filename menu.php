@@ -26,7 +26,6 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/blocks/like/lib.php');
 
-
 try {
     $id = required_param('instanceid', PARAM_INT);
     $courseid = required_param('courseid', PARAM_INT);
@@ -83,11 +82,11 @@ try {
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading($title, 2);
-    echo $OUTPUT->container_start('block_like');
+    echo $OUTPUT->container_start('block_like_menu');
 
     require("tabs.php");
 
-    $sql = 'SELECT Base.cmid, Base.type, 
+    $sql = 'SELECT Base.cmid,
             IFNULL(COUNT(Base.cmid), 0) AS total,
             IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
             IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
@@ -99,9 +98,10 @@ try {
               WHERE vote = 2 GROUP BY cmid) AS TableTypeTwo
             NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypethree FROM {block_like}
               WHERE vote = 3 GROUP BY cmid) AS TableTypeThree
+            WHERE courseid = :courseid
           GROUP BY cmid;';
 
-    $params = array('userid' => $USER->id);
+    $params = array('userid' => $USER->id, 'courseid' => $COURSE->id);
 
     try {
         $result = $DB->get_records_sql($sql, $params);
@@ -111,14 +111,45 @@ try {
 
     if (!empty($result)) {
 
+        try {
+            $sqldata = $DB->get_records('block_like', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');
+        } catch (dml_exception $e) {
+            echo 'Exception dml_exception ($sqldata = DB->get_records() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
+        }
+
         $table = new html_table();
         $table->head = array('Cours', 'Modules', '', 'Réactions', '', '');
         $table->attributes['class'] = 'generaltable';
         $table->rowclasses = array();
         $table->data = array();
 
+        $users = $DB->get_records('user', null, '', 'id,firstname,lastname');
+
         foreach ($activities as $index => $activity) {
             if ($activity['type'] != 'label' && !is_null($result[($activity['id'])]->cmid)) {
+
+                $details = array(
+                    'easy' => array(),
+                    'better' => array(),
+                    'hard' => array()
+                );
+
+                foreach ($sqldata as $row) {
+                    if ($row->cmid == $activity['id']) {
+                        switch ($row->vote) {
+                            case 1 :
+                                array_push($details['easy'], $row->userid);
+                                break;
+                            case 2 :
+                                array_push($details['better'], $row->userid);
+                                break;
+                            case 3 :
+                                array_push($details['hard'], $row->userid);
+                                break;
+                        }
+                    }
+                }
+
                 array_push($table->rowclasses,
                     'row_module' . $activity['id'],
                     'row_module' . $activity['id'] . '_details'
@@ -131,25 +162,42 @@ try {
                         $icon . format_string($activity['name']),
                         html_writer::empty_tag(
                             'img',
-                            array('src' => $CFG->wwwroot . '/blocks/like/pix/easy.png', 'class' => 'overview_img')) . ' ' .
-                        100 * intval($result[($activity['id'])]->typeone) / intval($result[($activity['id'])]->total) . '% ',
+                            array('src' => $CFG->wwwroot . '/blocks/like/pix/easy.png', 'class' => 'overview_img')) .
+                        ' <span class="votePercent">' .
+                        round(100 * intval($result[($activity['id'])]->typeone)
+                            / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
+                            $result[($activity['id'])]->typeone . '</span>',
                         html_writer::empty_tag(
                             'img',
-                            array('src' => $CFG->wwwroot . '/blocks/like/pix/better.png', 'class' => 'overview_img')) . ' ' .
-                        100 * intval($result[($activity['id'])]->typetwo) / intval($result[($activity['id'])]->total) . '% ',
+                            array('src' => $CFG->wwwroot . '/blocks/like/pix/better.png', 'class' => 'overview_img')) .
+                        ' <span class="votePercent">' .
+                        round(100 * intval($result[($activity['id'])]->typetwo)
+                            / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
+                            $result[($activity['id'])]->typetwo . '</span>',
                         html_writer::empty_tag(
                             'img',
-                            array('src' => $CFG->wwwroot . '/blocks/like/pix/hard.png', 'class' => 'overview_img')) . ' ' .
-                        100 * intval($result[($activity['id'])]->typethree) / intval($result[($activity['id'])]->total) . '% ',
+                            array('src' => $CFG->wwwroot . '/blocks/like/pix/hard.png', 'class' => 'overview_img')) .
+                        ' <span class="votePercent">' .
+                        round(100 * intval($result[($activity['id'])]->typethree)
+                            / intval($result[($activity['id'])]->total)) . '% </span><span class="voteInt">' .
+                            $result[($activity['id'])]->typethree . '</span>',
                         '+'
                     ),
-                    array('', '', '', '', '', ''));
+                    array(
+                        '',
+                        '',
+                        tostring($OUTPUT, $details['easy'], $users, $course),
+                        tostring($OUTPUT, $details['better'], $users, $course),
+                        tostring($OUTPUT, $details['hard'], $users, $course),
+                        ''
+                    )
+                );
             }
         }
 
         echo html_writer::table($table);
     } else {
-        html_writer::tag('h3', 'Aucune activité');
+        echo html_writer::tag('p', get_string('noneactivity', 'block_like'));
     }
 
     echo $OUTPUT->container_end();

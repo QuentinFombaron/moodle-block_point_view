@@ -25,6 +25,23 @@ define(['jquery'], function($) {
                     $('.row_module' + id + '_details').css({'display': 'none'});
                     $('.row_module' + id + ' .c5').click({id: id}, rowDetails);
                 });
+
+                var intDisplay = false;
+                $('.voteInt').css({'display': 'none'});
+
+                $('.c2, .c3, .c4').click(function() {
+                    if (!intDisplay) {
+                        $('.voteInt').css({'display': ''});
+                        $('.votePercent').css({'display': 'none'});
+                        intDisplay = true;
+                    } else {
+                        $('.votePercent').css({'display': ''});
+                        $('.voteInt').css({'display': 'none'});
+                        intDisplay = false;
+                    }
+                }).mouseout(function() {
+                    $(this).css({'cursor': 'pointer'});
+                });
             });
         }
     };

@@ -92,3 +92,5 @@ $string['pixresettext'] = "<i style='font-size: 0.8em'>(You will be redirected i
 $string['blockdisabled'] = "<h3 style=\"color: red\">Like block is disabled</h3>";
 
 $string['emojidesc'] = " Emoji description";
+
+$string['noneactivity'] = 'No activity';
