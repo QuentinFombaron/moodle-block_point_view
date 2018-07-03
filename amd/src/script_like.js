@@ -365,6 +365,10 @@ define(['jquery'], function($) {
                      */
                     function onClick(event) {
 
+                        /* eslint-disable no-console */
+                        console.log('CLICKED');
+                        /* eslint-enable no-console */
+
                         /* Get the number of 'reactionName' reaction */
                         var nbReation = parseInt((event.data.module)
                             .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
