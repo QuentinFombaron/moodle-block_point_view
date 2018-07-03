@@ -366,16 +366,24 @@ define(['jquery'], function($) {
                     function onClick(event) {
 
                         /* eslint-disable no-console */
-                        console.log('CLICKED');
+                        console.log('CLICKED 1');
                         /* eslint-enable no-console */
 
                         /* Get the number of 'reactionName' reaction */
                         var nbReation = parseInt((event.data.module)
                             .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
 
+                        /* eslint-disable no-console */
+                        console.log('CLICKED 2');
+                        /* eslint-enable no-console */
+
                         /* Get the total number of reaction */
                         totalVoteArray[event.data.moduleId] = parseInt((event.data.module)
                             .getElementsByClassName('group_nb')[0].innerText);
+
+                        /* eslint-disable no-console */
+                        console.log('CLICKED 3');
+                        /* eslint-enable no-console */
 
                         /* IF there is no 'reactionName' reaction, change the emoji in black and white */
                         if (nbReation === 0) {
@@ -383,8 +391,16 @@ define(['jquery'], function($) {
                                 .css({'-webkit-filter': '', 'filter': ''});
                         }
 
+                        /* eslint-disable no-console */
+                        console.log('CLICKED 4');
+                        /* eslint-enable no-console */
+
                         /* IF this is a new vote for the user */
                         if (reactionVotedArray[event.data.moduleId] === Reactions.NULL) {
+
+                            /* eslint-disable no-console */
+                            console.log('CLICKED 5');
+                            /* eslint-enable no-console */
 
                             /* AJAX call to the PHP function which add a new line in DB */
                             $.ajax({
@@ -474,6 +490,7 @@ define(['jquery'], function($) {
                                     /* Update the current reaction with 'none reaction' */
                                     reactionVotedArray[event.data.moduleId] = Reactions.NULL;
                                 }
+
                             });
                         } else {
                             /* IF the user update its vote */
@@ -548,6 +565,10 @@ define(['jquery'], function($) {
                                 }
                             });
                         }
+
+                        /* eslint-disable no-console */
+                        console.log('CLICKED 6');
+                        /* eslint-enable no-console */
 
                     }
 
