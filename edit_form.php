@@ -345,7 +345,7 @@ class block_like_edit_form extends block_edit_form {
 
                 /* Imports */
                 $params = array($sectionid, $managetypesparams, $moduleids);
-                $PAGE->requires->js_call_amd('block_like/module', 'init', $params);
+                $PAGE->requires->js_call_amd('block_like/script_config_like', 'init', $params);
             } else {
                 $mform->addElement(
                     'static', '', '', get_string('blockdisabled', 'block_like')

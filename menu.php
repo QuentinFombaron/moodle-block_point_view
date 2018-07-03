@@ -73,7 +73,7 @@ try {
     $PAGE->set_context($context);
     $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/like/style/style.css'));
     $paramsamd = array(array_column($activities, 'id'));
-    $PAGE->requires->js_call_amd('block_like/menu', 'init', $paramsamd);
+    $PAGE->requires->js_call_amd('block_like/script_menu_like', 'init', $paramsamd);
     $title = get_string('menu', 'block_like');
     $PAGE->set_title($title);
     $PAGE->set_heading(get_string('config_default_title', 'block_like'));

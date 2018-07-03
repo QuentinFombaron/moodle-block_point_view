@@ -113,4 +113,5 @@ try {
 } catch (dml_exception $e) {
     echo 'Exception dml_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
 } catch (moodle_exception $e) {
+    echo 'Exception moodle_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
 }
