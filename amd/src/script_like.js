@@ -712,7 +712,7 @@ define(['jquery'], function($) {
 
                             /* MOUSE OVER */
                                 .mouseover({module: module, moduleId: moduleId}, groupImgMouseOver)
-                                .click({module: module, moduleId: moduleId}, groupImgMouseOver)
+                                .on('click', {module: module, moduleId: moduleId}, groupImgMouseOver)
 
                                 /* MOUSE OUT */
                                 .mouseout({moduleId: moduleId}, groupImgMouseOut);
@@ -733,7 +733,7 @@ define(['jquery'], function($) {
                                 }, mouseOut)
 
                                 /* ON CLICK */
-                                .click({
+                                .on('click', {
                                     module: module, moduleId: moduleId, reactionName: 'easy',
                                     reactionSelect: Reactions.EASY
                                 }, onClick);
@@ -754,7 +754,7 @@ define(['jquery'], function($) {
                                 }, mouseOut)
 
                                 /* ON CLICK */
-                                .click({
+                                .on('click', {
                                     module: module, moduleId: moduleId, reactionName: 'better',
                                     reactionSelect: Reactions.BETTER
                                 }, onClick);
@@ -775,7 +775,7 @@ define(['jquery'], function($) {
                                 }, mouseOut)
 
                                 /* ON CLICK */
-                                .click({
+                                .on('click', {
                                     module: module, moduleId: moduleId, reactionName: 'hard',
                                     reactionSelect: Reactions.HARD
                                 }, onClick);

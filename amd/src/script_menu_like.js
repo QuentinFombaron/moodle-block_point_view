@@ -23,13 +23,13 @@ define(['jquery'], function($) {
                 moduleIds.forEach(function(id) {
                     openRow[id] = false;
                     $('.row_module' + id + '_details').css({'display': 'none'});
-                    $('.row_module' + id + ' .c5').click({id: id}, rowDetails);
+                    $('.row_module' + id + ' .c5').on('click', {id: id}, rowDetails);
                 });
 
                 var intDisplay = false;
                 $('.voteInt').css({'display': 'none'});
 
-                $('.c2, .c3, .c4').click(function() {
+                $('.c2, .c3, .c4').on('click', function() {
                     if (!intDisplay) {
                         $('.voteInt').css({'display': ''});
                         $('.votePercent').css({'display': 'none'});
