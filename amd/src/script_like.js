@@ -374,7 +374,7 @@ define(['jquery'], function($) {
                             .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
 
                         /* eslint-disable no-console */
-                        console.log('CLICKED 2');
+                        console.log('CLICKED 2 : ' + nbReation);
                         /* eslint-enable no-console */
 
                         /* Get the total number of reaction */
@@ -382,13 +382,17 @@ define(['jquery'], function($) {
                             .getElementsByClassName('group_nb')[0].innerText);
 
                         /* eslint-disable no-console */
-                        console.log('CLICKED 3');
+                        console.log('CLICKED 3 : ' + totalVoteArray[event.data.moduleId]);
                         /* eslint-enable no-console */
 
                         /* IF there is no 'reactionName' reaction, change the emoji in black and white */
                         if (nbReation === 0) {
                             $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
                                 .css({'-webkit-filter': '', 'filter': ''});
+
+                            /* eslint-disable no-console */
+                            console.log('CLICKED 3.5');
+                            /* eslint-enable no-console */
                         }
 
                         /* eslint-disable no-console */
