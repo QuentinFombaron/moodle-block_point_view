@@ -24,6 +24,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/lib/csvlib.class.php');
 
 try {
     require_login();
@@ -37,11 +38,11 @@ try {
 
 try {
     $id = required_param('instanceid', PARAM_INT);
+    $contextid = required_param('contextid', PARAM_INT);
     $courseid = required_param('courseid', PARAM_INT);
-    $page = optional_param('page', 0, PARAM_INT);
-    $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
-    $group = optional_param('group', 0, PARAM_INT);
+    $enablepix = required_param('enablepix', PARAM_INT);
     $tab = optional_param('tab', 'export', PARAM_ALPHA);
+    $format = optional_param('format', null, PARAM_ALPHA);
 
     $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
@@ -57,10 +58,9 @@ try {
         '/blocks/like/export.php',
         array(
             'instanceid' => $id,
+            'contextid' => $contextid,
             'courseid' => $courseid,
-            'page' => $page,
-            'perpage' => $perpage,
-            'group' => $group,
+            'enablepix' => $enablepix,
             'sesskey' => sesskey()
         )
     );
@@ -81,26 +81,26 @@ try {
 
     echo html_writer::start_div('buttons');
 
-    $parameters = ['contextid' => $context->id, 'courseid' => $course->id , 'instanceid' => $id, 'format' => 'csv'];
-    $url        = new moodle_url('/blocks/like/export_lib.php', $parameters);
-    $label      = "Export CSV";
-    $options    = ['class' => 'exportCSVButton'];
+    $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'csv'];
+    $url = new moodle_url('/blocks/like/download.php', $parameters);
+    $label = "Export CSV";
+    $options = ['class' => 'exportCSVButton'];
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
     echo html_writer::tag('p', '&nbsp;');
 
-    $parameters = ['contextid' => $context->id, 'courseid' => $course->id , 'instanceid' => $id, 'format' => 'ods'];
-    $url        = new moodle_url('/blocks/like/export_lib.php', $parameters);
-    $label      = "Export ODS";
-    $options    = ['class' => 'exportODSButton'];
+    $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'ods'];
+    $url = new moodle_url('/blocks/like/download.php', $parameters);
+    $label = "Export ODS";
+    $options = ['class' => 'exportODSButton'];
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
     echo html_writer::tag('p', '&nbsp;');
 
-    $parameters = ['contextid' => $context->id, 'courseid' => $course->id , 'instanceid' => $id, 'format' => 'xls'];
-    $url        = new moodle_url('/blocks/like/export_lib.php', $parameters);
-    $label      = "Export XLS";
-    $options    = ['class' => 'exportXLSButton'];
+    $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'xls'];
+    $url = new moodle_url('/blocks/like/download.php', $parameters);
+    $label = "Export XLS";
+    $options = ['class' => 'exportXLSButton'];
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
     echo html_writer::end_div();

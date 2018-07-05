@@ -1,8 +1,8 @@
 define(['jquery'], function($) {
     return {
-        init: function(idmax, types, moduleids) {
+        init: function(idmax, types, moduleids, trackcolor) {
             /* Shortcut to the "SAVE" button at the bottom of the page */
-            $('#id_go_to_save').on('click', function() {
+            $('#id_go_to_save').click(function() {
                 window.location = '#id_submitbutton';
             }).removeClass('btn-secondary').addClass('btn-primary');
 
@@ -110,22 +110,27 @@ define(['jquery'], function($) {
              * @param event
              */
             function selectChange(event) {
-                var value = parseInt(this.value);
+                var value;
+                if (this.value !== undefined) {
+                    value = parseInt(this.value);
+                } else {
+                    value = event.data.value;
+                }
 
                 if (value !== 0) {
                     var difficulty;
                     switch (value) {
                         case 1:
-                            difficulty = '#129800';
+                            difficulty = trackcolor.greentrack;
                             break;
                         case 2:
-                            difficulty = '#0b619f';
+                            difficulty = trackcolor.bluetrack;
                             break;
                         case 3:
-                            difficulty = '#bd0f29';
+                            difficulty = trackcolor.redtrack;
                             break;
                         case 4:
-                            difficulty = '#01262e';
+                            difficulty = trackcolor.blacktrack;
                             break;
                     }
 
@@ -159,7 +164,7 @@ define(['jquery'], function($) {
                 }
             }
 
-            $('#id_close_field').on('click', function() {
+            $('#id_close_field').click(function() {
                 $('#id_activities').addClass('collapsed');
                 document.body.scrollTop = 0; // For Safari
                 document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
@@ -169,57 +174,41 @@ define(['jquery'], function($) {
             moduleids.forEach(function(moduleId) {
                 var classList = $('#id_config_moduleselectm' + moduleId).attr('class');
                 if (classList !== undefined) {
-                    var type = classList.split(" ")[0];
-                    var id = classList.split(" ")[2].slice(13);
-                    $('#id_config_moduleselectm' + moduleId).on('click', {id: id, type: type}, manageButton);
+                    var classes = classList.split(" ");
+                    var type = null;
+                    var id = null;
+                    var types = ['book', 'chat', 'file', 'forum', 'glossary', 'page', 'quiz', 'resource', 'url', 'vpl', 'wiki'];
+                    classes.forEach(function(classe) {
+                        if (types.indexOf(classe) !== -1) {
+                            type = types[types.indexOf(classe)];
+                        }
+                        if (classe.search('check_section_') !== -1) {
+                            id = classe.match(/\d+/);
+                        }
+                    });
+                    $('#id_config_moduleselectm' + moduleId).click({id: id, type: type}, manageButton);
                 }
 
                 var value = parseInt($('#id_config_difficulty_' + moduleId + ' :selected').val());
                 var idConfigDifficulty = $('#id_config_difficulty_' + moduleId);
 
-                if (value !== 0) {
-                    var difficulty;
-                    switch (value) {
-                        case 1:
-                            difficulty = '#129800';
-                            break;
-                        case 2:
-                            difficulty = '#0b619f';
-                            break;
-                        case 3:
-                            difficulty = '#bd0f29';
-                            break;
-                        case 4:
-                            difficulty = '#01262e';
-                            break;
-                    }
-
-                    idConfigDifficulty.css({
-                        'background-color': difficulty,
-                        'color': 'white'
-                    });
-                } else {
-                    idConfigDifficulty.css({
-                        'background-color': '',
-                        'color': ''
-                    });
-                }
+                selectChange({data: {value: value, module: idConfigDifficulty}});
 
                 idConfigDifficulty.change({module: idConfigDifficulty}, selectChange);
             });
 
             /* TODO Commenter : Les boutons Enable/Disable sont mis à jour au chargement de la page */
             for (var j = 2; j <= idmax; j++) {
-                $('#id_enable_' + j).on('click', {id: j}, treatEnableForm)
+                $('#id_enable_' + j).click({id: j}, treatEnableForm)
                     .removeClass('btn-secondary').addClass('btn-outline-success');
-                $('#id_disable_' + j).on('click', {id: j}, treatDisableForm)
+                $('#id_disable_' + j).click({id: j}, treatDisableForm)
                     .removeClass('btn-secondary').addClass('btn-outline-danger');
             }
 
             manageButtonSection();
 
             types.forEach(function(type) {
-                $('#id_enable' + jsUcfirst(type) + 's').on('click', function() {
+                $('#id_enable' + jsUcfirst(type) + 's').click(function() {
                     /* Check all checkbox of $type */
                     $('input.' + type).prop('checked', true);
                     /* Make the button darker without disable it */
@@ -229,7 +218,7 @@ define(['jquery'], function($) {
                     manageButtonSection();
                 }).removeClass('btn-secondary').addClass('btn-outline-success');
 
-                $('#id_disable' + jsUcfirst(type) + 's').on('click', function() {
+                $('#id_disable' + jsUcfirst(type) + 's').click(function() {
                     $('input.' + type).prop('checked', false);
                     $(this).addClass('active');
                     $('#id_enable' + jsUcfirst(type) + 's').removeClass('active');
@@ -239,7 +228,7 @@ define(['jquery'], function($) {
             });
 
             /* Reset images buttun  */
-            $('#id_config_reset_pix').on('click', function() {
+            $('#id_config_reset_pix').click(function() {
                 $('#id_config_enable_pix_checkbox:checked').prop('checked', false);
                 $('#mform1').submit();
             });
@@ -247,8 +236,8 @@ define(['jquery'], function($) {
             /* Hide fieldsets if Like or Difficulties checkboxes are disabled */
             checkConf();
 
-            $('#id_config_enable_likes_checkbox').on('click', checkConf);
-            $('#id_config_enable_difficulties_checkbox').on('click', checkConf);
+            $('#id_config_enable_likes_checkbox').click(checkConf);
+            $('#id_config_enable_difficulties_checkbox').click(checkConf);
         }
     };
 });

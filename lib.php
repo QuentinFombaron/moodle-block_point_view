@@ -163,20 +163,26 @@ function block_like_hide($mform, $elementarray, $checkbox) {
  */
 function block_like_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
     $fs = get_file_storage();
-    $file = null;
 
     if (($filearea == 'likes_pix') || ($filearea == 'likes_pix_admin')) {
         $itemid = array_shift($args);
+
+        if ($itemid != 0) {
+            return false;
+        }
+
         $filename = array_shift($args);
         $filepath = '/';
         $file = $fs->get_file($context->id, 'block_like', $filearea, $itemid, $filepath, $filename . '.png');
+    } else {
+        return false;
     }
 
     if (!$file) {
         return false;
     }
 
-    send_stored_file($file);
+    send_stored_file($file, 0, 0, true, $options);
 }
 
 /**

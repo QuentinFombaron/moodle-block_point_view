@@ -3,6 +3,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../config.php');
+require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot . '/blocks/like/lib.php');
 
 try {
@@ -299,7 +300,8 @@ class block_like_edit_form extends block_edit_form {
                         false
                     );
 
-                    $mform->addElement('filemanager',
+                    $mform->addElement(
+                        'filemanager',
                         'config_likes_pix',
                         get_string('likepix', 'block_like'),
                         null,
@@ -334,7 +336,7 @@ class block_like_edit_form extends block_edit_form {
                                 'img',
                                 array(
                                     'src' => ${$file.'img'},
-                                    'style' => 'width:20px'
+                                    'style' => 'width:30px'
                                 )
                             ) . get_string('emojidesc', 'block_like'),
                             array(' '),
@@ -343,8 +345,15 @@ class block_like_edit_form extends block_edit_form {
                     }
                 }
 
+                $trackcolor = array(
+                    'greentrack' => get_config('block_like', 'green_track_color_admin'),
+                    'bluetrack' => get_config('block_like', 'blue_track_color_admin'),
+                    'redtrack' => get_config('block_like', 'red_track_color_admin'),
+                    'blacktrack' => get_config('block_like', 'black_track_color_admin'),
+                );
+
                 /* Imports */
-                $params = array($sectionid, $managetypesparams, $moduleids);
+                $params = array($sectionid, $managetypesparams, $moduleids, $trackcolor);
                 $PAGE->requires->js_call_amd('block_like/script_config_like', 'init', $params);
             } else {
                 $mform->addElement(
@@ -356,5 +365,76 @@ class block_like_edit_form extends block_edit_form {
         } catch (moodle_exception $e) {
             echo 'Exception moodle_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";
         }
+    }
+
+    public function validation($data, $files) {
+        global $USER;
+
+        $errors = array();
+        if ($data['config_enable_pix_checkbox']) {
+            $fs = get_file_storage();
+            $usercontext = context_user::instance($USER->id);
+            $expected = array(
+                'easy',
+                'better',
+                'hard',
+                'group_',
+                'group_E',
+                'group_B',
+                'group_H',
+                'group_EB',
+                'group_EH',
+                'group_BH',
+                'group_EBH'
+            );
+            try {
+                $draftfiles = $fs->get_area_files(
+                    $usercontext->id,
+                    'user',
+                    'draft',
+                    $data['config_likes_pix'],
+                    'filename',
+                    false
+                );
+            } catch (coding_exception $e) {
+                echo '';
+            }
+            foreach ($draftfiles as $file) {
+                $pathinfo = pathinfo($file->get_filename());
+                if (!in_array($pathinfo['filename'], $expected, true)) {
+                    try {
+                        $errors['config_likes_pix'] .= get_string(
+                            'errorfilemanager',
+                            'block_like',
+                            $pathinfo['filename']
+                        ) . '<br />';
+                    } catch (coding_exception $e) {
+                        echo '';
+                    }
+                }
+            }
+        }
+        return $errors;
+    }
+
+    public function set_data($defaults) {
+        if (!empty($this->block->config) && is_object($this->block->config)) {
+            $draftid = file_get_submitted_draft_itemid('config_likes_pix');
+            file_prepare_draft_area(
+                $draftid,
+                $this->block->context->id,
+                'block_like',
+                'likes_pix',
+                0,
+                array(
+                    'subdirs' => 0,
+                    'maxfiles' => 20,
+                    'accepted_types' => array('.png')
+                )
+            );
+            $defaults->config_likes_pix = $draftid;
+            $this->block->config->likes_pix = $draftid;
+        }
+        parent::set_data($defaults);
     }
 }

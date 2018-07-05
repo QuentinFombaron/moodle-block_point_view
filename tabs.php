@@ -24,10 +24,9 @@
 
 $parameters = array(
         'instanceid' => $id,
+        'contextid'  => $contextid,
         'courseid'   => $courseid,
-        'page'       => $page,
-        'perpage'    => $perpage,
-        'group'      => $group,
+        'enablepix'  => $enablepix,
         'sesskey'    => sesskey(),
     );
 

@@ -41,8 +41,7 @@
 
 .group {
     position: absolute;
-    top: 3px;
-    left: 480px;
+    left: 87%;
 }
 
 .group_img {
@@ -53,13 +52,15 @@
 .group_nb {
     position: absolute;
     top: 3px;
-    left: 50px;
+    left: 47px;
+
 }
 
 .reactions {
     position: absolute;
-    left: 450px;
-    top: 3px;
+    left: 86%;
+    background-color: white;
+    z-index: 1;
 }
 
 .easy {
@@ -108,8 +109,8 @@
 }
 
 :target {
-    padding-top: 0.5rem!important;
-    margin-top: 0!important;
+    padding-top: 0.5rem !important;
+    margin-top: 0 !important;
 }
 
 #id_go_to_save {
@@ -142,14 +143,15 @@
 }
 
 .activityinstance {
-    display: inline-flex!important;
+    display: inline-flex !important;
 }
 
 .track {
     height: 25px;
-    width: 10px;
+    width: 20px;
+    max-width: 10px;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 5px;
     border-radius: 10%;
 }
 
@@ -164,7 +166,7 @@
     width: 30px
 }
 
-.c5 {
+.c6 {
     font-weight: bold;
     font-size: 1.5em;
     -moz-user-select: -moz-none;
@@ -176,8 +178,11 @@
     user-select: none;
 }
 
-.c0 {
-    width: 10%;
+.c0,
+.c5,
+.c6 {
+    width: 5%;
+    text-align: center;
 }
 
 .c1 {
@@ -190,8 +195,8 @@
     width: 20%;
 }
 
-.c5 {
-    width: 5%;
+.header {
+    text-align: center;
 }
 
 .buttons {

@@ -71,7 +71,7 @@ $string['bluetrack'] = "Blue track";
 $string['redtrack'] = "Red track";
 $string['blacktrack'] = "Black track";
 
-$string['menu'] = 'Menu';
+$string['menu'] = 'Reactions details';
 $string['overview_title_tab'] = "Overview";
 $string['export_title_tab'] = "Export";
 
@@ -94,3 +94,9 @@ $string['blockdisabled'] = "<h3 style=\"color: red\">Like block is disabled</h3>
 $string['emojidesc'] = " Emoji description";
 
 $string['noneactivity'] = 'No activity';
+
+$string['colsection'] = 'Section';
+$string['colmodule'] = 'Module';
+$string['colreactions'] = 'Reactions';
+
+$string['errorfilemanager'] = 'ERROR : The name of <b>{$a}</b>.png is not as indicated below';

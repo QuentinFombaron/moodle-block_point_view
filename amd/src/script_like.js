@@ -4,6 +4,9 @@ define(['jquery'], function($) {
         init: function(likessql, moduleselect, difficultylevels, pix, envconf) {
             /* Wait that the DOM is fully loaded */
             $(function() {
+
+                    $('.mod-indent-outer').css({'width': '85%'});
+
                     /* Array with all the needed data about the likes of the page */
                     var likesSQL = likessql;
                     /* ID of the current user */
@@ -132,6 +135,7 @@ define(['jquery'], function($) {
                             height: 23
                         }, 100);
 
+
                         /* Clear the animation queue to avoid image blinking */
                         $(this).clearQueue();
 
@@ -158,13 +162,15 @@ define(['jquery'], function($) {
                             * Completely hide the reaction group image to be sure
                             */
                             $('#module-' + (event.data.moduleId) + ' .group_img').animate({
-                                top: 13,
-                                left: 20,
+                                top: '+=15',
+                                left: '+=35',
                                 height: 0
                             }, 300).hide(0);
 
                             /* Also hide the number of total reaction */
                             $('#module-' + (event.data.moduleId) + ' .group_nb').delay(50).hide(300);
+
+                            $('#module-' + (event.data.moduleId) + ' .actions').hide(300);
 
                             /* Enable the pointer events for each reactions images */
 
@@ -272,6 +278,8 @@ define(['jquery'], function($) {
                                     /* Also show the number of total reaction */
                                     $('#module-' + (event.data.moduleId) + ' .group_nb').delay(600).show(300);
                                 }
+
+                                $('#module-' + (event.data.moduleId) + ' .actions').delay(600).show(300);
                             }
                         }, 2000);
                     }
@@ -633,6 +641,8 @@ define(['jquery'], function($) {
                                     /* Also show the number of total reaction */
                                     $('#module-' + (event.data.moduleId) + ' .group_nb').delay(600).show(300);
                                 }
+
+                                $('#module-' + (event.data.moduleId) + ' .actions').delay(600).show(300);
                             }
                         }, 1000);
                     }
@@ -711,7 +721,7 @@ define(['jquery'], function($) {
 
                             /* MOUSE OVER */
                                 .mouseover({module: module, moduleId: moduleId}, groupImgMouseOver)
-                                .on('click', {module: module, moduleId: moduleId}, groupImgMouseOver)
+                                .click({module: module, moduleId: moduleId}, groupImgMouseOver)
 
                                 /* MOUSE OUT */
                                 .mouseout({moduleId: moduleId}, groupImgMouseOut);
@@ -732,7 +742,7 @@ define(['jquery'], function($) {
                                 }, mouseOut)
 
                                 /* ON CLICK */
-                                .on('click', {
+                                .click({
                                     module: module, moduleId: moduleId, reactionName: 'easy',
                                     reactionSelect: Reactions.EASY
                                 }, onClick);
@@ -753,7 +763,7 @@ define(['jquery'], function($) {
                                 }, mouseOut)
 
                                 /* ON CLICK */
-                                .on('click', {
+                                .click({
                                     module: module, moduleId: moduleId, reactionName: 'better',
                                     reactionSelect: Reactions.BETTER
                                 }, onClick);
@@ -774,7 +784,7 @@ define(['jquery'], function($) {
                                 }, mouseOut)
 
                                 /* ON CLICK */
-                                .on('click', {
+                                .click({
                                     module: module, moduleId: moduleId, reactionName: 'hard',
                                     reactionSelect: Reactions.HARD
                                 }, onClick);

@@ -28,10 +28,9 @@ require_once($CFG->dirroot . '/blocks/like/lib.php');
 
 try {
     $id = required_param('instanceid', PARAM_INT);
+    $contextid = required_param('contextid', PARAM_INT);
     $courseid = required_param('courseid', PARAM_INT);
-    $page = optional_param('page', 0, PARAM_INT);
-    $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
-    $group = optional_param('group', 0, PARAM_INT);
+    $enablepix = required_param('enablepix', PARAM_INT);
     $tab = optional_param('tab', 'overview', PARAM_ALPHA);
 
 
@@ -60,31 +59,12 @@ try {
         '/blocks/like/menu.php',
         array(
             'instanceid' => $id,
+            'contextid' => $contextid,
             'courseid' => $courseid,
-            'page' => $page,
-            'perpage' => $perpage,
-            'group' => $group,
+            'enablepix' => $enablepix,
             'sesskey' => sesskey()
         )
     );
-
-    $activities = block_like_get_activities($courseid, $config);
-
-    $PAGE->set_context($context);
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/like/style/style.css'));
-    $paramsamd = array(array_column($activities, 'id'));
-    $PAGE->requires->js_call_amd('block_like/script_menu_like', 'init', $paramsamd);
-    $title = get_string('menu', 'block_like');
-    $PAGE->set_title($title);
-    $PAGE->set_heading(get_string('config_default_title', 'block_like'));
-    $PAGE->navbar->add($title);
-    $PAGE->set_pagelayout('report');
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($title, 2);
-    echo $OUTPUT->container_start('block_like_menu');
-
-    require("tabs.php");
 
     $sql = 'SELECT Base.cmid,
             IFNULL(COUNT(Base.cmid), 0) AS total,
@@ -101,7 +81,7 @@ try {
             WHERE courseid = :courseid
           GROUP BY cmid;';
 
-    $params = array('userid' => $USER->id, 'courseid' => $COURSE->id);
+    $params = array('courseid' => $COURSE->id);
 
     try {
         $result = $DB->get_records_sql($sql, $params);
@@ -109,7 +89,25 @@ try {
         echo 'Exception : ', $e->getMessage(), "\n";
     }
 
+    $PAGE->set_context($context);
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/like/style/style.css'));
+    $paramsamd = array(array_column($result, 'cmid'));
+    $PAGE->requires->js_call_amd('block_like/script_menu_like', 'init', $paramsamd);
+    $title = get_string('menu', 'block_like');
+    $PAGE->set_title($title);
+    $PAGE->set_heading(get_string('config_default_title', 'block_like'));
+    $PAGE->navbar->add($title);
+    $PAGE->set_pagelayout('report');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($title, 2);
+    echo $OUTPUT->container_start('block_like_menu');
+
+    require("tabs.php");
+
     if (!empty($result)) {
+
+        $activities = block_like_get_activities($courseid, $config);
 
         try {
             $sqldata = $DB->get_records('block_like', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');
@@ -118,12 +116,42 @@ try {
         }
 
         $table = new html_table();
-        $table->head = array('Cours', 'Modules', '', 'Réactions', '', '');
+        $table->head = array(
+            get_string('colsection', 'block_like'),
+            get_string('colmodule', 'block_like'),
+            '',
+            get_string('colreactions', 'block_like'),
+            '',
+            'Total',
+            ''
+            );
         $table->attributes['class'] = 'generaltable';
         $table->rowclasses = array();
         $table->data = array();
 
         $users = $DB->get_records('user', null, '', 'id,firstname,lastname');
+
+        $pixparam = array(
+            'easy' => $CFG->wwwroot . '/blocks/like/pix/easy.png',
+            'better' => $CFG->wwwroot . '/blocks/like/pix/better.png',
+            'hard' => $CFG->wwwroot . '/blocks/like/pix/hard.png',
+        );
+
+        $fs = get_file_storage();
+
+        if (get_config('block_like', 'enable_pix_admin')) {
+            foreach ($pixparam as $file => $data) {
+                if ($fs->file_exists(1, 'block_like', 'likes_pix_admin', 0, '/', $file . '.png')) {
+                    $pixparam[$file] = block_like_pix_url(1, 'likes_pix_admin', $file);
+                }
+            }
+        } else if ($enablepix) {
+            foreach ($pixparam as $file => $data) {
+                if ($fs->file_exists($contextid, 'block_like', 'likes_pix', 0, '/', $file . '.png')) {
+                    $pixparam[$file] = block_like_pix_url($contextid, 'likes_pix', $file);
+                }
+            }
+        }
 
         foreach ($activities as $index => $activity) {
             if ($activity['type'] != 'label' && !is_null($result[($activity['id'])]->cmid)) {
@@ -162,25 +190,26 @@ try {
                         $icon . format_string($activity['name']),
                         html_writer::empty_tag(
                             'img',
-                            array('src' => $CFG->wwwroot . '/blocks/like/pix/easy.png', 'class' => 'overview_img')) .
+                            array('src' => $pixparam['easy'], 'class' => 'overview_img')) .
                         ' <span class="votePercent">' .
                         round(100 * intval($result[($activity['id'])]->typeone)
                             / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
                             $result[($activity['id'])]->typeone . '</span>',
                         html_writer::empty_tag(
                             'img',
-                            array('src' => $CFG->wwwroot . '/blocks/like/pix/better.png', 'class' => 'overview_img')) .
+                            array('src' => $pixparam['better'], 'class' => 'overview_img')) .
                         ' <span class="votePercent">' .
                         round(100 * intval($result[($activity['id'])]->typetwo)
                             / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
                             $result[($activity['id'])]->typetwo . '</span>',
                         html_writer::empty_tag(
                             'img',
-                            array('src' => $CFG->wwwroot . '/blocks/like/pix/hard.png', 'class' => 'overview_img')) .
+                            array('src' => $pixparam['hard'], 'class' => 'overview_img')) .
                         ' <span class="votePercent">' .
                         round(100 * intval($result[($activity['id'])]->typethree)
                             / intval($result[($activity['id'])]->total)) . '% </span><span class="voteInt">' .
                             $result[($activity['id'])]->typethree . '</span>',
+                        $result[($activity['id'])]->total,
                         '+'
                     ),
                     array(
