@@ -107,7 +107,21 @@ try {
 
     if (!empty($result)) {
 
-        $config = null;
+        $config = new stdClass();
+        $config->moduletype = array(
+            'book',
+            'chat',
+            'file',
+            'forum',
+            'glossary',
+            'page',
+            'quiz',
+            'resource',
+            'url',
+            'vpl',
+            'wiki'
+        );
+
         $activities = block_like_get_activities($courseid, $config);
 
         try {
