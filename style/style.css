@@ -206,3 +206,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+#region-main > .card {
+    overflow-x: unset;
+}
