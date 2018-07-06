@@ -95,8 +95,8 @@ $string['emojidesc'] = " Emoji description";
 
 $string['noneactivity'] = 'No activity';
 
-$string['colsection'] = 'Section';
-$string['colmodule'] = 'Module';
-$string['colreactions'] = 'Reactions';
+$string['colsection'] = "Section";
+$string['colmodule'] = "Module";
+$string['colreactions'] = "Reactions";
 
-$string['errorfilemanager'] = 'ERROR : The name of <b>{$a}</b>.png is not as indicated below';
+$string['errorfilemanager'] = '<b>ERROR</b> : The name of <b>{$a}.png</b> is not as indicated below';

@@ -399,6 +399,8 @@ class block_like_edit_form extends block_edit_form {
             } catch (coding_exception $e) {
                 echo '';
             }
+
+            $errors['config_likes_pix'] = '';
             foreach ($draftfiles as $file) {
                 $pathinfo = pathinfo($file->get_filename());
                 if (!in_array($pathinfo['filename'], $expected, true)) {
