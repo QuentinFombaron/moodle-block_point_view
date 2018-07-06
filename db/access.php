@@ -36,6 +36,7 @@ $capabilities = array(
             'coursecreator'     => CAP_ALLOW
         )
     ),
+
     'block/like:myaddinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,

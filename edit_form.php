@@ -400,10 +400,12 @@ class block_like_edit_form extends block_edit_form {
                 echo '';
             }
 
-            $errors['config_likes_pix'] = '';
             foreach ($draftfiles as $file) {
                 $pathinfo = pathinfo($file->get_filename());
                 if (!in_array($pathinfo['filename'], $expected, true)) {
+                    if (!isset($errors['config_likes_pix'])) {
+                        $errors['config_likes_pix'] = '';
+                    }
                     try {
                         $errors['config_likes_pix'] .= get_string(
                             'errorfilemanager',
