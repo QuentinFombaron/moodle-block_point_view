@@ -28,7 +28,7 @@ $string['config_default_title'] = "Like";
 
 $string['contentinputlabel'] = "Block Content";
 
-$string['defaulttext'] = "This plugin gives the possibility to react to activities<br /><br />It is important to know that you are testing the Alpha version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>July 2<SUP>nd</SUP> 2018 (version 0.6.0)</i><br /><br />";
+$string['defaulttextcontent'] = "This plugin gives the possibility to react to activities<br /><br />It is important to know that you are testing the Alpha version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>July 2<SUP>nd</SUP> 2018 (version 0.6.0)</i><br /><br />";
 
 $string['config_header_activities'] = "Likes/Difficulties configuration";
 $string['config_header_images'] = "Emojis configuration";

@@ -144,7 +144,7 @@ try {
         $table->rowclasses = array();
         $table->data = array();
 
-        $users = $DB->get_records('user', null, '', 'id,firstname,lastname');
+        $users = $DB->get_records('user', null, '', user_picture::fields());
 
         $pixparam = array(
             'easy' => $CFG->wwwroot . '/blocks/like/pix/easy.png',
@@ -169,8 +169,7 @@ try {
         }
 
         foreach ($activities as $index => $activity) {
-            if ($activity['type'] != 'label' && !is_null($result[($activity['id'])]->cmid)) {
-
+            if (isset($result[($activity['id'])]->cmid)) {
                 $details = array(
                     'easy' => array(),
                     'better' => array(),
@@ -248,12 +247,9 @@ try {
     echo $OUTPUT->footer();
 } catch (coding_exception $e) {
     echo 'Exception coding_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
-    die();
 } catch (dml_exception $e) {
     echo 'Exception dml_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
-    die();
 } catch (moodle_exception $e) {
     echo 'Exception moodle_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
-    die();
 }
 

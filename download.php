@@ -26,8 +26,6 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/blocks/like/lib.php');
 
-global $COURSE;
-
 try {
     require_login();
 } catch (coding_exception $e) {
@@ -42,6 +40,9 @@ $format = $_POST['format'];
 $courseid = $_POST['courseid'];
 $contextid = $_POST['contextid'];
 $instanceid = $_POST['instanceid'];
+
+$context = CONTEXT_COURSE::instance($courseid);
+$PAGE->set_context($context);
 
 if ($format != null) {
     try {
@@ -84,12 +85,12 @@ if ($format != null) {
 
         $like = $DB->get_records('block_like', ['courseid' => $courseid], '', 'id,cmid,userid,vote');
 
-        $users = $DB->get_records('user', null, '', 'id,firstname,lastname');
+        $users = $DB->get_records('user', null, '', user_picture::fields());
 
         $data = array();
 
         foreach ($activities as $index => $activity) {
-            if ($activity['type'] != 'label' && !is_null($result[($activity['id'])]->cmid)) {
+            if (isset($result[($activity['id'])]->cmid)) {
                 foreach ($like as $row) {
                     if ($row->cmid == $activity['id']) {
                         array_push($data, array(
