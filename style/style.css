@@ -8,10 +8,10 @@
 /* Tooltip text */
 .tooltipreaction .tooltiptextreaction {
     visibility: hidden;
-    width: intrinsic;
+    display: table;
+    width: max-content;
     width: -moz-max-content;
     width: -webkit-max-content;
-    display: inline-block;
     background-color: #555;
     color: #fff;
     text-align: center;

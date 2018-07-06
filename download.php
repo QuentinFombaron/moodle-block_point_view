@@ -139,7 +139,7 @@ if ($format != null) {
             }
 
             $workbook->send($downloadfilename);
-            $myxls = $workbook->add_worksheet("worksheet");
+            $myxls = $workbook->add_worksheet("data_likes");
 
             $line = 0;
             $colonne = 0;

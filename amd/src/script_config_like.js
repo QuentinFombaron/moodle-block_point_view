@@ -174,18 +174,21 @@ define(['jquery'], function($) {
             moduleids.forEach(function(moduleId) {
                 var classList = $('#id_config_moduleselectm' + moduleId).attr('class');
                 if (classList !== undefined) {
-                    var classes = classList.split(" ");
+                    var classes = classList.split(' ');
                     var type = null;
                     var id = null;
                     var types = ['book', 'chat', 'file', 'forum', 'glossary', 'page', 'quiz', 'resource', 'url', 'vpl', 'wiki'];
-                    classes.forEach(function(classe) {
-                        if (types.indexOf(classe) !== -1) {
-                            type = types[types.indexOf(classe)];
+                    classes.forEach(function(className) {
+                        if (types.indexOf(className) !== -1) {
+                            type = types[types.indexOf(className)];
                         }
-                        if (classe.search('check_section_') !== -1) {
-                            id = classe.match(/\d+/);
+                        if (className.search('check_section_') !== -1) {
+                            id = className.match(/\d+/);
                         }
                     });
+                    /* eslint-disable no-console */
+                    console.log('classes : {' + classes + '}, id: ' + id + ', type: ' + type);
+                    /* eslint-enable no-console */
                     $('#id_config_moduleselectm' + moduleId).click({id: id, type: type}, manageButton);
                 }
 
