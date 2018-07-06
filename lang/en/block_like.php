@@ -71,7 +71,7 @@ $string['bluetrack'] = "Blue track";
 $string['redtrack'] = "Red track";
 $string['blacktrack'] = "Black track";
 
-$string['menu'] = 'Reactions details';
+$string['menu'] = "Reactions details";
 $string['overview_title_tab'] = "Overview";
 $string['export_title_tab'] = "Export";
 
@@ -87,7 +87,7 @@ $string['defaulttexthard'] = "So hard...";
 
 $string['pixcurrently'] = "Currently used";
 $string['pixreset'] = "Reset pictures";
-$string['pixresettext'] = "<i style='font-size: 0.8em'>(You will be redirected in course page)</i>";
+$string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(You will be redirected in course page)</i>";
 
 $string['blockdisabled'] = "<h3 style=\"color: red\">Like block is disabled</h3>";
 

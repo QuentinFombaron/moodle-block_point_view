@@ -254,7 +254,8 @@ class block_like_edit_form extends block_edit_form {
                         '',
                         '<img src="' . $easyimg . '" style="width: 30px"/>
                         <img src="' . $betterimg . '" style="width: 30px"/>
-                        <img src="' . $hardimg . '" style="width: 30px"/>'
+                        <img src="' . $hardimg . '" style="width: 30px"/>
+                        &nbsp;&nbsp;'
                     );
 
                     $pixpreview[] =& $mform->createElement(
