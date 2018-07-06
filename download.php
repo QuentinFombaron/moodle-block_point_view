@@ -47,6 +47,7 @@ if ($format != null) {
     try {
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
+        $config = null;
         $activities = block_like_get_activities($courseid, $config);
 
         $sql = 'SELECT Base.cmid,

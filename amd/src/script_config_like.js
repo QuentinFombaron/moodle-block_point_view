@@ -186,9 +186,6 @@ define(['jquery'], function($) {
                             id = className.match(/\d+/);
                         }
                     });
-                    /* eslint-disable no-console */
-                    console.log('classes : {' + classes + '}, id: ' + id + ', type: ' + type);
-                    /* eslint-enable no-console */
                     $('#id_config_moduleselectm' + moduleId).click({id: id, type: type}, manageButton);
                 }
 

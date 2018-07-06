@@ -107,6 +107,7 @@ try {
 
     if (!empty($result)) {
 
+        $config = null;
         $activities = block_like_get_activities($courseid, $config);
 
         try {
