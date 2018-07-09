@@ -296,7 +296,7 @@ class block_like_edit_form extends block_edit_form {
                     $mform->addGroup(
                         $enableperso,
                         'config_enable_pix',
-                        get_string('enableimgperso', 'block_like'),
+                        get_string('enablecustompix', 'block_like'),
                         array(' '),
                         false
                     );

@@ -83,7 +83,7 @@ try {
 
     $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'csv'];
     $url = new moodle_url('/blocks/like/download.php', $parameters);
-    $label = "Export CSV";
+    $label = get_string('exportcsv', 'block_like');
     $options = ['class' => 'exportCSVButton'];
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
@@ -91,7 +91,7 @@ try {
 
     $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'ods'];
     $url = new moodle_url('/blocks/like/download.php', $parameters);
-    $label = "Export ODS";
+    $label = get_string('exportods', 'block_like');
     $options = ['class' => 'exportODSButton'];
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
@@ -99,7 +99,7 @@ try {
 
     $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'xls'];
     $url = new moodle_url('/blocks/like/download.php', $parameters);
-    $label = "Export XLS";
+    $label = get_string('exportxls', 'block_like');
     $options = ['class' => 'exportXLSButton'];
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 

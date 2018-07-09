@@ -28,11 +28,11 @@ $string['config_default_title'] = "Like";
 
 $string['contentinputlabel'] = "Block Content";
 
-$string['defaulttextcontent'] = "This plugin gives the possibility to react to activities<br /><br />It is important to know that you are testing the Alpha version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>July 2<SUP>nd</SUP> 2018 (version 0.6.0)</i><br /><br />";
+$string['defaulttextcontent'] = "This plugin gives the possibility to react and to give difficulties levels to activities.<br /><br />It is important to know that you are testing the Beta version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Like\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>July 9<SUP>th</SUP> 2018 (version 1.0.0)</i><br /><br />";
 
 $string['config_header_activities'] = "Likes/Difficulties configuration";
 $string['config_header_images'] = "Emojis configuration";
-$string['no_activities_config_message'] = "There is no activities";
+$string['no_activities_config_message'] = "There is no activity";
 
 $string['enableall'] = "Enable all in ";
 $string['disableall'] = "Disable all in ";
@@ -46,7 +46,7 @@ $manage = array('books', 'chats', 'files', 'forums', 'pages', 'quizs', 'resource
 foreach ($manage as $type) {
     $string['enable'.$type] = "Enable all ".ucfirst($type);
     $string['disable'.$type] = "Disable all ".ucfirst($type);
-    $string['howto_'.$type] = "management of ".substr(ucfirst($type), 0, -1)." activities";
+    $string['howto_'.$type] = "Management of ".substr(ucfirst($type), 0, -1)." activities";
     $string['howto_'.$type.'_help'] = "This buttons gives the possibility to enable or disable all  ".substr(ucfirst($type), 0, -1)." activities";
 }
 
@@ -75,9 +75,6 @@ $string['menu'] = "Reactions details";
 $string['overview_title_tab'] = "Overview";
 $string['export_title_tab'] = "Export";
 
-$string['no_activities_message'] = "No activities or resources are being monitored. Use configuration to set up monitoring";
-$string['no_visible_activities_message'] = "None of the monitored activities are currently visible";
-
 $string['texteasy'] = "<b>Easy !</b> text";
 $string['textbetter'] = "<b>I'm getting better !</b> text";
 $string['texthard'] = "<b>So hard...</b> text";
@@ -100,3 +97,7 @@ $string['colmodule'] = "Module";
 $string['colreactions'] = "Reactions";
 
 $string['errorfilemanager'] = '<b>ERROR</b> : The name of <b>{$a}.png</b> is not as indicated below';
+
+$string['exportcsv'] = "CSV Export";
+$string['exportods'] = "ODS Export";
+$string['exportxls'] = "XLS Export";

@@ -827,20 +827,20 @@ define(['jquery'], function($) {
 
                     $('#menu_like_img')
                         .mouseover(function() {
-                            $(this).animate({
-                                top: '-=30',
-                                left: '-=3',
-                                width: 45
-                            }, 100);
-                            $(this).clearQueue();
+                           $(this).css({
+                               '-webkit-filter': 'invert(100%)',
+                               '-moz-filter': 'invert(100%)',
+                               '-o-filter': 'invert(100%)',
+                               '-ms-filter': 'invert(100%)'
+                           });
                         })
                         .mouseout(function() {
-                            $(this).animate({
-                                top: '+=2.5',
-                                left: '+=3',
-                                width: 40
-                            }, 100);
-                            $(this).clearQueue();
+                            $(this).css({
+                                '-webkit-filter': 'invert(0%)',
+                                '-moz-filter': 'invert(0%)',
+                                '-o-filter': 'invert(0%)',
+                                '-ms-filter': 'invert(0%)'
+                            });
                         });
 
                     $('.greentrack').css({'background-color': envconf.greentrack});
