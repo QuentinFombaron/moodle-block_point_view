@@ -3,7 +3,9 @@ define(['jquery'], function($) {
     return {
         init: function(moduleIds) {
             var openRow = [];
+
             /**
+             * Hide/Show row details of the table.
              *
              * @param event
              */
@@ -20,6 +22,8 @@ define(['jquery'], function($) {
             }
 
             $(function() {
+
+                /* Create an accordeon home made table */
                 moduleIds.forEach(function(id) {
                     openRow[id] = false;
                     $('.row_module' + id + '_details').css({'display': 'none'});
@@ -33,6 +37,7 @@ define(['jquery'], function($) {
                     });
                 });
 
+                /* Create two views : Integer and Pourcentage, both visible on click */
                 var intDisplay = false;
                 $('.voteInt').css({'display': 'none'});
 
