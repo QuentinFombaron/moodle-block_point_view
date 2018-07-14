@@ -74,7 +74,7 @@ class block_like_edit_form extends block_edit_form {
                     false
                 );
 
-                /* -------------------------------------------------------------------------------------------------------------- */
+                /* ----------------------------------------------------------------------------------------------------- */
 
                 $config = new stdClass();
                 $config->moduletype = array(
@@ -223,7 +223,7 @@ class block_like_edit_form extends block_edit_form {
                         get_string('close_field', 'block_like')
                     );
 
-                    /* -------------------------------------------------------------------------------------------------------------- */
+                    /* ----------------------------------------------------------------------------------------------------- */
 
                     /* Emojis images configuration */
                     $mform->addElement(
@@ -344,6 +344,55 @@ class block_like_edit_form extends block_edit_form {
                             false
                         );
                     }
+
+                    /* ----------------------------------------------------------------------------------------------------- */
+
+                    /* Reaction reinitialisation */
+                    $mform->addElement(
+                        'header',
+                        'config_reset',
+                        HTML_WRITER::link("#", get_string('config_header_reset', 'block_like'))
+                    );
+
+                    $reinit = array();
+                    $reinit[] =& $mform->createElement(
+                        'button',
+                        'config_reaction_reset_button',
+                        get_string('reactionreset', 'block_like', $COURSE->fullname)
+                    );
+
+                    $mform->addGroup($reinit, 'config_reaction_reset',
+                        '',
+                        array(' '),
+                        false
+                    );
+
+                    $reinitconfirm = array();
+                    $reinitconfirm[] =& $mform->createElement(
+                        'button',
+                        'config_reset_yes',
+                        get_string('yes', 'block_like')
+                    );
+
+                    $reinitconfirm[] =& $mform->createElement(
+                        'button',
+                        'config_reset_no',
+                        get_string('no', 'block_like')
+                    );
+
+                    $reinitconfirm[] =& $mform->createElement(
+                        'static',
+                        'config_reset_pix_text',
+                        '',
+                        get_string('pixresettext', 'block_like')
+                    );
+
+                    $mform->addGroup($reinitconfirm,
+                        'config_reset_confirm',
+                        get_string('confirmation', 'block_like', $COURSE->fullname),
+                        array(' '),
+                        false
+                    );
                 }
 
                 $trackcolor = array(
@@ -354,7 +403,7 @@ class block_like_edit_form extends block_edit_form {
                 );
 
                 /* Imports */
-                $params = array($sectionid, $managetypesparams, $moduleids, $trackcolor);
+                $params = array($sectionid, $managetypesparams, $moduleids, $trackcolor, $COURSE->id);
                 $PAGE->requires->js_call_amd('block_like/script_config_like', 'init', $params);
             } else {
                 $mform->addElement(

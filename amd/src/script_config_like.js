@@ -1,6 +1,6 @@
 define(['jquery'], function($) {
     return {
-        init: function(idmax, types, moduleids, trackcolor) {
+        init: function(idmax, types, moduleids, trackcolor, courseid) {
             /* Shortcut to the "SAVE" button at the bottom of the page */
             $('#id_go_to_save').click(function() {
                 window.location = '#id_submitbutton';
@@ -166,8 +166,11 @@ define(['jquery'], function($) {
 
             $('#id_close_field').click(function() {
                 $('#id_activities').addClass('collapsed');
+                window.location = '#maincontent';
+                /*
                 document.body.scrollTop = 0; // For Safari
                 document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+                */
             });
 
             /* TODO Commenter : Quand une checkbox est coché/décoché, je met à jour l'affachage des boutons Enable/Disable */
@@ -228,9 +231,12 @@ define(['jquery'], function($) {
             });
 
             /* Reset images buttun  */
-            $('#id_config_reset_pix').click(function() {
-                $('#id_config_enable_pix_checkbox:checked').prop('checked', false);
-                $('#mform1').submit();
+            $('#id_config_reset_pix')
+                .removeClass('btn-secondary')
+                .addClass('btn-outline-warning')
+                .click(function() {
+                    $('#id_config_enable_pix_checkbox:checked').prop('checked', false);
+                    $('#mform1').submit();
             });
 
             /* Hide fieldsets if Like or Difficulties checkboxes are disabled */
@@ -238,6 +244,45 @@ define(['jquery'], function($) {
 
             $('#id_config_enable_likes_checkbox').click(checkConf);
             $('#id_config_enable_difficulties_checkbox').click(checkConf);
+
+            $('div[data-groupname="config_reset_confirm"]').css({'display': 'none'});
+
+            $('#id_config_reset_yes')
+                .removeClass('btn-secondary')
+                .addClass('btn-success')
+                .click(function() {
+                    /* AJAX call to the PHP function which reset DB */
+                    $.ajax({
+                        type: 'POST',
+                        url: '../blocks/like/update_db.php',
+                        dataType: 'json',
+                        data: {
+                            func: 'reset',
+                            userid: null,
+                            courseid: courseid,
+                            cmid: null,
+                            vote: null
+                        },
+
+                        success: function() {
+                            $('#mform1').submit();
+                        }
+                    });
+                });
+
+            $('#id_config_reset_no')
+                .removeClass('btn-secondary')
+                .addClass('btn-danger')
+                .click(function() {
+                    $('div[data-groupname="config_reset_confirm"]').css({'display': 'none'});
+                });
+
+            $('#id_config_reaction_reset_button')
+                .removeClass('btn-secondary')
+                .addClass('btn-outline-warning')
+                .click(function() {
+                    $('div[data-groupname="config_reset_confirm"]').css({'display': ''});
+            });
         }
     };
 });

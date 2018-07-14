@@ -210,3 +210,7 @@
 #region-main > .card {
     overflow-x: unset;
 }
+
+#config_reset_confirm {
+    display: none;
+}

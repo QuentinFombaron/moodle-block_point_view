@@ -69,4 +69,15 @@ switch ($_POST['func']) {
         }
 
         break;
+
+    case 'reset':
+        $conditions = array('courseid' => $courseid);
+
+        try {
+            $DB->delete_records($table, $conditions);
+            echo json_encode('Reset OK');
+        } catch (dml_exception $e) {
+            echo json_encode('Exception : ', $e->getMessage(), '\n');
+        }
+        break;
 }

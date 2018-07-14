@@ -126,6 +126,9 @@ define(['jquery'], function($) {
                  */
                 function groupImgMouseOver(event) {
 
+                    /* Clear the animation queue to avoid image blinking */
+                    $(this).stop();
+
                     /* Pointer modification to inform a possible click or interaction */
                     $(this).css({'cursor': 'pointer'});
 
@@ -135,10 +138,6 @@ define(['jquery'], function($) {
                         left: -3,
                         height: 23
                     }, 100);
-
-
-                    /* Clear the animation queue to avoid image blinking */
-                    $(this).clearQueue();
 
                     /* IF the mouse stay over at least 0.3 seconds */
                     timerGroupImgArray[event.data.moduleId] = setTimeout(function() {
@@ -291,6 +290,9 @@ define(['jquery'], function($) {
                  */
                 function groupImgMouseOut(event) {
 
+                    /* Clear the animation queue to avoid image blinking */
+                    $(this).stop();
+
                     /* Reset timerGroupImg timer */
                     clearTimeout(timerGroupImgArray[event.data.moduleId]);
 
@@ -302,9 +304,6 @@ define(['jquery'], function($) {
                             left: 0,
                             height: 20
                         }, 100);
-
-                        /* Clear the animation queue to avoid image blinking */
-                        $(this).clearQueue();
                     }
                 }
 
@@ -313,8 +312,12 @@ define(['jquery'], function($) {
                  * @param {Object} event
                  */
                 function mouseOver(event) {
+
+                    /* Clear the animation queue to avoid image blinking */
+                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName).stop();
+
                     /* Modification of the toolbox width */
-                    $('#module-' + (event.data.moduleId) + ' .tooltipreaction .tooltiptextreaction').css({
+                    $('#module-' + event.data.moduleId + ' .tooltipreaction .tooltiptextreaction').css({
                         'left': event.data.leftTxt
                     });
 
@@ -337,9 +340,6 @@ define(['jquery'], function($) {
                         left: event.data.leftReaction,
                         height: 40
                     }, 100);
-
-                    /* Clear the animation queue to avoid image blinking */
-                    $(this).clearQueue();
                 }
 
                 /**
@@ -347,6 +347,10 @@ define(['jquery'], function($) {
                  * @param {Object} event
                  */
                 function mouseOut(event) {
+
+                    /* Clear the animation queue to avoid image blinking */
+                    $(this).stop();
+
                     /* Come back to the original size to inform that the image is mouse out */
                     $(this).animate({
                         top: -15,
@@ -363,9 +367,6 @@ define(['jquery'], function($) {
                         $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
                             .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
                     }
-
-                    /* Clear the animation queue to avoid image blinking */
-                    $(this).clearQueue();
                 }
 
                 /**

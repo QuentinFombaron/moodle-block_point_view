@@ -180,13 +180,13 @@ try {
                     if ($row->cmid == $activity['id']) {
                         switch ($row->vote) {
                             case 1 :
-                                array_push($details['easy'], $row->userid);
+                                array_push($details['easy'], intval($row->userid));
                                 break;
                             case 2 :
-                                array_push($details['better'], $row->userid);
+                                array_push($details['better'], intval($row->userid));
                                 break;
                             case 3 :
-                                array_push($details['hard'], $row->userid);
+                                array_push($details['hard'], intval($row->userid));
                                 break;
                         }
                     }
@@ -237,7 +237,6 @@ try {
                 );
             }
         }
-
         echo html_writer::table($table);
     } else {
         echo html_writer::tag('p', get_string('noneactivity', 'block_like'));
