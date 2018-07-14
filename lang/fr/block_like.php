@@ -23,14 +23,14 @@
  * @license [TODO]
  */
 
-$string['pluginname'] = "Like";
-$string['config_default_title'] = "Like";
+$string['pluginname'] = "Réactions et pistes de difficulté";
+$string['config_default_title'] = "Réactions et pistes de difficulté";
 
 $string['contentinputlabel'] = "Contenu du block";
 
-$string['defaulttextcontent'] = "Ce plugin offre la possibilité de réagir et de donner des niveaux de difficulté aux activités.</br></br>Il est important de savoir que vous testez la version Beta.</br>Ce plugin est développé par Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=Plugin%20\"Like\"%20Moodle%20-%20Commentaire'>CLIQUER ICI</a> pour m'envoyer un mail.</br>Merci d'avance pour vos retours et rapports de bugs.</br></br><i>9 Juillet 2018 (version 1.0.0)</i><br /><br />";
+$string['defaulttextcontent'] = "Ce plugin offre la possibilité de réagir et de donner des niveaux de difficulté aux activités.</br></br>Il est important de savoir que vous testez la version Beta.</br>Ce plugin est développé par Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=Plugin%20\"Réactions\"%20Moodle%20-%20Commentaire'>CLIQUER ICI</a> pour m'envoyer un mail.</br>Merci d'avance pour vos retours et rapports de bugs.</br></br><i>9 Juillet 2018 (version 1.0.0)</i><br /><br />";
 
-$string['config_header_activities'] = "Configuration des Likes et Pistes de difficulté";
+$string['config_header_activities'] = "Configuration des Réactions et Pistes de difficulté";
 $string['config_header_images'] = "Configuration des Emojis";
 $string['config_header_reset'] = "Réinitialisation des réactions";
 $string['no_activities_config_message'] = "Aucune activitié";
@@ -55,7 +55,7 @@ $string['disableglossarys'] = "Désactiver tous les Lexiques";
 $string['howto_glossarys'] = "Gestion des Lexiques";
 $string['howto_glossarys'] = "Ce bouton offre la possibilité d'activer ou désactiver toutes les activités de type Lexique";
 
-$string['enablelikes'] = "Activer les Likes";
+$string['enablelikes'] = "Activer les Réactions";
 $string['enabledifficulties'] = "Activer les Pistes de difficulté";
 $string['enablecustompix'] = "Utiliser des émojis personnalisés";
 $string['likepix'] = "Emojis";
@@ -85,7 +85,7 @@ $string['pixcurrently'] = "Utilisé actuellement";
 $string['pixreset'] = "Réinitialiser les émojis";
 $string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(La configuration sera enregistrée et vous serez redirigé vers la page du cours)</i>";
 
-$string['blockdisabled'] = "<h3 style=\"color: red\">Le block Like est désactivé</h3>";
+$string['blockdisabled'] = "<h3 style=\"color: red\">Le block est désactivé</h3>";
 
 $string['emojidesc'] = " Description de l'émoji";
 
