@@ -316,9 +316,13 @@ define(['jquery'], function($) {
                     /* Clear the animation queue to avoid image blinking */
                     $('#module-' + event.data.moduleId + ' .' + event.data.reactionName).stop();
 
+                    var widthParam = $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').width();
+                    var leftParamHard = $('#module-' + event.data.moduleId + ' .' + event.data.reactionName).css('left');
+                    var leftParam = parseInt(leftParamHard.slice(0, -2), 10);
+
                     /* Modification of the toolbox width */
-                    $('#module-' + event.data.moduleId + ' .tooltipreaction .tooltiptextreaction').css({
-                        'left': event.data.leftTxt
+                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').css({
+                        'left': leftParam - (widthParam / 2) + 60
                     });
 
                     /* Get the number of 'reactionName' reaction */
@@ -405,7 +409,7 @@ define(['jquery'], function($) {
                                     cmid: event.data.moduleId,
                                     vote: event.data.reactionSelect
                                 },
-                                success: function () {
+                                success: function() {
                                     /* Increment the number of the new reaction of 1 */
                                     (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
                                         .innerText = (nbReation + 1);
@@ -441,7 +445,7 @@ define(['jquery'], function($) {
                                     vote: event.data.reactionSelect
                                 },
 
-                                success: function () {
+                                success: function() {
                                     /* Decrement the number of old of 1 */
                                     nbReation--;
 
@@ -488,7 +492,7 @@ define(['jquery'], function($) {
                                     vote: event.data.reactionSelect
                                 },
 
-                                success: function () {
+                                success: function() {
                                     /* Increment the number of 'reactionName' reaction of 1 */
                                     (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
                                         .innerText = (nbReation + 1);
