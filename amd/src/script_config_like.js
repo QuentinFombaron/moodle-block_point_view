@@ -153,24 +153,36 @@ define(['jquery'], function($) {
                 if ($('#id_config_enable_likes_checkbox').is(':checked')
                     || $('#id_config_enable_difficulties_checkbox').is(':checked')) {
                     $('#id_activities').css({'display': ''});
+
+                    if (!$('#id_config_enable_difficulties_checkbox').is(':checked')) {
+                        moduleids.forEach(function(moduleId) {
+                            $('#id_config_difficulty_' + moduleId).css({'display': 'none'});
+                        });
+                    } else {
+                        moduleids.forEach(function(moduleId) {
+                            $('#id_config_difficulty_' + moduleId).css({'display': ''});
+                        });
+                    }
+
+                    if (!$('#id_config_enable_likes_checkbox').is(':checked')) {
+                        $('#id_config_images').css({'display': 'none'});
+                        moduleids.forEach(function(moduleId) {
+                            $('#id_config_moduleselectm' + moduleId).css({'display': 'none'});
+                        });
+                    } else {
+                        $('#id_config_images').css({'display': ''});
+                        moduleids.forEach(function(moduleId) {
+                            $('#id_config_moduleselectm' + moduleId).css({'display': ''});
+                        });
+                    }
                 } else {
                     $('#id_activities').css({'display': 'none'});
-                }
-
-                if (!$('#id_config_enable_likes_checkbox').is(':checked')) {
-                    $('#id_config_images').css({'display': 'none'});
-                } else {
-                    $('#id_config_images').css({'display': ''});
                 }
             }
 
             $('#id_close_field').click(function() {
                 $('#id_activities').addClass('collapsed');
                 window.location = '#maincontent';
-                /*
-                document.body.scrollTop = 0; // For Safari
-                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-                */
             });
 
             /* TODO Commenter : Quand une checkbox est coché/décoché, je met à jour l'affachage des boutons Enable/Disable */

@@ -167,11 +167,6 @@ class block_like_edit_form extends block_edit_form {
                                 array(' '),
                                 false
                             );
-                            block_like_hide(
-                                $mform,
-                                array('enable_' . $sectionid, 'disable_' . $sectionid),
-                                'config_enable_likes_checkbox'
-                            );
                         }
 
                         $attributes = ['class' => 'iconlarge activityicon'];
@@ -197,18 +192,6 @@ class block_like_edit_form extends block_edit_form {
 
                         $mform->addGroup($activityoption, 'config_activity_' . $activity['id'],
                             $icon . format_string($activity['name']), array(' '), false);
-
-                        block_like_hide(
-                            $mform,
-                            array('config_moduleselectm' . $activity['id']),
-                            'config_enable_likes_checkbox'
-                        );
-
-                        block_like_hide(
-                            $mform,
-                            array('config_difficulty_' . $activity['id']),
-                            'config_enable_difficulties_checkbox'
-                        );
                     }
 
                     /* Shortcuts */

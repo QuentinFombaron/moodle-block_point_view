@@ -44,7 +44,7 @@ try {
 
     try {
         require_login();
-        require_capability('block/like:overview', $blockcontext);
+        require_capability('block/like:view', $blockcontext);
         confirm_sesskey();
     } catch (coding_exception $e) {
         echo 'Exception coding_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";

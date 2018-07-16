@@ -11,7 +11,7 @@ define(['jquery'], function($) {
                 /* Array with all the needed data about the likes of the page */
                 var likesSQL = likessql;
                 /* ID of the current user */
-                var userId = envconf.userid;
+                var userId = parseInt(envconf.userid);
 
                 var courseId = envconf.courseid;
                 /* Array of the modules which have the likes activated */
@@ -374,173 +374,174 @@ define(['jquery'], function($) {
                  * @param {Object} event
                  */
                 function onClick(event) {
+                    if (userId !== null && userId !== 1) {
 
-                    /* Get the number of 'reactionName' reaction */
-                    var nbReation = parseInt((event.data.module)
-                        .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
+                        /* Get the number of 'reactionName' reaction */
+                        var nbReation = parseInt((event.data.module)
+                            .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
 
-                    /* Get the total number of reaction */
-                    totalVoteArray[event.data.moduleId] = parseInt((event.data.module)
-                        .getElementsByClassName('group_nb')[0].innerText);
+                        /* Get the total number of reaction */
+                        totalVoteArray[event.data.moduleId] = parseInt((event.data.module)
+                            .getElementsByClassName('group_nb')[0].innerText);
 
-                    /* IF there is no 'reactionName' reaction, change the emoji in black and white */
-                    if (nbReation === 0) {
-                        $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                            .css({'-webkit-filter': '', 'filter': ''});
-                    }
+                        /* IF there is no 'reactionName' reaction, change the emoji in black and white */
+                        if (nbReation === 0) {
+                            $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
+                                .css({'-webkit-filter': '', 'filter': ''});
+                        }
 
-                    /* IF this is a new vote for the user */
-                    if (reactionVotedArray[event.data.moduleId] === Reactions.NULL) {
+                        /* IF this is a new vote for the user */
+                        if (reactionVotedArray[event.data.moduleId] === Reactions.NULL) {
 
-                        /* AJAX call to the PHP function which add a new line in DB */
-                        $.ajax({
-                            type: 'POST',
-                            url: '../blocks/like/update_db.php',
-                            dataType: 'json',
-                            data: {
-                                func: 'insert',
-                                userid: userId,
-                                courseid: courseId,
-                                cmid: event.data.moduleId,
-                                vote: event.data.reactionSelect
-                            },
-                            success: function() {
-                                /* Increment the number of the new reaction of 1 */
-                                (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
-                                    .innerText = (nbReation + 1);
+                            /* AJAX call to the PHP function which add a new line in DB */
+                            $.ajax({
+                                type: 'POST',
+                                url: '../blocks/like/update_db.php',
+                                dataType: 'json',
+                                data: {
+                                    func: 'insert',
+                                    userid: userId,
+                                    courseid: courseId,
+                                    cmid: event.data.moduleId,
+                                    vote: event.data.reactionSelect
+                                },
+                                success: function () {
+                                    /* Increment the number of the new reaction of 1 */
+                                    (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
+                                        .innerText = (nbReation + 1);
 
-                                /* Update the text appearance to know that this is the selected reaction */
-                                $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').css({
-                                    'font-weight': 'bold',
-                                    'color': '#5585B6'
-                                });
+                                    /* Update the text appearance to know that this is the selected reaction */
+                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').css({
+                                        'font-weight': 'bold',
+                                        'color': '#5585B6'
+                                    });
 
-                                /* Update the value of total number reaction with an increment of 1 */
-                                (event.data.module).getElementsByClassName('group_nb')[0].innerText =
-                                    (totalVoteArray[event.data.moduleId] + 1);
+                                    /* Update the value of total number reaction with an increment of 1 */
+                                    (event.data.module).getElementsByClassName('group_nb')[0].innerText =
+                                        (totalVoteArray[event.data.moduleId] + 1);
 
-                                /* Update the current reation with the new one */
-                                reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
+                                    /* Update the current reation with the new one */
+                                    reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
 
-                            }
-                        });
-                    } else if (reactionVotedArray[event.data.moduleId] === event.data.reactionSelect) {
-                        /* IF the user canceled its vote */
+                                }
+                            });
+                        } else if (reactionVotedArray[event.data.moduleId] === event.data.reactionSelect) {
+                            /* IF the user canceled its vote */
 
-                        /* AJAX call to the PHP function which remove a line in DB */
-                        $.ajax({
-                            type: 'POST',
-                            url: '../blocks/like/update_db.php',
-                            dataType: 'json',
-                            data: {
-                                func: 'remove',
-                                userid: userId,
-                                courseid: courseId,
-                                cmid: event.data.moduleId,
-                                vote: event.data.reactionSelect
-                            },
+                            /* AJAX call to the PHP function which remove a line in DB */
+                            $.ajax({
+                                type: 'POST',
+                                url: '../blocks/like/update_db.php',
+                                dataType: 'json',
+                                data: {
+                                    func: 'remove',
+                                    userid: userId,
+                                    courseid: courseId,
+                                    cmid: event.data.moduleId,
+                                    vote: event.data.reactionSelect
+                                },
 
-                            success: function() {
-                                /* Decrement the number of old of 1 */
-                                nbReation--;
+                                success: function () {
+                                    /* Decrement the number of old of 1 */
+                                    nbReation--;
 
-                                /* Update the number of old reaction */
-                                (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
-                                    .innerText = nbReation;
+                                    /* Update the number of old reaction */
+                                    (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
+                                        .innerText = nbReation;
 
-                                /* Update the text appearance to know that this is no longer the selected reaction */
-                                $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').css({
-                                    'font-weight': 'normal',
-                                    'color': 'black'
-                                });
+                                    /* Update the text appearance to know that this is no longer the selected reaction */
+                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').css({
+                                        'font-weight': 'normal',
+                                        'color': 'black'
+                                    });
 
-                                /*
-                                    * IF after the decrementation, the number of old reaction is 0
-                                    * THEN change the emoji in black and white
+                                    /*
+                                        * IF after the decrementation, the number of old reaction is 0
+                                        * THEN change the emoji in black and white
+                                        */
+                                    if (nbReation === 0) {
+                                        $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
+                                            .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
+                                    }
+
+                                    /* Update the value of total number reaction with an decrement of 1 */
+                                    (event.data.module).getElementsByClassName('group_nb')[0].innerText =
+                                        (totalVoteArray[event.data.moduleId] - 1);
+
+                                    /* Update the current reaction with 'none reaction' */
+                                    reactionVotedArray[event.data.moduleId] = Reactions.NULL;
+                                }
+                            });
+                        } else {
+                            /* IF the user update its vote */
+
+                            /* AJAX call to the PHP function which update a line in DB */
+                            $.ajax({
+                                type: 'POST',
+                                url: '../blocks/like/update_db.php',
+                                dataType: 'json',
+                                data: {
+                                    func: 'update',
+                                    userid: userId,
+                                    courseid: courseId,
+                                    cmid: event.data.moduleId,
+                                    vote: event.data.reactionSelect
+                                },
+
+                                success: function () {
+                                    /* Increment the number of 'reactionName' reaction of 1 */
+                                    (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
+                                        .innerText = (nbReation + 1);
+
+                                    /* Update the text appearance to know that this is the selected reaction */
+                                    $('#module-' + (event.data.moduleId) + ' .' + (event.data.reactionName) + '_nb').css({
+                                        'font-weight': 'bold',
+                                        'color': '#5585B6'
+                                    });
+
+                                    /* Find the name of the reaction selected */
+                                    var reationSelectName;
+                                    switch (reactionVotedArray[event.data.moduleId]) {
+                                        case Reactions.EASY:
+                                            reationSelectName = 'easy';
+                                            break;
+                                        case Reactions.BETTER:
+                                            reationSelectName = 'better';
+                                            break;
+                                        case Reactions.HARD:
+                                            reationSelectName = 'hard';
+                                            break;
+                                    }
+
+                                    /*  Get the current number of the old reaction and decrement it of 1 */
+                                    var nbReationSelect = parseInt((event.data.module)
+                                        .getElementsByClassName(reationSelectName + '_nb')[0].innerText) - 1;
+
+                                    /* Update the value of the old reaction */
+                                    (event.data.module).getElementsByClassName(reationSelectName + '_nb')[0]
+                                        .innerText = nbReationSelect;
+
+                                    /* Update the text appearance to know that this is no longer the selected reaction */
+                                    $('#module-' + (event.data.moduleId) + ' .' + reationSelectName + '_nb').css({
+                                        'font-weight': 'normal',
+                                        'color': 'black'
+                                    });
+
+                                    /*
+                                    * IF after the decrementation, the number of the old
+                                    * reaction is 0 THEN change the emoji in black and white
                                     */
-                                if (nbReation === 0) {
-                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                        .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
+                                    if (nbReationSelect === 0) {
+                                        $('#module-' + (event.data.moduleId) + ' .' + reationSelectName)
+                                            .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
+                                    }
+
+                                    /* Update the current reation with the new one */
+                                    reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
                                 }
-
-                                /* Update the value of total number reaction with an decrement of 1 */
-                                (event.data.module).getElementsByClassName('group_nb')[0].innerText =
-                                    (totalVoteArray[event.data.moduleId] - 1);
-
-                                /* Update the current reaction with 'none reaction' */
-                                reactionVotedArray[event.data.moduleId] = Reactions.NULL;
-                            }
-                        });
-                    } else {
-                        /* IF the user update its vote */
-
-                        /* AJAX call to the PHP function which update a line in DB */
-                        $.ajax({
-                            type: 'POST',
-                            url: '../blocks/like/update_db.php',
-                            dataType: 'json',
-                            data: {
-                                func: 'update',
-                                userid: userId,
-                                courseid: courseId,
-                                cmid: event.data.moduleId,
-                                vote: event.data.reactionSelect
-                            },
-
-                            success: function() {
-                                /* Increment the number of 'reactionName' reaction of 1 */
-                                (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
-                                    .innerText = (nbReation + 1);
-
-                                /* Update the text appearance to know that this is the selected reaction */
-                                $('#module-' + (event.data.moduleId) + ' .' + (event.data.reactionName) + '_nb').css({
-                                    'font-weight': 'bold',
-                                    'color': '#5585B6'
-                                });
-
-                                /* Find the name of the reaction selected */
-                                var reationSelectName;
-                                switch (reactionVotedArray[event.data.moduleId]) {
-                                    case Reactions.EASY:
-                                        reationSelectName = 'easy';
-                                        break;
-                                    case Reactions.BETTER:
-                                        reationSelectName = 'better';
-                                        break;
-                                    case Reactions.HARD:
-                                        reationSelectName = 'hard';
-                                        break;
-                                }
-
-                                /*  Get the current number of the old reaction and decrement it of 1 */
-                                var nbReationSelect = parseInt((event.data.module)
-                                    .getElementsByClassName(reationSelectName + '_nb')[0].innerText) - 1;
-
-                                /* Update the value of the old reaction */
-                                (event.data.module).getElementsByClassName(reationSelectName + '_nb')[0]
-                                    .innerText = nbReationSelect;
-
-                                /* Update the text appearance to know that this is no longer the selected reaction */
-                                $('#module-' + (event.data.moduleId) + ' .' + reationSelectName + '_nb').css({
-                                    'font-weight': 'normal',
-                                    'color': 'black'
-                                });
-
-                                /*
-                                * IF after the decrementation, the number of the old
-                                * reaction is 0 THEN change the emoji in black and white
-                                */
-                                if (nbReationSelect === 0) {
-                                    $('#module-' + (event.data.moduleId) + ' .' + reationSelectName)
-                                        .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                                }
-
-                                /* Update the current reation with the new one */
-                                reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
-                            }
-                        });
+                            });
+                        }
                     }
-
                 }
 
                 /**

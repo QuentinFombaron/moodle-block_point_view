@@ -122,30 +122,9 @@ function block_like_manage_types($mform, $types) {
             );
             $mform->addHelpButton($typename.'_group_type', 'howto_'.$typename, 'block_like');
 
-            $mform->hideIf(
-                $typename.'_group_type',
-                'config_enable_likes_checkbox',
-                'notchecked'
-            );
         } catch (coding_exception $e) {
             echo 'Exception coding_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";
         }
-    }
-}
-
-/**
- * Hide all elements in array passed in parameter if config_enable_likes_checkbox is not checked
- * @param $mform
- * @param $elementarray
- * @param $checkbox
- */
-function block_like_hide($mform, $elementarray, $checkbox) {
-    foreach ($elementarray as $element) {
-        $mform->hideIf(
-            $element,
-            $checkbox,
-            'notchecked'
-        );
     }
 }
 

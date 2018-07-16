@@ -25,15 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'block/like:overview' => array (
-        'riskbitmask'   => RISK_PERSONAL,
-        'captype'       => 'read',
-        'contextlevel'  => CONTEXT_BLOCK,
-        'archetypes'    => array (
-            'teacher'           => CAP_ALLOW,
-            'editingteacher'    => CAP_ALLOW,
-            'manager'           => CAP_ALLOW,
-            'coursecreator'     => CAP_ALLOW
+    'block/like:view' => array(
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW
         )
     ),
 
@@ -49,7 +49,6 @@ $capabilities = array(
 
     'block/like:addinstance' => array(
         'riskbitmask' => RISK_SPAM | RISK_XSS,
-
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
