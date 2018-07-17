@@ -314,15 +314,13 @@ define(['jquery'], function($) {
                 function mouseOver(event) {
 
                     /* Clear the animation queue to avoid image blinking */
-                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName).stop();
+                    $(this).stop();
 
                     var widthParam = $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').width();
-                    var leftParamHard = $('#module-' + event.data.moduleId + ' .' + event.data.reactionName).css('left');
-                    var leftParam = parseInt(leftParamHard.slice(0, -2), 10);
 
-                    /* Modification of the toolbox width */
+                    /* Modification of the toolbox position (centered) */
                     $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').css({
-                        'left': leftParam - (widthParam / 2) + 60
+                        'left': (event.data.leftReaction + 10) - (widthParam / 2) + 60
                     });
 
                     /* Get the number of 'reactionName' reaction */
@@ -726,7 +724,7 @@ define(['jquery'], function($) {
                         /* MOUSE OVER */
                             .mouseover({
                                 module: module, moduleId: moduleId, reactionName: 'easy',
-                                className: 'easy_txt', leftTxt: 15, leftReaction: -30
+                                className: 'easy_txt', leftReaction: -30
                             }, mouseOver)
 
                             /* MOUSE OUT */
@@ -747,7 +745,7 @@ define(['jquery'], function($) {
                         /* MOUSE OVER */
                             .mouseover({
                                 module: module, moduleId: moduleId, reactionName: 'better',
-                                className: 'better_txt', leftTxt: 40, leftReaction: 15
+                                className: 'better_txt', leftReaction: 15
                             }, mouseOver)
 
                             /* MOUSE OUT */
@@ -762,18 +760,21 @@ define(['jquery'], function($) {
                                 reactionSelect: Reactions.BETTER
                             }, onClick);
 
+                        var hardSelector = $('#module-' + moduleId + ' .hard');
+                        var hardLeft = parseInt((hardSelector.css('left')).slice(0, -2), 10);
+
                         /* Management of the 'So hard...' reaction */
-                        $('#module-' + moduleId + ' .hard')
+                        hardSelector
 
                         /* MOUSE OVER */
                             .mouseover({
                                 module: module, moduleId: moduleId, reactionName: 'hard',
-                                className: 'hard_txt', leftTxt: 105, leftReaction: 60
+                                className: 'hard_txt', leftReaction: (hardLeft - 20)
                             }, mouseOver)
 
                             /* MOUSE OUT */
                             .mouseout({
-                                module: module, moduleId: moduleId, leftReaction: 70,
+                                module: module, moduleId: moduleId, leftReaction: (hardLeft - 10),
                                 reactionName: 'hard'
                             }, mouseOut)
 
