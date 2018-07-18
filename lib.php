@@ -47,14 +47,23 @@ try {
  * @return array Activities with completion settings in the course
  * @throws moodle_exception
  */
-function block_like_get_activities($courseid, $config = null) {
+function block_like_get_course_data ($courseid) {
     $modinfo = get_fast_modinfo($courseid, -1);
     $sections = $modinfo->get_sections();
     $activities = array();
+    $types = array();
+    $ids = array();
     foreach ($modinfo->instances as $module => $instances) {
         $modulename = get_string('pluginname', $module);
         foreach ($instances as $index => $cm) {
-            if (in_array($module, $config->moduletype) || $config == null) {
+            if ($module != 'label') {
+
+                if (!in_array($module, $types)) {
+                    array_push($types, $module);
+                }
+
+                array_push($ids, $cm->id);
+
                 $activities[] = array(
                     'type'       => $module,
                     'modulename' => $modulename,
@@ -75,7 +84,7 @@ function block_like_get_activities($courseid, $config = null) {
 
     usort($activities, 'block_like_compare_activities');
 
-    return $activities;
+    return array('activities' => $activities, 'types' => $types, 'ids' => $ids);
 }
 
 /**
@@ -100,27 +109,34 @@ function block_like_compare_activities($a, $b) {
  */
 function block_like_manage_types($mform, $types) {
     foreach ($types as $type) {
-        $typename = $type.'s';
+        if ($type == 'quiz') {
+            $typename = 'quizzes';
+        } else if ($type == 'glossary') {
+            $typename = 'glossaries';
+        } else {
+            $typename = $type.'s';
+        }
         $manage = array();
         try {
             $manage[] =& $mform->createElement(
                 'button',
-                'enable' . ucfirst($typename),
-                get_string('enable' . $typename, 'block_like')
+                'enableall' . $type,
+                get_string('enable_type', 'block_like', ucfirst($typename)),
+                array('class' => 'manage')
             );
             $manage[] =& $mform->createElement(
                 'button',
-                'disable' . ucfirst($typename),
-                get_string('disable' . $typename, 'block_like')
+                'disableall' . $type,
+                get_string('disable_type', 'block_like', ucfirst($typename))
             );
             $mform->addGroup(
                 $manage,
-                $typename.'_group_type',
-                get_string('manage', 'block_like') . ucfirst($typename),
+                $type.'_group_type',
+                '',
                 array(' '),
                 false
             );
-            $mform->addHelpButton($typename.'_group_type', 'howto_'.$typename, 'block_like');
+            $mform->addHelpButton($type.'_group_type', 'howto_type', 'block_like');
 
         } catch (coding_exception $e) {
             echo 'Exception coding_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";

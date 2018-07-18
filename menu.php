@@ -107,22 +107,7 @@ try {
 
     if (!empty($result)) {
 
-        $config = new stdClass();
-        $config->moduletype = array(
-            'book',
-            'chat',
-            'file',
-            'forum',
-            'glossary',
-            'page',
-            'quiz',
-            'resource',
-            'url',
-            'vpl',
-            'wiki'
-        );
-
-        $activities = block_like_get_activities($courseid, $config);
+        $activities = (block_like_get_course_data($courseid))['activities'];
 
         try {
             $sqldata = $DB->get_records('block_like', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');

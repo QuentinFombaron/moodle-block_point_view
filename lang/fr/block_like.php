@@ -35,25 +35,15 @@ $string['config_header_images'] = "Configuration des Emojis";
 $string['config_header_reset'] = "Réinitialisation des réactions";
 $string['no_activities_config_message'] = "Aucune activitié";
 
-$string['enableall'] = "Tout activer dans ";
-$string['disableall'] = "Tout désactiver dans ";
+$string['enableall'] = 'Tout activer dans <b>{$a}</b>';
+$string['disableall'] = 'Tout désactiver dans <b>{$a}</b>';
 $string['go_to_save'] = "Aller à <b>Enregistrer</b>";
 $string['close_field'] = "<b>Fermer</b> l'onglet";
-$string['manage'] = "Manage ";
 
-$manage = array('books', 'chats', 'files', 'forums', 'pages', 'quizs', 'resources', 'urls', 'vpls', 'wikis');
-
-foreach ($manage as $type) {
-    $string['enable'.$type] = "Activer tous/toutes les ".ucfirst($type);
-    $string['disable'.$type] = "Désactiver tous/toutes les ".ucfirst($type);
-    $string['howto_'.$type] = "Gestion des ".substr(ucfirst($type), 0, -1);
-    $string['howto_'.$type.'_help'] = "Ce bouton offre la possibilité d'activer ou désactiver toutes les activités de type ".substr(ucfirst($type), 0, -1);
-}
-
-$string['enableglossarys'] = "Activer tous les Lexiques";
-$string['disableglossarys'] = "Désactiver tous les Lexiques";
-$string['howto_glossarys'] = "Gestion des Lexiques";
-$string['howto_glossarys'] = "Ce bouton offre la possibilité d'activer ou désactiver toutes les activités de type Lexique";
+$string['enable_type'] = 'Activer tous/toutes les <b>{$a}</b>';
+$string['disable_type'] = 'Désactiver tous/toutes lesl <b>{$a}</b>';
+$string['howto_type'] = 'Gestion des réactions sur les activités du même type';
+$string['howto_type_help'] = 'Activer ou désactiver les réactions sur les activités du même type';
 
 $string['enablelikes'] = "Activer les Réactions";
 $string['enabledifficulties'] = "Activer les Pistes de difficulté";
@@ -81,7 +71,7 @@ $string['defaulttexteasy'] = "Fastoche !";
 $string['defaulttextbetter'] = "Je m'améliore !";
 $string['defaulttexthard'] = "Dur dur...";
 
-$string['pixcurrently'] = "Utilisé actuellement";
+$string['pixcurrently'] = "Utilisés actuellement";
 $string['pixreset'] = "Réinitialiser les émojis";
 $string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(La configuration sera enregistrée et vous serez redirigé vers la page du cours)</i>";
 

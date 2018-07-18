@@ -76,28 +76,15 @@ class block_like_edit_form extends block_edit_form {
 
                 /* ----------------------------------------------------------------------------------------------------- */
 
-                $config = new stdClass();
-                $config->moduletype = array(
-                    'book',
-                    'chat',
-                    'file',
-                    'forum',
-                    'glossary',
-                    'page',
-                    'quiz',
-                    'resource',
-                    'url',
-                    'vpl',
-                    'wiki'
-                );
+                $coursedata = block_like_get_course_data($COURSE->id);
+
+                $activities = $coursedata['activities'];
 
                 $mform->addElement(
                     'header',
                     'activities',
                     HTML_WRITER::link("#", get_string('config_header_activities', 'block_like'))
                 );
-                $activities = block_like_get_activities($COURSE->id, $config);
-
 
                 /* IF there is no activities */
                 if (empty($activities)) {
@@ -113,18 +100,8 @@ class block_like_edit_form extends block_edit_form {
                     $oldsection = "";
                     $sectionid = 1;
 
-                    /* Get the lower et higher module ID of the course */
-                    $moduleids = array();
-                    $managetypesparams = array();
-                    foreach ($activities as $index => $activity) {
-                        if (!in_array($activity['type'], $managetypesparams)) {
-                            array_push($managetypesparams, $activity['type']);
-                        }
-                        array_push($moduleids, $activity['id']);
-                    }
-
                     /* Enable/Disable by types */
-                    block_like_manage_types($mform, $managetypesparams);
+                    block_like_manage_types($mform, $coursedata['types']);
 
                     $mform->addElement('html', '<br>');
 
@@ -152,12 +129,12 @@ class block_like_edit_form extends block_edit_form {
                             $enabledisable[] =& $mform->createElement(
                                 'button',
                                 'enable_' . $sectionid,
-                                get_string('enableall', 'block_like') . $sectionname
+                                get_string('enableall', 'block_like', $sectionname)
                             );
                             $enabledisable[] =& $mform->createElement(
                                 'button',
                                 'disable_' . $sectionid,
-                                get_string('disableall', 'block_like') . $sectionname
+                                get_string('disableall', 'block_like', $sectionname)
                             );
 
 
@@ -386,7 +363,7 @@ class block_like_edit_form extends block_edit_form {
                 );
 
                 /* Imports */
-                $params = array($sectionid, $managetypesparams, $moduleids, $trackcolor, $COURSE->id);
+                $params = array(range(2, $sectionid), $coursedata['types'], $coursedata['ids'], $trackcolor, $COURSE->id);
                 $PAGE->requires->js_call_amd('block_like/script_config_like', 'init', $params);
             } else {
                 $mform->addElement(

@@ -644,6 +644,17 @@ define(['jquery'], function($) {
                     var moduleId = parseInt(moduleIdParam);
                     if (document.getElementById('module-' + moduleId) !== null) {
 
+                        $('#module-' + moduleIdParam)
+                            .mouseover(function() {
+                                $(this).css({
+                                    'background': 'linear-gradient(to right, #f4f4f4, #f4f4f4, white)',
+                                    'border-radius': '5px'
+                                });
+                            })
+                            .mouseout(function() {
+                                $(this).css({'background': ''});
+                            });
+
                         var likesModule = searchModule(moduleId);
 
                         /* Create the HTML block necessary to each activity */

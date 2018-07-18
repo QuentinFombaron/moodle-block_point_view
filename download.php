@@ -48,21 +48,7 @@ if ($format != null) {
     try {
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
-        $config = new stdClass();
-        $config->moduletype = array(
-            'book',
-            'chat',
-            'file',
-            'forum',
-            'glossary',
-            'page',
-            'quiz',
-            'resource',
-            'url',
-            'vpl',
-            'wiki'
-        );
-        $activities = block_like_get_activities($courseid, $config);
+        $activities = (block_like_get_course_data($courseid))['activities'];
 
         $sql = 'SELECT Base.cmid,
             IFNULL(COUNT(Base.cmid), 0) AS total,

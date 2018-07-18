@@ -1,6 +1,7 @@
 define(['jquery'], function($) {
     return {
-        init: function(idmax, types, moduleids, trackcolor, courseid) {
+        init: function(sectionids, types, moduleids, trackcolor, courseid) {
+
             /* Shortcut to the "SAVE" button at the bottom of the page */
             $('#id_go_to_save').click(function() {
                 window.location = '#id_submitbutton';
@@ -13,14 +14,14 @@ define(['jquery'], function($) {
                 types.forEach(function(type) {
                     var checkedType = $('.' + type + ':checkbox:checked').length;
                     if ( checkedType === $('.' + type + ':checkbox').length) {
-                        $('#id_enable' + jsUcfirst(type) + 's').addClass('active');
-                        $('#id_disable' + jsUcfirst(type) + 's').removeClass('active');
+                        $('#id_enableall' + type).addClass('active');
+                        $('#id_disableall' + type).removeClass('active');
                     } else if (checkedType === 0) {
-                        $('#id_disable' + jsUcfirst(type) + 's').addClass('active');
-                        $('#id_enable' + jsUcfirst(type) + 's').removeClass('active');
+                        $('#id_disableall' + type).addClass('active');
+                        $('#id_enableall' + type).removeClass('active');
                     } else {
-                        $('#id_enable' + jsUcfirst(type) + 's').removeClass('active');
-                        $('#id_disable' + jsUcfirst(type) + 's').removeClass('active');
+                        $('#id_enableall' + type).removeClass('active');
+                        $('#id_disableall' + type).removeClass('active');
                     }
                 });
             }
@@ -29,19 +30,19 @@ define(['jquery'], function($) {
              * Management of the Enable/Disable all section button
              */
             function manageButtonSection() {
-                for (var j = 2; j <= idmax; j++) {
-                    var checkedBoxGroup = $('.checkboxgroup' + j + ':checkbox:checked').length;
-                    if (checkedBoxGroup === $('.checkboxgroup' + j + ':checkbox').length) {
-                        $('#id_enable_' + j).addClass('active');
-                        $('#id_disable_' + j).removeClass('active');
+                sectionids.forEach(function(sectionid) {
+                    var checkedBoxGroup = $('.checkboxgroup' + sectionid + ':checkbox:checked').length;
+                    if (checkedBoxGroup === $('.checkboxgroup' + sectionid + ':checkbox').length) {
+                        $('#id_enable_' + sectionid).addClass('active');
+                        $('#id_disable_' + sectionid).removeClass('active');
                     } else if (checkedBoxGroup === 0) {
-                        $('#id_disable_' + j).addClass('active');
-                        $('#id_enable_' + j).removeClass('active');
+                        $('#id_disable_' + sectionid).addClass('active');
+                        $('#id_enable_' + sectionid).removeClass('active');
                     } else {
-                        $('#id_disable_' + j).removeClass('active');
-                        $('#id_enable_' + j).removeClass('active');
+                        $('#id_disable_' + sectionid).removeClass('active');
+                        $('#id_enable_' + sectionid).removeClass('active');
                     }
-                }
+                });
             }
 
             /**
@@ -69,25 +70,16 @@ define(['jquery'], function($) {
             }
 
             /**
-             * Put the first character of a string in upper case
-             * @param string A low case string
-             * @returns {string} String with the first character in upper case
-             */
-            function jsUcfirst(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
-
-            /**
              *
              * @param event
              */
             function manageButton(event) {
                 if (!$(this).is(':checked')) {
                     $('#id_enable_' + event.data.id).removeClass('active');
-                    $('#id_enable' + jsUcfirst(event.data.type) + 's').removeClass('active');
+                    $('#id_enableall' + event.data.type).removeClass('active');
                 } else {
                     $('#id_disable_' + event.data.id).removeClass('active');
-                    $('#id_disable' + jsUcfirst(event.data.type) + 's').removeClass('active');
+                    $('#id_disableall' + event.data.type).removeClass('active');
                 }
 
                 var checkedBoxGroup = $('.checkboxgroup' + event.data.id + ':checkbox:checked').length;
@@ -99,9 +91,9 @@ define(['jquery'], function($) {
 
                 var checkedType = $('.' + event.data.type + ':checkbox:checked').length;
                 if ( checkedType === $('.' + event.data.type + ':checkbox').length) {
-                    $('#id_enable' + jsUcfirst(event.data.type) + 's').addClass('active');
+                    $('#id_enableall' + event.data.type).addClass('active');
                 } else if (checkedType === 0) {
-                    $('#id_disable' + jsUcfirst(event.data.type) + 's').addClass('active');
+                    $('#id_disableall' + event.data.type).addClass('active');
                 }
             }
 
@@ -153,30 +145,44 @@ define(['jquery'], function($) {
                 if ($('#id_config_enable_likes_checkbox').is(':checked')
                     || $('#id_config_enable_difficulties_checkbox').is(':checked')) {
                     $('#id_activities').css({'display': ''});
-
-                    if (!$('#id_config_enable_difficulties_checkbox').is(':checked')) {
-                        moduleids.forEach(function(moduleId) {
-                            $('#id_config_difficulty_' + moduleId).css({'display': 'none'});
-                        });
-                    } else {
-                        moduleids.forEach(function(moduleId) {
-                            $('#id_config_difficulty_' + moduleId).css({'display': ''});
-                        });
-                    }
-
-                    if (!$('#id_config_enable_likes_checkbox').is(':checked')) {
-                        $('#id_config_images').css({'display': 'none'});
-                        moduleids.forEach(function(moduleId) {
-                            $('#id_config_moduleselectm' + moduleId).css({'display': 'none'});
-                        });
-                    } else {
-                        $('#id_config_images').css({'display': ''});
-                        moduleids.forEach(function(moduleId) {
-                            $('#id_config_moduleselectm' + moduleId).css({'display': ''});
-                        });
-                    }
                 } else {
                     $('#id_activities').css({'display': 'none'});
+                }
+
+                if ($('#id_config_enable_difficulties_checkbox').is(':checked')) {
+                    moduleids.forEach(function(moduleId) {
+                        $('#id_config_difficulty_' + moduleId).css({'display': ''});
+                    });
+                } else {
+                    moduleids.forEach(function(moduleId) {
+                        $('#id_config_difficulty_' + moduleId).css({'display': 'none'});
+                    });
+                }
+
+                if ($('#id_config_enable_likes_checkbox').is(':checked')) {
+                    $('#id_config_images').css({'display': ''});
+                    moduleids.forEach(function(moduleId) {
+                        $('#id_config_moduleselectm' + moduleId).css({'display': ''});
+                    });
+                    types.forEach(function(typeParam) {
+                        $('div[data-groupname="' + typeParam + '_group_type"]').css({'display': ''});
+                    });
+                    sectionids.forEach(function(sectionid) {
+                        $('#id_enable_' + sectionid).css({'display': ''});
+                        $('#id_disable_' + sectionid).css({'display': ''});
+                    });
+                } else {
+                    $('#id_config_images').css({'display': 'none'});
+                    moduleids.forEach(function(moduleId) {
+                        $('#id_config_moduleselectm' + moduleId).css({'display': 'none'});
+                    });
+                    types.forEach(function(typeParam) {
+                        $('div[data-groupname="' + typeParam + '_group_type"]').css({'display': 'none'});
+                    });
+                    sectionids.forEach(function(sectionid) {
+                        $('#id_enable_' + sectionid).css({'display': 'none'});
+                        $('#id_disable_' + sectionid).css({'display': 'none'});
+                    });
                 }
             }
 
@@ -192,7 +198,6 @@ define(['jquery'], function($) {
                     var classes = classList.split(' ');
                     var type = null;
                     var id = null;
-                    var types = ['book', 'chat', 'file', 'forum', 'glossary', 'page', 'quiz', 'resource', 'url', 'vpl', 'wiki'];
                     classes.forEach(function(className) {
                         if (types.indexOf(className) !== -1) {
                             type = types[types.indexOf(className)];
@@ -201,6 +206,7 @@ define(['jquery'], function($) {
                             id = className.match(/\d+/);
                         }
                     });
+
                     $('#id_config_moduleselectm' + moduleId).click({id: id, type: type}, manageButton);
                 }
 
@@ -213,30 +219,30 @@ define(['jquery'], function($) {
             });
 
             /* TODO Commenter : Les boutons Enable/Disable sont mis à jour au chargement de la page */
-            for (var j = 2; j <= idmax; j++) {
-                $('#id_enable_' + j).click({id: j}, treatEnableForm)
+            sectionids.forEach(function(sectionid) {
+                $('#id_enable_' + sectionid).click({id: sectionid}, treatEnableForm)
                     .removeClass('btn-secondary').addClass('btn-outline-success');
-                $('#id_disable_' + j).click({id: j}, treatDisableForm)
+                $('#id_disable_' + sectionid).click({id: sectionid}, treatDisableForm)
                     .removeClass('btn-secondary').addClass('btn-outline-danger');
-            }
+            });
 
             manageButtonSection();
 
             types.forEach(function(type) {
-                $('#id_enable' + jsUcfirst(type) + 's').click(function() {
+                $('#id_enableall' + type).click(function() {
                     /* Check all checkbox of $type */
                     $('input.' + type).prop('checked', true);
                     /* Make the button darker without disable it */
                     $(this).addClass('active');
                     /* And reset the other one to see that this one was cliked */
-                    $('#id_disable' + jsUcfirst(type) + 's').removeClass('active');
+                    $('#id_disableall' + type).removeClass('active');
                     manageButtonSection();
                 }).removeClass('btn-secondary').addClass('btn-outline-success');
 
-                $('#id_disable' + jsUcfirst(type) + 's').click(function() {
+                $('#id_disableall' + type).click(function() {
                     $('input.' + type).prop('checked', false);
                     $(this).addClass('active');
-                    $('#id_enable' + jsUcfirst(type) + 's').removeClass('active');
+                    $('#id_enableall' + type).removeClass('active');
                     manageButtonSection();
                 }).removeClass('btn-secondary').addClass('btn-outline-danger');
                 manageButtonGroup();

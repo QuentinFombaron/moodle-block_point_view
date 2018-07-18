@@ -35,25 +35,15 @@ $string['config_header_images'] = "Emojis configuration";
 $string['config_header_reset'] = "Reset reactions";
 $string['no_activities_config_message'] = "There is no activity";
 
-$string['enableall'] = "Enable all in ";
-$string['disableall'] = "Disable all in ";
+$string['enableall'] = 'Enable all in <b>{$a}</b>';
+$string['disableall'] = 'Disable all in <b>{$a}</b>';
 $string['go_to_save'] = "Jump to <b>Save</b>";
 $string['close_field'] = "<b>Close</b> field";
-$string['manage'] = "Manage ";
 
-$manage = array('books', 'chats', 'files', 'forums', 'pages', 'quizs', 'resources', 'urls', 'vpls', 'wikis');
-
-foreach ($manage as $type) {
-    $string['enable'.$type] = "Enable all ".ucfirst($type);
-    $string['disable'.$type] = "Disable all ".ucfirst($type);
-    $string['howto_'.$type] = "Management of ".substr(ucfirst($type), 0, -1)." activities";
-    $string['howto_'.$type.'_help'] = "This buttons gives the possibility to enable or disable all  ".substr(ucfirst($type), 0, -1)." activities";
-}
-
-$string['enableglossarys'] = "Enable all Glossaries";
-$string['disableglossarys'] = "Disable all Glossaries";
-$string['howto_glossarys'] = "Management of Glossarie activities";
-$string['howto_glossarys'] = "This buttons gives the possibility to enable or disable all  Glossarie activities";
+$string['enable_type'] = 'Enable all <b>{$a}</b>';
+$string['disable_type'] = 'Disable all <b>{$a}</b>';
+$string['howto_type'] = 'management of reactions in same type activities';
+$string['howto_type_help'] = 'Enable or disable reactions on all activities of same type';
 
 $string['enablelikes'] = "Enable Reactions";
 $string['enabledifficulties'] = "Enable difficulty tracks";
