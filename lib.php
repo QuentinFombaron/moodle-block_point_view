@@ -136,7 +136,11 @@ function block_like_manage_types($mform, $types) {
                 array(' '),
                 false
             );
-            $mform->addHelpButton($type.'_group_type', 'howto_type', 'block_like');
+            $mform->addHelpButton(
+                $type.'_group_type',
+                'howto_type',
+                'block_like'
+            );
 
         } catch (coding_exception $e) {
             echo 'Exception coding_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";

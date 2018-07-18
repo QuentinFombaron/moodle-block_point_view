@@ -29,18 +29,21 @@ class block_like_edit_form extends block_edit_form {
                     'config_header',
                     get_string('blocksettings', 'block')
                 );
+
+                /* Block content */
                 $mform->addElement('text',
                     'config_text',
                     get_string('contentinputlabel', 'block_like')
                 );
                 $mform->setDefault('config_text', '');
                 $mform->setType('config_text', PARAM_RAW);
-
                 $mform->addHelpButton(
                     'config_text',
                     'howto_text',
                     'block_like'
                 );
+
+                /* Reaction activation checkbox*/
                 $enablelikes = array();
                 $enablelikes[] =& $mform->createElement(
                     'advcheckbox',
@@ -57,6 +60,13 @@ class block_like_edit_form extends block_edit_form {
                     array(' '),
                     false
                 );
+                $mform->addHelpButton(
+                    'config_enable_likes_group',
+                    'howto_enable_likes_checkbox',
+                    'block_like'
+                );
+
+                /* Difficulties activation checkbox */
                 $enabledifficulties = array();
                 $enabledifficulties[] =& $mform->createElement(
                     'advcheckbox',
@@ -72,6 +82,11 @@ class block_like_edit_form extends block_edit_form {
                     get_string('enabledifficulties', 'block_like'),
                     array(' '),
                     false
+                );
+                $mform->addHelpButton(
+                    'config_enable_difficulties_group',
+                    'howto_enable_difficulties_group',
+                    'block_like'
                 );
 
                 /* ----------------------------------------------------------------------------------------------------- */
@@ -140,9 +155,15 @@ class block_like_edit_form extends block_edit_form {
 
                             $mform->addGroup(
                                 $enabledisable,
-                                'manage_checkbox_' . $sectionid, '<br><h4>' . (string)$sectionname . '</h4>',
+                                'manage_checkbox_' . $sectionid,
+                                '<br><h4>' . (string)$sectionname . '</h4>',
                                 array(' '),
                                 false
+                            );
+                            $mform->addHelpButton(
+                                'manage_checkbox_' . $sectionid,
+                                'howto_manage_checkbox',
+                                'block_like'
                             );
                         }
 
@@ -217,24 +238,28 @@ class block_like_edit_form extends block_edit_form {
                         <img src="' . $hardimg . '" style="width: 30px"/>
                         &nbsp;&nbsp;'
                     );
-
                     $pixpreview[] =& $mform->createElement(
                         'button',
                         'config_reset_pix',
                         get_string('pixreset', 'block_like')
                     );
-
                     $pixpreview[] =& $mform->createElement(
                         'static',
                         'config_reset_pix_text',
                         '',
                         get_string('pixresettext', 'block_like')
                     );
-
-                    $mform->addGroup($pixpreview, 'config_pix_preview_group',
+                    $mform->addGroup(
+                        $pixpreview,
+                        'config_pix_preview_group',
                         get_string('pixcurrently', 'block_like'),
                         array(' '),
                         false
+                    );
+                    $mform->addHelpButton(
+                        'config_pix_preview_group',
+                        'howto_pix_preview_group',
+                        'block_like'
                     );
 
                     $mform->disabledIf(
@@ -252,13 +277,17 @@ class block_like_edit_form extends block_edit_form {
                         array(),
                         array(0, 1)
                     );
-
                     $mform->addGroup(
                         $enableperso,
                         'config_enable_pix',
                         get_string('enablecustompix', 'block_like'),
                         array(' '),
                         false
+                    );
+                    $mform->addHelpButton(
+                        'config_enable_pix',
+                        'howto_enable_pix',
+                        'block_like'
                     );
 
                     $mform->addElement(
@@ -303,6 +332,11 @@ class block_like_edit_form extends block_edit_form {
                             array(' '),
                             false
                         );
+                        $mform->addHelpButton(
+                            'config_'.$file.'_text_group',
+                            'howto_text_group',
+                            'block_like'
+                        );
                     }
 
                     /* ----------------------------------------------------------------------------------------------------- */
@@ -321,10 +355,17 @@ class block_like_edit_form extends block_edit_form {
                         get_string('reactionreset', 'block_like', $COURSE->fullname)
                     );
 
-                    $mform->addGroup($reinit, 'config_reaction_reset',
+                    $mform->addGroup(
+                        $reinit,
+                        'config_reaction_reset',
                         '',
                         array(' '),
                         false
+                    );
+                    $mform->addHelpButton(
+                        'config_reaction_reset',
+                        'howto_reaction_reset',
+                        'block_like'
                     );
 
                     $reinitconfirm = array();

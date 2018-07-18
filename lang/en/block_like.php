@@ -42,18 +42,14 @@ $string['close_field'] = "<b>Close</b> field";
 
 $string['enable_type'] = 'Enable all <b>{$a}</b>';
 $string['disable_type'] = 'Disable all <b>{$a}</b>';
-$string['howto_type'] = 'management of reactions in same type activities';
-$string['howto_type_help'] = 'Enable or disable reactions on all activities of same type';
 
-$string['enablelikes'] = "Enable Reactions";
-$string['enabledifficulties'] = "Enable difficulty tracks";
+
+$string['enablelikes'] = "Enable <b>Reactions</b>";
+$string['enabledifficulties'] = "Enable <b>difficulty tracks</b>";
 $string['enablecustompix'] = "Use custom Reaction emojis";
 $string['likepix'] = "Emojis";
 $string['likepixdesc'] = "<h5 style='color:red'>Important :</h5> Name the files <b><span style='font-family: Courier'>[emoji_name].png</span></b> for the emoji pictures, for instance: <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span> and <span style='font-family: Courier'>hard.png</span>. Also need groups of emojis <b><span style='font-family: Courier'>group_[emojis_initials].png</span></b>, for instance: <span style='font-family: Courier'>group_EB.png</span> for the group of Easy and Better reactions. Don't forget the file <b><span style='font-family: Courier'>group_.png</span></b>  for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 fichiers attendus : <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span>, <span style='font-family: Courier'>hard.png</span>, <span style='font-family: Courier'>group_.png</span>, <span style='font-family: Courier'>group_E.png</span>, <span style='font-family: Courier'>group_B.png</span>, <span style='font-family: Courier'>group_H.png</span>, <span style='font-family: Courier'>group_EB.png</span>, <span style='font-family: Courier'>group_EH.png</span>, <span style='font-family: Courier'>group_BH.png</span> et <span style='font-family: Courier'>group_EBH.png</span>";
 $string['enableimgperso'] = "Enable image personalisation";
-
-$string['howto_text'] = "text visible in the block";
-$string['howto_text_help'] = "This field gives the possibility to modify the text visible in the block";
 
 $string['nonetrack'] = "None track";
 $string['greentrack'] = "Green track";
@@ -73,7 +69,7 @@ $string['defaulttextbetter'] = "I'm getting better !";
 $string['defaulttexthard'] = "So hard...";
 
 $string['pixcurrently'] = "Currently used";
-$string['pixreset'] = "Reset pictures";
+$string['pixreset'] = "Reset emojis";
 $string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(Configuration will be saved and you will be redirected in course page)</i>";
 
 $string['blockdisabled'] = "<h3 style=\"color: red\">The block is disabled</h3>";
@@ -96,3 +92,23 @@ $string['reactionreset'] = 'Reset <b>{$a}</b> course reactions';
 $string['yes'] = "Yes";
 $string['no'] = "No";
 $string['confirmation'] = 'Are you sure you want to reset all reactions of <b>{$a}</b> course ?';
+
+/* Help text */
+$string['howto_enable_difficulties_group'] = "activation of the difficulty tracks";
+$string['howto_enable_difficulties_group_help'] = "Enable or disable difficulty tracks in the course";
+$string['howto_enable_likes_checkbox'] = "activation of the reaction";
+$string['howto_enable_likes_checkbox_help'] = "Enable or disable reactions in the course";
+$string['howto_enable_pix'] = "activation of custom emojis";
+$string['howto_enable_pix_help'] = "Enable or disable custom emojis. You need to put the images in the file manager with specific names and extension (see below)";
+$string['howto_manage_checkbox'] = "management of reactions on course activities";
+$string['howto_manage_checkbox_help'] = "Enable or disable reactions on all activities of the course";
+$string['howto_pix_preview_group'] = "curently used emojis";
+$string['howto_pix_preview_group_help'] = "This is the emojis you are currently using in the course. You can reset them to the default one with the \"<b>Reset emojis</b>\" button";
+$string['howto_reaction_reset'] = "reset all reaction in the course";
+$string['howto_reaction_reset_help'] = "Reset all reaction in the course, you need to be sure what you are doing";
+$string['howto_text'] = "text visible in the block";
+$string['howto_text_help'] = "This field allows to modify the text visible in the block";
+$string['howto_text_group'] = "custom text description of emoji";
+$string['howto_text_group_help'] = "Custom the text description displayed on top of the emoji";
+$string['howto_type'] = "management of reactions on same type activities";
+$string['howto_type_help'] = "Enable or disable reactions on all activities of same type";

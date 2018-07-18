@@ -224,6 +224,7 @@ define(['jquery'], function($) {
                     .removeClass('btn-secondary').addClass('btn-outline-success');
                 $('#id_disable_' + sectionid).click({id: sectionid}, treatDisableForm)
                     .removeClass('btn-secondary').addClass('btn-outline-danger');
+                $('div[data-groupname="manage_checkbox_' + sectionid + '"] .pull-xs-right').css({'padding-top': '20px'});
             });
 
             manageButtonSection();
