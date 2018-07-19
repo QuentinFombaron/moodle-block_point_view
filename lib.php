@@ -15,29 +15,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * [TODO]
+ * Point of View block
  *
- * @package [TODO]
- * @copyright [TODO]
- * @license [TODO]
+ *
+ * @package    block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
 require_once(__DIR__ . '/../../config.php');
 
-const DEFAULT_LIKE_ENABLELIKES = 1;
-const DEFAULT_LIKE_ENABLECUSTOMPIX = 0;
-
 try {
     require_login();
 } catch (coding_exception $e) {
-    echo 'Exception coding_exception (require_login() -> blocks/like/block_like.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [coding_exception] (blocks/point_view/lib.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 } catch (require_login_exception $e) {
-    echo 'Exception require_login_exception (require_login() -> blocks/like/block_like.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [require_login_exception] (blocks/point_view/lib.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 } catch (moodle_exception $e) {
-    echo 'Exception moodle_exception (require_login() -> blocks/like/block_like.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [moodle_exception] (blocks/point_view/lib.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 }
+
+const DEFAULT_POINT_VIEW_ENABLE_REACTIONS = 1;
+
+const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
 
 /**
  * Returns the activities in current course
@@ -47,19 +53,30 @@ try {
  * @return array Activities with completion settings in the course
  * @throws moodle_exception
  */
-function block_like_get_course_data ($courseid) {
+function block_point_view_get_course_data ($courseid) {
+
     $modinfo = get_fast_modinfo($courseid, -1);
+
     $sections = $modinfo->get_sections();
+
     $activities = array();
+
     $types = array();
+
     $ids = array();
+
     foreach ($modinfo->instances as $module => $instances) {
+
         $modulename = get_string('pluginname', $module);
+
         foreach ($instances as $index => $cm) {
+
             if ($module != 'label') {
 
                 if (!in_array($module, $types)) {
+
                     array_push($types, $module);
+
                 }
 
                 array_push($ids, $cm->id);
@@ -82,7 +99,7 @@ function block_like_get_course_data ($courseid) {
         }
     }
 
-    usort($activities, 'block_like_compare_activities');
+    usort($activities, 'block_point_view_compare_activities');
 
     return array('activities' => $activities, 'types' => $types, 'ids' => $ids);
 }
@@ -94,11 +111,16 @@ function block_like_get_course_data ($courseid) {
  * @param array $b array of event information
  * @return mixed <0, 0 or >0 depending on order of activities/resources on course page
  */
-function block_like_compare_activities($a, $b) {
+function block_point_view_compare_activities($a, $b) {
+
     if ($a['section'] != $b['section']) {
+
         return $a['section'] - $b['section'];
+
     } else {
+
         return $a['position'] - $b['position'];
+
     }
 }
 
@@ -107,28 +129,41 @@ function block_like_compare_activities($a, $b) {
  * @param $mform
  * @param $types
  */
-function block_like_manage_types($mform, $types) {
+function block_point_view_manage_types($mform, $types) {
+
     foreach ($types as $type) {
+
         if ($type == 'quiz') {
+
             $typename = 'quizzes';
+
         } else if ($type == 'glossary') {
+
             $typename = 'glossaries';
+
         } else {
+
             $typename = $type.'s';
+
         }
+
         $manage = array();
+
         try {
+
             $manage[] =& $mform->createElement(
                 'button',
                 'enableall' . $type,
-                get_string('enable_type', 'block_like', ucfirst($typename)),
+                get_string('enable_type', 'block_point_view', ucfirst($typename)),
                 array('class' => 'manage')
             );
+
             $manage[] =& $mform->createElement(
                 'button',
                 'disableall' . $type,
-                get_string('disable_type', 'block_like', ucfirst($typename))
+                get_string('disable_type', 'block_point_view', ucfirst($typename))
             );
+
             $mform->addGroup(
                 $manage,
                 $type.'_group_type',
@@ -136,14 +171,18 @@ function block_like_manage_types($mform, $types) {
                 array(' '),
                 false
             );
+
             $mform->addHelpButton(
                 $type.'_group_type',
                 'howto_type',
-                'block_like'
+                'block_point_view'
             );
 
         } catch (coding_exception $e) {
-            echo 'Exception coding_exception (specific_definition() -> blocks/like/edit_form.php) : ', $e->getMessage(), "\n";
+
+            echo 'Exception [coding_exception] (blocks/point_view/lib.php -> block_point_view_manage_types()) : ',
+            $e->getMessage(), "\n";
+
         }
     }
 }
@@ -160,10 +199,12 @@ function block_like_manage_types($mform, $types) {
  * @param array $options Array of options.
  * @return void|false
  */
-function block_like_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
+
     $fs = get_file_storage();
 
-    if (($filearea == 'likes_pix') || ($filearea == 'likes_pix_admin')) {
+    if (($filearea == 'point_views_pix') || ($filearea == 'point_views_pix_admin')) {
+
         $itemid = array_shift($args);
 
         if ($itemid != 0) {
@@ -171,14 +212,21 @@ function block_like_pluginfile($course, $bi, $context, $filearea, $args, $forced
         }
 
         $filename = array_shift($args);
+
         $filepath = '/';
-        $file = $fs->get_file($context->id, 'block_like', $filearea, $itemid, $filepath, $filename . '.png');
+
+        $file = $fs->get_file($context->id, 'block_point_view', $filearea, $itemid, $filepath, $filename . '.png');
+
     } else {
+
         return false;
+
     }
 
     if (!$file) {
+
         return false;
+
     }
 
     send_stored_file($file, 0, 0, true, $options);
@@ -189,23 +237,29 @@ function block_like_pluginfile($course, $bi, $context, $filearea, $args, $forced
  * @param $react
  * @return string
  */
-function block_like_pix_url($context, $filearea, $react) {
+function block_point_view_pix_url($context, $filearea, $react) {
+
     return strval(moodle_url::make_pluginfile_url(
         $context,
-        'block_like',
+        'block_point_view',
         $filearea,
         0,
         '/',
         $react)
     );
+
 }
 
 function tostring($output, $data, $users, $course) {
+
     $string = '';
 
     foreach ($data as $item) {
+
         $string .= $output->user_picture($users[$item], array('course' => $course->id)) .
             $users[$item]->firstname . ' ' . $users[$item]->lastname . '<br />';
+
     }
+
     return $string;
 }

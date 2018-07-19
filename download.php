@@ -14,26 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Like block export page
+ * Point of View block
  *
- * @package    block_like
- * @copyright  [TODO]
- * @license    [TODO]
+ *
+ * @package    block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/blocks/like/lib.php');
+require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
 try {
     require_login();
 } catch (coding_exception $e) {
-    echo 'Exception coding_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [coding_exception] (blocks/point_view/download.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 } catch (require_login_exception $e) {
-    echo 'Exception require_login_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [require_login_exception] (blocks/point_view/download.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 } catch (moodle_exception $e) {
-    echo 'Exception moodle_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [moodle_exception] (blocks/point_view/download.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 }
 
 $format = $_POST['format'];
@@ -48,19 +52,19 @@ if ($format != null) {
     try {
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
-        $activities = (block_like_get_course_data($courseid))['activities'];
+        $activities = (block_point_view_get_course_data($courseid))['activities'];
 
         $sql = 'SELECT Base.cmid,
             IFNULL(COUNT(Base.cmid), 0) AS total,
             IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
             IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
             IFNULL(TableTypeThree.TotalTypethree, 0) AS typethree
-          FROM {block_like} AS Base
-            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_like}
+          FROM {block_point_view} AS Base
+            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_point_view}
               WHERE vote = 1 GROUP BY cmid) AS TableTypeOne
-            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeTwo FROM {block_like}
+            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeTwo FROM {block_point_view}
               WHERE vote = 2 GROUP BY cmid) AS TableTypeTwo
-            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypethree FROM {block_like}
+            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypethree FROM {block_point_view}
               WHERE vote = 3 GROUP BY cmid) AS TableTypeThree
             WHERE courseid = :courseid
           GROUP BY cmid;';
@@ -69,7 +73,7 @@ if ($format != null) {
 
         $result = $DB->get_records_sql($sql, $params);
 
-        $like = $DB->get_records('block_like', ['courseid' => $courseid], '', 'id,cmid,userid,vote');
+        $pointview = $DB->get_records('block_point_view', ['courseid' => $courseid], '', 'id,cmid,userid,vote');
 
         $users = $DB->get_records('user', null, '', user_picture::fields());
 
@@ -77,7 +81,7 @@ if ($format != null) {
 
         foreach ($activities as $index => $activity) {
             if (isset($result[($activity['id'])]->cmid)) {
-                foreach ($like as $row) {
+                foreach ($pointview as $row) {
                     if ($row->cmid == $activity['id']) {
                         array_push($data, array(
                                 get_section_name($course, $activity['section']),
@@ -94,9 +98,11 @@ if ($format != null) {
             }
         }
     } catch (dml_exception $e) {
-        echo 'Exception : ', $e->getMessage(), "\n";
+        echo 'Exception [dml_exception] (blocks/point_view/download.php -> require_login()) : ',
+        $e->getMessage(), "\n";
     } catch (moodle_exception $e) {
-        echo 'Exception : ', $e->getMessage(), "\n";
+        echo 'Exception [moodle_exception] (blocks/point_view/download.php -> require_login()) : ',
+        $e->getMessage(), "\n";
     }
 
     $headers = array(
@@ -114,7 +120,7 @@ if ($format != null) {
             require_once($CFG->libdir . '/csvlib.class.php');
 
             $writer = new csv_export_writer();
-            $filename = clean_filename("likes_export");
+            $filename = clean_filename("point_views_export");
             $writer->set_filename($filename);
 
             $writer->add_data($headers);
@@ -127,7 +133,7 @@ if ($format != null) {
             break;
         case 'ods':
         case 'xls' :
-            $downloadfilename = clean_filename("likes_export." . $format);
+            $downloadfilename = clean_filename("point_views_export." . $format);
 
             if ($format == "ods") {
                 require_once($CFG->libdir . '/odslib.class.php');
@@ -140,7 +146,7 @@ if ($format != null) {
             }
 
             $workbook->send($downloadfilename);
-            $myxls = $workbook->add_worksheet("data_likes");
+            $myxls = $workbook->add_worksheet("data_point_views");
 
             $line = 0;
             $colonne = 0;

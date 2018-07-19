@@ -14,13 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Like block export page
+ * Point of View block
  *
- * @package    block_like
- * @copyright  [TODO]
- * @license    [TODO]
+ *
+ * @package    block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../config.php');
@@ -29,19 +30,30 @@ require_once($CFG->dirroot . '/lib/csvlib.class.php');
 try {
     require_login();
 } catch (coding_exception $e) {
-    echo 'Exception coding_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [coding_exception] (blocks/point_view/export.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 } catch (require_login_exception $e) {
-    echo 'Exception require_login_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [require_login_exception] (blocks/point_view/export.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 } catch (moodle_exception $e) {
-    echo 'Exception moodle_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
+    echo 'Exception [moodle_exception] (blocks/point_view/export.php -> require_login()) : ',
+    $e->getMessage(), "\n";
 }
 
+confirm_sesskey();
+
 try {
+
     $id = required_param('instanceid', PARAM_INT);
+
     $contextid = required_param('contextid', PARAM_INT);
+
     $courseid = required_param('courseid', PARAM_INT);
+
     $enablepix = required_param('enablepix', PARAM_INT);
+
     $tab = optional_param('tab', 'export', PARAM_ALPHA);
+
     $format = optional_param('format', null, PARAM_ALPHA);
 
     $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
@@ -51,11 +63,13 @@ try {
     $block = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
 
     $config = unserialize(base64_decode($block->configdata));
+
     $blockcontext = CONTEXT_BLOCK::instance($id);
 
     $PAGE->set_course($course);
+
     $PAGE->set_url(
-        '/blocks/like/export.php',
+        '/blocks/point_view/export.php',
         array(
             'instanceid' => $id,
             'contextid' => $contextid,
@@ -66,52 +80,88 @@ try {
     );
 
     $PAGE->set_context($context);
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/like/style/style.css'));
-    $title = get_string('menu', 'block_like');
+
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style/style.css'));
+
+    $title = get_string('menu', 'block_point_view');
+
     $PAGE->set_title($title);
-    $PAGE->set_heading(get_string('config_default_title', 'block_like'));
+
+    $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
+
     $PAGE->navbar->add($title);
+
     $PAGE->set_pagelayout('report');
 
     echo $OUTPUT->header();
+
     echo $OUTPUT->heading($title, 2);
-    echo $OUTPUT->container_start('block_like_export');
+
+    echo $OUTPUT->container_start('block_point_view_export');
 
     require("tabs.php");
 
     echo html_writer::start_div('buttons');
 
+    /* CSV Export */
+
     $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'csv'];
-    $url = new moodle_url('/blocks/like/download.php', $parameters);
-    $label = get_string('exportcsv', 'block_like');
+
+    $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+
+    $label = get_string('exportcsv', 'block_point_view');
+
     $options = ['class' => 'exportCSVButton'];
+
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
     echo html_writer::tag('p', '&nbsp;');
+
+    /* ODS Export */
 
     $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'ods'];
-    $url = new moodle_url('/blocks/like/download.php', $parameters);
-    $label = get_string('exportods', 'block_like');
+
+    $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+
+    $label = get_string('exportods', 'block_point_view');
+
     $options = ['class' => 'exportODSButton'];
+
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
     echo html_writer::tag('p', '&nbsp;');
 
+    /* XLS Export */
+
     $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'xls'];
-    $url = new moodle_url('/blocks/like/download.php', $parameters);
-    $label = get_string('exportxls', 'block_like');
+
+    $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+
+    $label = get_string('exportxls', 'block_point_view');
+
     $options = ['class' => 'exportXLSButton'];
+
     echo $OUTPUT->single_button($url, $label, 'post', $options);
 
     echo html_writer::end_div();
 
     echo $OUTPUT->container_end();
+
     echo $OUTPUT->footer();
 
 } catch (coding_exception $e) {
-    echo 'Exception coding_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
+
+    echo 'Exception [coding_exception] (blocks/point_view/export.php) : ',
+    $e->getMessage(), "\n";
+
 } catch (dml_exception $e) {
-    echo 'Exception dml_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
+
+    echo 'Exception [dml_exception] (blocks/point_view/export.php) : ',
+    $e->getMessage(), "\n";
+
 } catch (moodle_exception $e) {
-    echo 'Exception moodle_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
+
+    echo 'Exception [moodle_exception] (blocks/point_view/export.php) : ',
+    $e->getMessage(), "\n";
+
 }

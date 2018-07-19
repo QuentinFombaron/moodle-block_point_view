@@ -1,20 +1,20 @@
 /* Include JQuery */
 define(['jquery'], function($) {
     return {
-        init: function(likessql, moduleselect, difficultylevels, pix, envconf) {
+        init: function(pointviewssql, moduleselect, difficultylevels, pix, envconf) {
             /* Wait that the DOM is fully loaded */
             $(function() {
 
                 /* Resize the activity name field to give space to Likes icons */
                 $('.mod-indent-outer').css({'width': '85%'});
 
-                /* Array with all the needed data about the likes of the page */
-                var likesSQL = likessql;
+                /* Array with all the needed data about the reactions of the page */
+                var pointViewsSQL = pointviewssql;
                 /* ID of the current user */
                 var userId = parseInt(envconf.userid);
 
                 var courseId = envconf.courseid;
-                /* Array of the modules which have the likes activated */
+                /* Array of the modules which have the reactions activated */
                 var moduleSelect = moduleselect;
 
                 /* Enumeration of the possible reactions */
@@ -91,13 +91,13 @@ define(['jquery'], function($) {
                  */
                 function searchModule(moduleId) {
 
-                    /* Boolean which check if the data are in likesSQL array */
+                    /* Boolean which check if the data are in pointViewsSQL array */
                     var assign = false;
 
                     /* Variable which will be returned */
                     var resultSearch;
 
-                    likesSQL.forEach(function(element) {
+                    pointViewsSQL.forEach(function(element) {
                         if (parseInt(element.cmid) === moduleId) {
                             resultSearch = element;
                             assign = true;
@@ -150,7 +150,7 @@ define(['jquery'], function($) {
                         if (parseInt((event.data.module).getElementsByClassName('better_nb')[0].innerText) === 0) {
                             $('#module-' + (event.data.moduleId) + ' .better')
                                 .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                            // .attr('src', '../blocks/like/pix/better_BW.png');
+                            // .attr('src', '../blocks/point_view/pix/better_BW.png');
                         }
                         if (parseInt((event.data.module).getElementsByClassName('hard_nb')[0].innerText) === 0) {
                             $('#module-' + (event.data.moduleId) + ' .hard')
@@ -398,7 +398,7 @@ define(['jquery'], function($) {
                             /* AJAX call to the PHP function which add a new line in DB */
                             $.ajax({
                                 type: 'POST',
-                                url: '../blocks/like/update_db.php',
+                                url: '../blocks/point_view/update_db.php',
                                 dataType: 'json',
                                 data: {
                                     func: 'insert',
@@ -433,7 +433,7 @@ define(['jquery'], function($) {
                             /* AJAX call to the PHP function which remove a line in DB */
                             $.ajax({
                                 type: 'POST',
-                                url: '../blocks/like/update_db.php',
+                                url: '../blocks/point_view/update_db.php',
                                 dataType: 'json',
                                 data: {
                                     func: 'remove',
@@ -480,7 +480,7 @@ define(['jquery'], function($) {
                             /* AJAX call to the PHP function which update a line in DB */
                             $.ajax({
                                 type: 'POST',
-                                url: '../blocks/like/update_db.php',
+                                url: '../blocks/point_view/update_db.php',
                                 dataType: 'json',
                                 data: {
                                     func: 'update',
@@ -639,7 +639,7 @@ define(['jquery'], function($) {
                     }, 1000);
                 }
 
-                /* For each selected module, create a like zone */
+                /* For each selected module, create a reaction zone */
                 moduleSelect.forEach(function(moduleIdParam) {
                     var moduleId = parseInt(moduleIdParam);
                     if (document.getElementById('module-' + moduleId) !== null) {
@@ -655,31 +655,31 @@ define(['jquery'], function($) {
                                 $(this).css({'background': ''});
                             });
 
-                        var likesModule = searchModule(moduleId);
+                        var pointViewsModule = searchModule(moduleId);
 
                         /* Create the HTML block necessary to each activity */
                         var htmlBlock = '<div class="reactions">' +
                             '<!-- EASY ! --><span class="tooltipreaction">' +
                             '<img src="' + pix.easy + '" alt=" " class="easy"/>' +
                             '<span class="tooltiptextreaction easy_txt">' + pix.easytxt + '</span></span>' +
-                            '<span class="easy_nb">' + likesModule.typeone + '</span>' +
+                            '<span class="easy_nb">' + pointViewsModule.typeone + '</span>' +
                             '<!-- I\'M GETTING BETTER --><span class="tooltipreaction">' +
                             '<img src="' + pix.better + '" alt=" " class="better"/>' +
                             '<span class="tooltiptextreaction better_txt">' + pix.bettertxt + '</span></span>' +
-                            '<span class="better_nb">' + likesModule.typetwo + '</span>' +
+                            '<span class="better_nb">' + pointViewsModule.typetwo + '</span>' +
                             '<!-- SO HARD... --><span class="tooltipreaction">' +
                             '<img src="' + pix.hard + '" alt=" " class="hard"/>' +
                             '<span class="tooltiptextreaction hard_txt">' + pix.hardtxt + '</span></span>' +
-                            '<span class="hard_nb">' + likesModule.typethree + '</span></div>' +
+                            '<span class="hard_nb">' + pointViewsModule.typethree + '</span></div>' +
                             '<!-- GROUP --><div class="group">' +
                             '<img src="" alt=" " class="group_img"/>' +
-                            '<span class="group_nb">' + likesModule.total + '</span></div>';
+                            '<span class="group_nb">' + pointViewsModule.total + '</span></div>';
 
                         /* Export the HTML block */
                         $('#module-' + moduleId + ' .activityinstance').append(htmlBlock);
 
                         /* Initialise reactionVotedArray and CSS */
-                        switch (parseInt(likesModule.uservote)) {
+                        switch (parseInt(pointViewsModule.uservote)) {
                             case 1:
                                 reactionVotedArray[moduleId] = Reactions.EASY;
                                 /* Update the text appearance to know that this is the selected reaction */
@@ -842,7 +842,7 @@ define(['jquery'], function($) {
                 $('.blacktrack').css({'background-color': envconf.blacktrack});
 
                 /* Add animation to menu button */
-                $('#menu_like_img')
+                $('#menu_point_view_img')
                     .mouseover(function() {
                         $(this).css({
                             '-webkit-filter': 'invert(100%)',

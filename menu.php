@@ -14,25 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Like block menu page
+ * Point of View block
  *
- * @package    block_like
- * @copyright  [TODO]
- * @license    [TODO]
+ *
+ * @package    block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/blocks/like/lib.php');
+require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
 try {
     $id = required_param('instanceid', PARAM_INT);
-    $contextid = required_param('contextid', PARAM_INT);
-    $courseid = required_param('courseid', PARAM_INT);
-    $enablepix = required_param('enablepix', PARAM_INT);
-    $tab = optional_param('tab', 'overview', PARAM_ALPHA);
 
+    $contextid = required_param('contextid', PARAM_INT);
+
+    $courseid = required_param('courseid', PARAM_INT);
+
+    $enablepix = required_param('enablepix', PARAM_INT);
+
+    $tab = optional_param('tab', 'overview', PARAM_ALPHA);
 
     $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
@@ -42,21 +46,16 @@ try {
 
     $blockcontext = CONTEXT_BLOCK::instance($id);
 
-    try {
-        require_login();
-        require_capability('block/like:view', $blockcontext);
-        confirm_sesskey();
-    } catch (coding_exception $e) {
-        echo 'Exception coding_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
-    } catch (require_login_exception $e) {
-        echo 'Exception require_login_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
-    } catch (moodle_exception $e) {
-        echo 'Exception moodle_exception (require_login() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
-    }
+    require_login();
+
+    confirm_sesskey();
+
+    require_capability('block/point_view:view', $blockcontext);
 
     $PAGE->set_course($course);
+
     $PAGE->set_url(
-        '/blocks/like/menu.php',
+        '/blocks/point_view/menu.php',
         array(
             'instanceid' => $id,
             'contextid' => $contextid,
@@ -71,90 +70,106 @@ try {
             IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
             IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
             IFNULL(TableTypeThree.TotalTypethree, 0) AS typethree
-          FROM {block_like} AS Base
-            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_like}
+          FROM {block_point_view} AS Base
+            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_point_view}
               WHERE vote = 1 GROUP BY cmid) AS TableTypeOne
-            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeTwo FROM {block_like}
+            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeTwo FROM {block_point_view}
               WHERE vote = 2 GROUP BY cmid) AS TableTypeTwo
-            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypethree FROM {block_like}
+            NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypethree FROM {block_point_view}
               WHERE vote = 3 GROUP BY cmid) AS TableTypeThree
             WHERE courseid = :courseid
           GROUP BY cmid;';
 
     $params = array('courseid' => $COURSE->id);
 
-    try {
-        $result = $DB->get_records_sql($sql, $params);
-    } catch (dml_exception $e) {
-        echo 'Exception : ', $e->getMessage(), "\n";
-    }
+    $result = $DB->get_records_sql($sql, $params);
 
     $PAGE->set_context($context);
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/like/style/style.css'));
+
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style/style.css'));
+
     $paramsamd = array(array_column($result, 'cmid'));
-    $PAGE->requires->js_call_amd('block_like/script_menu_like', 'init', $paramsamd);
-    $title = get_string('menu', 'block_like');
+
+    $PAGE->requires->js_call_amd('block_point_view/script_menu_point_view', 'init', $paramsamd);
+
+    $title = get_string('menu', 'block_point_view');
+
     $PAGE->set_title($title);
-    $PAGE->set_heading(get_string('config_default_title', 'block_like'));
+
+    $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
+
     $PAGE->navbar->add($title);
+
     $PAGE->set_pagelayout('report');
 
     echo $OUTPUT->header();
+
     echo $OUTPUT->heading($title, 2);
-    echo $OUTPUT->container_start('block_like_menu');
+
+    echo $OUTPUT->container_start('block_point_view_menu');
 
     require("tabs.php");
 
     if (!empty($result)) {
 
-        $activities = (block_like_get_course_data($courseid))['activities'];
+        $activities = (block_point_view_get_course_data($courseid))['activities'];
 
-        try {
-            $sqldata = $DB->get_records('block_like', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');
-        } catch (dml_exception $e) {
-            echo 'Exception dml_exception ($sqldata = DB->get_records() -> blocks/like/menu.php) : ', $e->getMessage(), "\n";
-        }
+        $sqldata = $DB->get_records('block_point_view', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');
 
         $table = new html_table();
+
         $table->head = array(
-            get_string('colsection', 'block_like'),
-            get_string('colmodule', 'block_like'),
+            get_string('colsection', 'block_point_view'),
+            get_string('colmodule', 'block_point_view'),
             '',
-            get_string('colreactions', 'block_like'),
+            get_string('colreactions', 'block_point_view'),
             '',
             'Total',
             ''
             );
+
         $table->attributes['class'] = 'generaltable';
+
         $table->rowclasses = array();
+
         $table->data = array();
 
         $users = $DB->get_records('user', null, '', user_picture::fields());
 
         $pixparam = array(
-            'easy' => $CFG->wwwroot . '/blocks/like/pix/easy.png',
-            'better' => $CFG->wwwroot . '/blocks/like/pix/better.png',
-            'hard' => $CFG->wwwroot . '/blocks/like/pix/hard.png',
+            'easy' => $CFG->wwwroot . '/blocks/point_view/pix/easy.png',
+            'better' => $CFG->wwwroot . '/blocks/point_view/pix/better.png',
+            'hard' => $CFG->wwwroot . '/blocks/point_view/pix/hard.png',
         );
 
         $fs = get_file_storage();
 
-        if (get_config('block_like', 'enable_pix_admin')) {
+        if (get_config('block_point_view', 'enable_pix_admin')) {
+
             foreach ($pixparam as $file => $data) {
-                if ($fs->file_exists(1, 'block_like', 'likes_pix_admin', 0, '/', $file . '.png')) {
-                    $pixparam[$file] = block_like_pix_url(1, 'likes_pix_admin', $file);
+
+                if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
+
+                    $pixparam[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
+
                 }
             }
         } else if ($enablepix) {
+
             foreach ($pixparam as $file => $data) {
-                if ($fs->file_exists($contextid, 'block_like', 'likes_pix', 0, '/', $file . '.png')) {
-                    $pixparam[$file] = block_like_pix_url($contextid, 'likes_pix', $file);
+
+                if ($fs->file_exists($contextid, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
+
+                    $pixparam[$file] = block_point_view_pix_url($contextid, 'point_views_pix', $file);
+
                 }
             }
         }
 
         foreach ($activities as $index => $activity) {
+
             if (isset($result[($activity['id'])]->cmid)) {
+
                 $details = array(
                     'easy' => array(),
                     'better' => array(),
@@ -162,7 +177,9 @@ try {
                 );
 
                 foreach ($sqldata as $row) {
+
                     if ($row->cmid == $activity['id']) {
+
                         switch ($row->vote) {
                             case 1 :
                                 array_push($details['easy'], intval($row->userid));
@@ -181,8 +198,11 @@ try {
                     'row_module' . $activity['id'],
                     'row_module' . $activity['id'] . '_details'
                 );
+
                 $attributes = ['class' => 'iconlarge activityicon'];
+
                 $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+
                 array_push($table->data,
                     array(
                         get_section_name($COURSE, $activity['section']),
@@ -222,18 +242,33 @@ try {
                 );
             }
         }
+
         echo html_writer::table($table);
+
     } else {
-        echo html_writer::tag('p', get_string('noneactivity', 'block_like'));
+
+        echo html_writer::tag('p', get_string('noneactivity', 'block_point_view'));
+
     }
 
     echo $OUTPUT->container_end();
+
     echo $OUTPUT->footer();
+
 } catch (coding_exception $e) {
-    echo 'Exception coding_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
+
+    echo 'Exception [coding_exception] (blocks/point_view/menu.php) : ',
+    $e->getMessage(), "\n";
+
 } catch (dml_exception $e) {
-    echo 'Exception dml_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
+
+    echo 'Exception [dml_exception] (blocks/point_view/menu.php) : ',
+    $e->getMessage(), "\n";
+
 } catch (moodle_exception $e) {
-    echo 'Exception moodle_exception (blocks/like/menu.php) : ', $e->getMessage(), "\n";
+
+    echo 'Exception [moodle_exception] (blocks/point_view/menu.php) : ',
+    $e->getMessage(), "\n";
+
 }
 

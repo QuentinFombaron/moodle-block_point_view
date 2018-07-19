@@ -4,7 +4,8 @@ define(['jquery'], function($) {
 
             /* Shortcut to the "SAVE" button at the bottom of the page */
             $('#id_go_to_save').click(function() {
-                window.location = '#id_submitbutton';
+                window.onbeforeunload = null;
+                $('#mform1').submit();
             }).removeClass('btn-secondary').addClass('btn-primary');
 
             /**
@@ -142,7 +143,7 @@ define(['jquery'], function($) {
              *
              */
             function checkConf() {
-                if ($('#id_config_enable_likes_checkbox').is(':checked')
+                if ($('#id_config_enable_point_views_checkbox').is(':checked')
                     || $('#id_config_enable_difficulties_checkbox').is(':checked')) {
                     $('#id_activities').css({'display': ''});
                 } else {
@@ -159,7 +160,7 @@ define(['jquery'], function($) {
                     });
                 }
 
-                if ($('#id_config_enable_likes_checkbox').is(':checked')) {
+                if ($('#id_config_enable_point_views_checkbox').is(':checked')) {
                     $('#id_config_images').css({'display': ''});
                     moduleids.forEach(function(moduleId) {
                         $('#id_config_moduleselectm' + moduleId).css({'display': ''});
@@ -225,6 +226,7 @@ define(['jquery'], function($) {
                 $('#id_disable_' + sectionid).click({id: sectionid}, treatDisableForm)
                     .removeClass('btn-secondary').addClass('btn-outline-danger');
                 $('div[data-groupname="manage_checkbox_' + sectionid + '"] .pull-xs-right').css({'padding-top': '20px'});
+                $('div[data-groupname="manage_checkbox_' + sectionid + '"] .float-sm-right').css({'padding-top': '20px'});
             });
 
             manageButtonSection();
@@ -261,7 +263,7 @@ define(['jquery'], function($) {
             /* Hide fieldsets if Like or Difficulties checkboxes are disabled */
             checkConf();
 
-            $('#id_config_enable_likes_checkbox').click(checkConf);
+            $('#id_config_enable_point_views_checkbox').click(checkConf);
             $('#id_config_enable_difficulties_checkbox').click(checkConf);
 
             $('div[data-groupname="config_reset_confirm"]').css({'display': 'none'});
@@ -273,7 +275,7 @@ define(['jquery'], function($) {
                     /* AJAX call to the PHP function which reset DB */
                     $.ajax({
                         type: 'POST',
-                        url: '../blocks/like/update_db.php',
+                        url: '../blocks/point_view/update_db.php',
                         dataType: 'json',
                         data: {
                             func: 'reset',

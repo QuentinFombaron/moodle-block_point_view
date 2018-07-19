@@ -37,7 +37,7 @@
     opacity: 1;
 }
 
-/* source for tooltip : https://www.w3schools.com/css/css_tooltip.asp */
+/* Source for tooltip : https://www.w3schools.com/css/css_tooltip.asp */
 
 .group {
     position: absolute;
@@ -108,11 +108,13 @@
     left: 100px;
 }
 
+/* Enable good target */
 :target {
     padding-top: 0.5rem !important;
     margin-top: 0 !important;
 }
 
+/* "Save changes" button in configuration */
 #id_go_to_save {
     position: fixed;
     top: 390px;
@@ -120,6 +122,7 @@
     z-index: 9999;
 }
 
+/* "Close field" button in configuration */
 #id_close_field {
     position: fixed;
     top: 430px;
@@ -127,6 +130,7 @@
     z-index: 9999;
 }
 
+/* Green dot to inform that user has voted */
 .voted {
     width: 15px;
     height: 15px;
@@ -138,14 +142,17 @@
     background: #66ad89;
 }
 
+/* Select list of difficulty in the configuration */
 .selectDifficulty {
     margin-left: 30px;
 }
 
+/* Show Tracks + Activity + Reactions in line */
 .activityinstance {
     display: inline-flex !important;
 }
 
+/* Difficulty tracks */
 .track {
     height: 25px;
     width: 20px;
@@ -155,17 +162,22 @@
     border-radius: 10%;
 }
 
-#menu_like_img {
+/* Menu button in block content */
+#menu_point_view_img {
     width: 40px;
     display: block;
     margin-left: auto;
     margin-right: auto;
 }
 
+/* Emojis of overview table */
 .overview_img {
-    width: 30px
+    width: 30px;
 }
 
+/** Colums of the overview table **/
+
+/* Disable selection */
 .c6 {
     font-weight: bold;
     font-size: 1.5em;
@@ -177,7 +189,6 @@
     -ms-user-select: none;
     user-select: none;
 }
-
 .c0,
 .c5,
 .c6 {
@@ -199,6 +210,7 @@
     text-align: center;
 }
 
+/* Center the export buttons */
 .buttons {
     display: inline-flex;
     position: absolute;
@@ -207,10 +219,12 @@
     transform: translate(-50%, -50%);
 }
 
+/* Dont' hide tooltip when reaction are in the top of course*/
 #region-main > .card {
     overflow-x: unset;
 }
 
+/* Hide the confirm button to reset reactions */
 #config_reset_confirm {
     display: none;
 }

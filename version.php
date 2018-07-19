@@ -15,16 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Current user info block.
+ * Point of View block
  *
- * @package    block_like
- * @copyright  [TODO]
- * @author     [TODO]
+ *
+ * @package    block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018071600;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2018071900;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2017051502;        // Requires this Moodle version.
-$plugin->component = 'block_like';      // Full name of the plugin (used for diagnostics).
+$plugin->component = 'block_point_view';      // Full name of the plugin (used for diagnostics).
