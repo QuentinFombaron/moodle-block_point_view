@@ -26,7 +26,7 @@ Sur la page du cours, dans le panneau latéral, cliquer sur le bouton `Ajouter u
 
 Une fois le bloc ajouté (voir **0.1**), passer un mode édition puis cliquer sur l’icône `Actions` (⚙️ engrenage), puis `Supprimer le bloc Point de vue`.
 
-<img src='https://cdn.pbrd.co/images/HvkyF92.png' alt='0.2.2' width='250px' /><br />
+<img src='https://cdn.pbrd.co/images/HvkyF92.png' alt='0.2.2' width='250px' />
 
 ### 0.3 Accéder à la page de configuration
 
@@ -34,7 +34,7 @@ Une fois le bloc ajouté (voir **0.1**), passer un mode édition puis cliquer su
 
 Une fois le bloc ajouté (voir **0.1**), passer un mode édition puis cliquer sur l’icône `Actions` (⚙️ engrenage), puis `Configurer le bloc Point de vue`.
 
-<img src='https://cdn.pbrd.co/images/HvkCpZG.png' alt='0.2.2' width='250px' /><br />
+<img src='https://cdn.pbrd.co/images/HvkCpZG.png' alt='0.2.2' width='250px' />
 
 ## Utilisation
 
@@ -44,7 +44,7 @@ Une fois le bloc ajouté (voir **0.1**), passer un mode édition puis cliquer su
 
 Les emojis sont initialement regroupés, il suffit de laisser la souris sur le groupe pour que le détail s’affiche.
 
-<img src='https://cdn.pbrd.co/images/HvkEq4M.png' alt='1.0.1' width='250px' /><br />
+<img src='https://cdn.pbrd.co/images/HvkEq4M.png' alt='1.0.1' width='250px' />
 
 ### 1.1 - Comment réagir à une activité ?
 
@@ -92,7 +92,7 @@ Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Confi
 
 <img src='https://cdn.pbrd.co/images/HvkIOmy.png' alt='3.1.1' width='500px' /><br />
 
-Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Configuration des Réactions et Pistes de difficulté, activer/désactiver les réactions sur toutes les activités d’un même type en cliquant sur le boutons associé. Par exemple sur l’image ci-dessus, la gestions de toute les ressources.
+Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Configuration des Réactions et Pistes de difficulté`, activer/désactiver les réactions sur toutes les activités d’un même type en cliquant sur le boutons associé. Par exemple sur l’image ci-dessus, la gestions de toute les ressources.
 
 ### 3.2 - Comment activer les réactions sur toutes les activités d’un même cours ?`
 
@@ -106,7 +106,7 @@ Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Confi
 
 Une fois les pistes de difficulté activés (voir **2.1**), dans l’onglet Configuration des Réactions et Pistes de difficulté`», définir une piste à un cours en choisissant dans la liste déroulante à droite de l’activité associée.
 
-<img src='https://cdn.pbrd.co/images/HvkKGUn.png' alt='3.3.2' width='200px' /><br />
+<img src='https://cdn.pbrd.co/images/HvkKGUn.png' alt='3.3.2' width='200px' />
 
 ### 3.4 - Comment utiliser les boutons d’aide à la navigation ?
 
@@ -146,15 +146,15 @@ Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Confi
 
 <img src='https://cdn.pbrd.co/images/HvkRCUw.png' alt='4.2.1' width='400px' /><br />
 
-Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Configuration des Emojis, modifier le nom en remplaçant le contenu de la zone de texte associé à chaque emoji.
+Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Configuration des Emojis`, modifier le nom en remplaçant le contenu de la zone de texte associé à chaque emoji.
 
 ### 4.3 Comment mettre à zéro les réactions d’un cours ?
 
 <img src='https://cdn.pbrd.co/images/HvkS1yb.png' alt='4.3.1' width='300px' /><br />
 
-Dans l’onglet « Réinitialisation des réactions », appuyer sur le bouton ci-dessus, un message de confirmation va apparaitre. Confirmer puis vous  serez automatiquement redirigé sur la page du cours.
+Dans l’onglet `Réinitialisation des réactions`, appuyer sur le bouton ci-dessus, un message de confirmation va apparaitre. Confirmer puis vous  serez automatiquement redirigé sur la page du cours.
 
-<img src='https://cdn.pbrd.co/images/HvkSa4L.png' alt='4.3.2' width='700px' /><br />
+<img src='https://cdn.pbrd.co/images/HvkSa4L.png' alt='4.3.2' width='700px' />
 
 ## Menu
 
@@ -176,15 +176,15 @@ Cette page donne le détails des votes du cours en un tableau lisible.
 
 Par défaut, l’affichage de la répartition est en pourcentage, cliquer sur l’un des votes et l’affichage sera modifié en nombre de vote.
 
-<img src='https://cdn.pbrd.co/images/HvkTNiW.png' alt='5.1.2' width='800px' /><br />
+<img src='https://cdn.pbrd.co/images/HvkTNiW.png' alt='5.1.2' width='800px' />
 
 ### 5.2 - Comment avoir le détail des utilisateurs qui ont voté une activité ?
 
 <img src='https://cdn.pbrd.co/images/HvkUohm.png' alt='5.2.1' width='800px' /><br />
 
-Cliquer sur le petit `+` à droite de la ligne et le détail des utilisateurs associés à leur réaction voté s’affichera.
+Cliquer sur le petit `+` à droite de la ligne et le détail des utilisateurs associés à leur réaction votée s’affichera.
 
-<img src='https://cdn.pbrd.co/images/HvkUExu.png' alt='5.2.2' width='800px' /><br />
+<img src='https://cdn.pbrd.co/images/HvkUExu.png' alt='5.2.2' width='800px' />
 
 ### 6.0 - Comment avoir accès au menu d’exportation ?
 
