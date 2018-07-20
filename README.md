@@ -1,0 +1,1 @@
+# moodle-block_point_view
