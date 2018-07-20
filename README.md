@@ -1,8 +1,8 @@
-#Plugin Moodle « Point de vue »
+# Plugin Moodle « Point de vue »
 
-Quentin Fombaron - 20 Juillet 2018
+*Quentin Fombaron - 20 Juillet 2018*
 
-Le plugin « Point de vue » offre la possibilité de réagir et de donner des niveaux de difficulté aux activités d’un cours Moodle. Les étudiants ont connaissance de la difficulté de l’activité grace à des pistes de couleur, ainsi que la possibilité de s’exprimer via des emojis représentant chacun une émotion, un ressenti (voir partie Utilisation).
+Le plugin « **Point de vue** » offre la possibilité de réagir et de donner des niveaux de difficulté aux activités d’un cours Moodle. Les étudiants ont connaissance de la difficulté de l’activité grace à des pistes de couleur, ils ont aussi la possibilité de s’exprimer via des emojis représentant chacun une émotion, un ressenti (voir partie **Utilisation**).
 
 C’est un plugin Moodle géré par un bloc qu’il faut ajouter à un cours (voir **0.1**).
 
@@ -142,7 +142,7 @@ Exemple :
 
 Une fois le système de réaction activé (voir **2.0**), dans l’onglet `Configuration des Emojis`, réinitialiser les emojis en appuyant sur le bouton `Réinitialiser les emojis, vous serez automatiquement redirigé sur la page du cours.
 
-#### 4.2 - Comment modifier le texte associé à un emoji ?
+### 4.2 - Comment modifier le texte associé à un emoji ?
 
 <img src='https://cdn.pbrd.co/images/HvkRCUw.png' alt='4.2.1' width='400px' /><br />
 
@@ -212,7 +212,7 @@ Dans le menu `Administration du Site > Plugins > Blocs > Point de vue`, activer/
 
 Dans le menu  `Administration du Site > Plugins > Blocs > Point de vue`, activer la personnalisation des emojis en cochant la case ci-dessus et fournir les 11 fichiers requis dans la zone de fichier (voir **4.0**).
 
-## 7.2 - Comment personnaliser la couleur des pistes de difficulté du site ?
+### 7.2 - Comment personnaliser la couleur des pistes de difficulté du site ?
 
 <img src='https://cdn.pbrd.co/images/HvkYBo4.png' alt='7.2.1' width='400px' /><br />
 
