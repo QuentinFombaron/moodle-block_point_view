@@ -65,12 +65,12 @@ try {
         )
     );
 
-    $sql = 'SELECT Base.cmid,
-            IFNULL(COUNT(Base.cmid), 0) AS total,
+    $sql = 'SELECT cmid,
+            IFNULL(COUNT(cmid), 0) AS total,
             IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
             IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
             IFNULL(TableTypeThree.TotalTypethree, 0) AS typethree
-          FROM {block_point_view} AS Base
+          FROM {block_point_view}
             NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_point_view}
               WHERE vote = 1 GROUP BY cmid) AS TableTypeOne
             NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeTwo FROM {block_point_view}
@@ -86,7 +86,7 @@ try {
 
     $PAGE->set_context($context);
 
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style.css'));
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
     $paramsamd = array(array_column($result, 'cmid'));
 

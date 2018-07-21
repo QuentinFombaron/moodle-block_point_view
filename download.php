@@ -54,12 +54,12 @@ if ($format != null) {
 
         $activities = (block_point_view_get_course_data($courseid))['activities'];
 
-        $sql = 'SELECT Base.cmid,
-            IFNULL(COUNT(Base.cmid), 0) AS total,
+        $sql = 'SELECT cmid,
+            IFNULL(COUNT(cmid), 0) AS total,
             IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
             IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
             IFNULL(TableTypeThree.TotalTypethree, 0) AS typethree
-          FROM {block_point_view} AS Base
+          FROM {block_point_view}
             NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_point_view}
               WHERE vote = 1 GROUP BY cmid) AS TableTypeOne
             NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeTwo FROM {block_point_view}
