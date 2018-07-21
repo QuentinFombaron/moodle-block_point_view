@@ -44,9 +44,19 @@ try {
     $e->getMessage(), "\n";
 }
 
+/**
+ * block_point_view_edit_form Class
+ *
+ *
+ * @package    block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class block_point_view_edit_form extends block_edit_form {
 
     /**
+     * Configuration page
      * @param object $mform
      */
     protected function specific_definition($mform) {
@@ -57,7 +67,7 @@ class block_point_view_edit_form extends block_edit_form {
 
             if (get_config('block_point_view', 'enable_point_views_admin')) {
 
-                $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style.css'));
+                $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
                 $mform->addElement(
                     'header',
@@ -618,7 +628,7 @@ class block_point_view_edit_form extends block_edit_form {
 
     /**
      * Filemanager data
-     * @param $defaults
+     * @param {array} $defaults
      */
     public function set_data($defaults) {
 

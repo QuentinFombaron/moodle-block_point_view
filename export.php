@@ -81,7 +81,7 @@ try {
 
     $PAGE->set_context($context);
 
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style.css'));
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
     $title = get_string('menu', 'block_point_view');
 

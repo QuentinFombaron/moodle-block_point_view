@@ -826,12 +826,12 @@ define(['jquery'], function($) {
                                 break;
                         }
 
-                        var difficultyBlock = '<span class="track ' + difficulty + 'track"></span>';
+                        var difficultyBlock = '<div class="track ' + difficulty + 'track"></div>';
 
-                        $('#module-' + key + ' .activityinstance').prepend(difficultyBlock);
+                        $('#module-' + key + ' .activityinstance a').prepend(difficultyBlock);
                     } else {
                         var difficultyBlockEmpty = '<span class="track"></span>';
-                        $('#module-' + key + ' .activityinstance').prepend(difficultyBlockEmpty);
+                        $('#module-' + key + ' .activityinstance a').prepend(difficultyBlockEmpty);
                     }
                 });
 

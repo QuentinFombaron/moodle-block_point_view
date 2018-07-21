@@ -41,15 +41,16 @@ try {
     $e->getMessage(), "\n";
 }
 
+/** Administration configuration to enable Reactions */
 const DEFAULT_POINT_VIEW_ENABLE_REACTIONS = 1;
 
+/** Administration configuration to enable custom emojis */
 const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
 
 /**
  * Returns the activities in current course
  *
- * @param int    courseid   ID of the course
- * @param int    config     The block instance configuration
+ * @param int $courseid ID of the course
  * @return array Activities with completion settings in the course
  * @throws moodle_exception
  */
@@ -126,8 +127,10 @@ function block_point_view_compare_activities($a, $b) {
 
 /**
  * Create a group of buttons to Enable/Disable activities by types
- * @param $mform
- * @param $types
+ *
+ * @param stdClass $mform
+ * @param array $types
+ * @throws coding_exception
  */
 function block_point_view_manage_types($mform, $types) {
 
@@ -148,8 +151,6 @@ function block_point_view_manage_types($mform, $types) {
         }
 
         $manage = array();
-
-        try {
 
             $manage[] =& $mform->createElement(
                 'button',
@@ -178,12 +179,6 @@ function block_point_view_manage_types($mform, $types) {
                 'block_point_view'
             );
 
-        } catch (coding_exception $e) {
-
-            echo 'Exception [coding_exception] (blocks/point_view/lib.php -> block_point_view_manage_types()) : ',
-            $e->getMessage(), "\n";
-
-        }
     }
 }
 
@@ -233,8 +228,11 @@ function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $
 }
 
 /**
- * @param $context
- * @param $react
+ * Reaction image
+ *
+ * @param stdClass $context
+ * @param string $filearea
+ * @param string $react
  * @return string
  */
 function block_point_view_pix_url($context, $filearea, $react) {
@@ -250,6 +248,15 @@ function block_point_view_pix_url($context, $filearea, $react) {
 
 }
 
+/**
+ * User data string for the overview table
+ *
+ * @param stdClass $output
+ * @param stdClass $data
+ * @param stdClass $users
+ * @param stdClass $course
+ * @return string
+ */
 function tostring($output, $data, $users, $course) {
 
     $string = '';
