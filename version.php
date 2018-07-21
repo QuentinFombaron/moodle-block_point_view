@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018071900;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2017051502;        // Requires this Moodle version.
-$plugin->component = 'block_point_view';      // Full name of the plugin (used for diagnostics).
+$plugin->component = 'block_point_view';
+$plugin->version   = 2018071901;
+$plugin->requires  = 2017051502;
+$plugin->maturity = MATURITY_BETA;
+$plugin->release = 'v1.0-r2';

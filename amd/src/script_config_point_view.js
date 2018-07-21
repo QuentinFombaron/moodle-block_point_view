@@ -14,7 +14,7 @@ define(['jquery'], function($) {
             function manageButtonGroup() {
                 types.forEach(function(type) {
                     var checkedType = $('.' + type + ':checkbox:checked').length;
-                    if ( checkedType === $('.' + type + ':checkbox').length) {
+                    if (checkedType === $('.' + type + ':checkbox').length) {
                         $('#id_enableall' + type).addClass('active');
                         $('#id_disableall' + type).removeClass('active');
                     } else if (checkedType === 0) {
@@ -71,8 +71,8 @@ define(['jquery'], function($) {
             }
 
             /**
-             *
-             * @param event
+             * Manage enable/disable all button
+             * @param {array} event
              */
             function manageButton(event) {
                 if (!$(this).is(':checked')) {
@@ -91,7 +91,7 @@ define(['jquery'], function($) {
                 }
 
                 var checkedType = $('.' + event.data.type + ':checkbox:checked').length;
-                if ( checkedType === $('.' + event.data.type + ':checkbox').length) {
+                if (checkedType === $('.' + event.data.type + ':checkbox').length) {
                     $('#id_enableall' + event.data.type).addClass('active');
                 } else if (checkedType === 0) {
                     $('#id_disableall' + event.data.type).addClass('active');
@@ -99,8 +99,8 @@ define(['jquery'], function($) {
             }
 
             /**
-             *
-             * @param event
+             * Event when one select list has changed
+             * @param {array} event
              */
             function selectChange(event) {
                 var value;
