@@ -7,7 +7,7 @@ define(['jquery'], function($) {
             /**
              * Hide/Show row details of the table.
              *
-             * @param event
+             * @param {array} event
              */
             function rowDetails(event) {
                 if (openRow[event.data.id]) {

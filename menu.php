@@ -86,7 +86,7 @@ try {
 
     $PAGE->set_context($context);
 
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style/style.css'));
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style.css'));
 
     $paramsamd = array(array_column($result, 'cmid'));
 

@@ -32,6 +32,7 @@ require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
 try {
     require_login();
+    confirm_sesskey();
 } catch (coding_exception $e) {
     echo 'Exception [coding_exception] (blocks/point_view/edit_form.php -> require_login()) : ',
     $e->getMessage(), "\n";
@@ -43,13 +44,11 @@ try {
     $e->getMessage(), "\n";
 }
 
-confirm_sesskey();
-
-/**
- * Class block_point_view_edit_form
- */
 class block_point_view_edit_form extends block_edit_form {
 
+    /**
+     * @param object $mform
+     */
     protected function specific_definition($mform) {
 
         global $CFG, $COURSE, $OUTPUT, $PAGE;
@@ -58,7 +57,7 @@ class block_point_view_edit_form extends block_edit_form {
 
             if (get_config('block_point_view', 'enable_point_views_admin')) {
 
-                $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style/style.css'));
+                $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/style.css'));
 
                 $mform->addElement(
                     'header',
@@ -536,6 +535,12 @@ class block_point_view_edit_form extends block_edit_form {
         }
     }
 
+    /**
+     * Validation of filemanager files
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
     public function validation($data, $files) {
 
         global $USER;
@@ -611,6 +616,10 @@ class block_point_view_edit_form extends block_edit_form {
         return $errors;
     }
 
+    /**
+     * Filemanager data
+     * @param $defaults
+     */
     public function set_data($defaults) {
 
         if (!empty($this->block->config) && is_object($this->block->config)) {
