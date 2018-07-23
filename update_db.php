@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Point of View block
  * File called in AJAX for database modification
  *
  *
