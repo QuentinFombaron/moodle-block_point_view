@@ -55,6 +55,7 @@ class block_point_view extends block_base
 {
     /**
      * Block initializations
+     *
      * @throws coding_exception
      */
     public function init() {
@@ -75,6 +76,7 @@ class block_point_view extends block_base
 
     /**
      * Content of Point of View block
+     *
      * @return Object
      * @throws dml_exception
      * @throws coding_exception
@@ -136,11 +138,13 @@ class block_point_view extends block_base
             }
 
             if (!$PAGE->user_is_editing()) {
+
                 $enablepointviewscheckbox = (isset($this->config->enable_point_views_checkbox)) ?
                     $this->config->enable_point_views_checkbox :
                     0;
 
                 if ($enablepointviewscheckbox) {
+
                     $sql = 'SELECT cmid,
                     IFNULL(COUNT(cmid), 0) AS total,
                     IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
@@ -164,8 +168,11 @@ class block_point_view extends block_base
 
                     /* Parameters for the Javascript */
                     $pointviews = (!empty($result)) ? array_values($result) : array();
+
                 } else {
+
                     $pointviews = null;
+
                 }
 
                 $sqlid = $DB->get_records('course_modules', array('course' => $COURSE->id), null, 'id');
@@ -175,12 +182,19 @@ class block_point_view extends block_base
                 $difficultylevels = array();
 
                 foreach ($sqlid as $row) {
+
                     if (isset($this->config->{'moduleselectm' . $row->id})) {
+
                         if ($this->config->{'moduleselectm' . $row->id} != 0 && $this->config->enable_point_views_checkbox) {
+
                             array_push($moduleselect, $row->id);
+
                         }
+
                         if ($this->config->enable_difficulties_checkbox) {
+
                             $difficultylevels[$row->id] = $this->config->{'difficulty_' . $row->id};
+
                         }
                     }
                 }
@@ -225,23 +239,35 @@ class block_point_view extends block_base
                 $fs = get_file_storage();
 
                 if (get_config('block_point_view', 'enable_pix_admin')) {
+
                     foreach ($pixfiles as $file) {
+
                         if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
+
                             $pixparam[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
+
                         }
                     }
                 } else {
+
                     $fs->delete_area_files(1, 'block_point_view');
+
                 }
 
                 if (isset($this->config->enable_pix_checkbox) && $this->config->enable_pix_checkbox) {
+
                     foreach ($pixfiles as $file) {
+
                         if ($fs->file_exists($this->context->id, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
+
                             $pixparam[$file] = block_point_view_pix_url($this->context->id, 'point_views_pix', $file);
+
                         }
                     }
                 } else {
+
                     $fs->delete_area_files($this->context->id, 'block_point_view');
+
                 }
 
                 $envconf = array(
@@ -261,7 +287,9 @@ class block_point_view extends block_base
             'block_point_view',
             'enable_point_views_admin')
             && has_capability('block/point_view:view', $this->context)) {
+
             $this->content->text = get_string('blockdisabled', 'block_point_view');
+
         }
 
         return $this->content;

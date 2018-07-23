@@ -16,6 +16,7 @@
 
 /**
  * Point of View block
+ * File called in AJAX for database modification
  *
  *
  * @package    block_point_view
@@ -54,6 +55,7 @@ $vote = $_POST['vote'];
 
 switch ($_POST['func']) {
 
+    /* INSERT a new line in block_point_view table */
     case 'insert':
         $dataobject = new stdClass();
 
@@ -78,6 +80,7 @@ switch ($_POST['func']) {
         }
         break;
 
+    /* REMOVE a line in block_point_view table */
     case 'remove':
         $conditions = array('userid' => $userid, 'courseid' => $courseid, 'cmid' => $cmid, 'vote' => $vote);
 
@@ -94,6 +97,7 @@ switch ($_POST['func']) {
         }
         break;
 
+    /* UPDATE a line in block_point_view table */
     case 'update':
         try {
 
@@ -124,6 +128,7 @@ switch ($_POST['func']) {
 
         break;
 
+    /* REMOVE all votes of a course */
     case 'reset':
         $conditions = array('courseid' => $courseid);
 

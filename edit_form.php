@@ -57,6 +57,7 @@ class block_point_view_edit_form extends block_edit_form {
 
     /**
      * Configuration page
+     *
      * @param object $mform
      */
     protected function specific_definition($mform) {
@@ -547,6 +548,7 @@ class block_point_view_edit_form extends block_edit_form {
 
     /**
      * Validation of filemanager files
+     *
      * @param array $data
      * @param array $files
      * @return array
@@ -628,6 +630,7 @@ class block_point_view_edit_form extends block_edit_form {
 
     /**
      * Filemanager data
+     *
      * @param {array} $defaults
      */
     public function set_data($defaults) {

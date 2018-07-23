@@ -16,6 +16,7 @@
 
 /**
  * Point of View block
+ * Administration configuration
  *
  *
  * @package    block_point_view
@@ -57,7 +58,7 @@ if ($ADMIN->fulltree) {
 
         $settings->add(new admin_setting_configcolourpicker(
             'block_point_view/green_track_color_admin',
-            'Green track color',
+            new lang_string('greentrack', 'block_point_view'),
             '',
             '#129800',
             null,
@@ -66,7 +67,7 @@ if ($ADMIN->fulltree) {
 
         $settings->add(new admin_setting_configcolourpicker(
             'block_point_view/blue_track_color_admin',
-            'Blue track color',
+            new lang_string('bluetrack', 'block_point_view'),
             '',
             '#0B619F',
             null,
@@ -75,7 +76,7 @@ if ($ADMIN->fulltree) {
 
         $settings->add(new admin_setting_configcolourpicker(
             'block_point_view/red_track_color_admin',
-            'Red track color',
+            new lang_string('redtrack', 'block_point_view'),
             '',
             '#BD0F29',
             null,
@@ -84,7 +85,7 @@ if ($ADMIN->fulltree) {
 
         $settings->add(new admin_setting_configcolourpicker(
             'block_point_view/black_track_color_admin',
-            'Black track color',
+            new lang_string('blacktrack', 'block_point_view'),
             '',
             '#01262E',
             null,

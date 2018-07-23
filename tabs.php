@@ -16,6 +16,7 @@
 
 /**
  * Point of View block
+ * Construct tabs in the menu
  *
  *
  * @package    block_point_view
