@@ -16,6 +16,7 @@
 
 /**
  * Point of View block
+ * Function's library
  *
  *
  * @package    block_point_view

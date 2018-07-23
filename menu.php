@@ -16,6 +16,7 @@
 
 /**
  * Point of View block
+ * File call to overview the votes in the table
  *
  *
  * @package    block_point_view

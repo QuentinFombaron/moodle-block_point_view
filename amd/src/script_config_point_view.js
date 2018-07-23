@@ -140,7 +140,7 @@ define(['jquery'], function($) {
             }
 
             /**
-             *
+             * Manage button state to be interactive
              */
             function checkConf() {
                 if ($('#id_config_enable_point_views_checkbox').is(':checked')
@@ -192,7 +192,7 @@ define(['jquery'], function($) {
                 window.location = '#maincontent';
             });
 
-            /* TODO Commenter : Quand une checkbox est coché/décoché, je met à jour l'affachage des boutons Enable/Disable */
+            /* Listen a checkbox state change */
             moduleids.forEach(function(moduleId) {
                 var classList = $('#id_config_moduleselectm' + moduleId).attr('class');
                 if (classList !== undefined) {
@@ -219,7 +219,7 @@ define(['jquery'], function($) {
                 idConfigDifficulty.change({module: idConfigDifficulty}, selectChange);
             });
 
-            /* TODO Commenter : Les boutons Enable/Disable sont mis à jour au chargement de la page */
+            /* Button state at the loading */
             sectionids.forEach(function(sectionid) {
                 $('#id_enable_' + sectionid).click({id: sectionid}, treatEnableForm)
                     .removeClass('btn-secondary').addClass('btn-outline-success');
@@ -251,7 +251,7 @@ define(['jquery'], function($) {
                 manageButtonGroup();
             });
 
-            /* Reset images buttun  */
+            /* Reset images button  */
             $('#id_config_reset_pix')
                 .removeClass('btn-secondary')
                 .addClass('btn-outline-warning')
@@ -260,7 +260,7 @@ define(['jquery'], function($) {
                     $('#mform1').submit();
             });
 
-            /* Hide fieldsets if Like or Difficulties checkboxes are disabled */
+            /* Hide fieldsets if Reactions or Difficulties checkboxes are disabled */
             checkConf();
 
             $('#id_config_enable_point_views_checkbox').click(checkConf);

@@ -16,6 +16,7 @@
 
 /**
  * Point of View block
+ * File called to download an exporting file
  *
  *
  * @package    block_point_view
@@ -41,11 +42,15 @@ try {
 }
 
 $format = $_POST['format'];
+
 $courseid = $_POST['courseid'];
+
 $contextid = $_POST['contextid'];
+
 $instanceid = $_POST['instanceid'];
 
 $context = CONTEXT_COURSE::instance($courseid);
+
 $PAGE->set_context($context);
 
 if ($format != null) {
@@ -80,9 +85,13 @@ if ($format != null) {
         $data = array();
 
         foreach ($activities as $index => $activity) {
+
             if (isset($result[($activity['id'])]->cmid)) {
+
                 foreach ($pointview as $row) {
+
                     if ($row->cmid == $activity['id']) {
+
                         array_push($data, array(
                                 get_section_name($course, $activity['section']),
                                 format_string($activity['name']),
@@ -98,11 +107,15 @@ if ($format != null) {
             }
         }
     } catch (dml_exception $e) {
+
         echo 'Exception [dml_exception] (blocks/point_view/download.php -> require_login()) : ',
         $e->getMessage(), "\n";
+
     } catch (moodle_exception $e) {
+
         echo 'Exception [moodle_exception] (blocks/point_view/download.php -> require_login()) : ',
         $e->getMessage(), "\n";
+
     }
 
     $headers = array(
@@ -117,55 +130,84 @@ if ($format != null) {
 
     switch ($format) {
         case 'csv' :
+
             require_once($CFG->libdir . '/csvlib.class.php');
 
             $writer = new csv_export_writer();
+
             $filename = clean_filename("point_views_export");
+
             $writer->set_filename($filename);
 
             $writer->add_data($headers);
 
             foreach ($data as $row) {
+
                 $writer->add_data($row);
+
             }
 
             $writer->download_file();
+
             break;
+
         case 'ods':
         case 'xls' :
+
             $downloadfilename = clean_filename("point_views_export." . $format);
 
             if ($format == "ods") {
+
                 require_once($CFG->libdir . '/odslib.class.php');
+
                 $workbook = new MoodleODSWorkbook("-");
+
             }
 
             if ($format == "xls") {
+
                 require_once($CFG->libdir . '/excellib.class.php');
+
                 $workbook = new MoodleExcelWorkbook("-");
+
             }
 
             $workbook->send($downloadfilename);
+
             $myxls = $workbook->add_worksheet("data_point_views");
 
             $line = 0;
+
             $colonne = 0;
+
             foreach ($headers as $h) {
+
                 $myxls->write_string($line, $colonne, $h);
+
                 $colonne++;
+
             }
 
             $line = 1;
+
             foreach ($data as $d) {
+
                 $colonne = 0;
+
                 foreach ($d as $row) {
+
                     $myxls->write_string($line, $colonne, $row);
+
                     $colonne++;
+
                 }
+
                 $line = $line + 1;
+
             }
 
             $workbook->close();
+
             break;
     }
 }

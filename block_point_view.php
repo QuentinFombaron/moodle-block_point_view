@@ -55,6 +55,7 @@ class block_point_view extends block_base
 {
     /**
      * Block initializations
+     *
      * @throws coding_exception
      */
     public function init() {
@@ -75,6 +76,7 @@ class block_point_view extends block_base
 
     /**
      * Content of Point of View block
+     *
      * @return Object
      * @throws dml_exception
      * @throws coding_exception

@@ -16,6 +16,7 @@
 
 /**
  * Point of View block
+ * Block version
  *
  *
  * @package    block_point_view
