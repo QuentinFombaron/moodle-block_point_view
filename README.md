@@ -77,6 +77,12 @@ Once a vote has been taken (see **1.1** part), modify its vote by clicking on an
 
 Once a vote has been taken (see **1.1** part), delete this vote by clicking again on the voted activity. The vote will then be deleted.
 
+### 1.4 - How to know the difficulty of an activity?
+
+<img src='https://cdn.pbrd.co/images/HwgeemR.png' alt='1.3.1' width='400px' /><br />
+
+Once it was configured (see **3.3** part), the difficulty track is displayed at the left of the activity name.
+
 ## Configuration
 
 ### 2.0 - How to enable the reaction system?
