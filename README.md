@@ -1,16 +1,19 @@
 # Moodle plugin « Point of View »
 
-*Quentin Fombaron - July 23<SUP>th</SUP> 2018*
+*Quentin Fombaron - July 23<SUP>th</SUP> 2018*<br />
+*Centre des Nouvelles Pédagogies (CNP\*), Univ. Grenoble Alpes - University of  innovation*<br />
 
 The plugin **Point of view** offers the possibility to react and give difficulty levels to activities of a Moodle course. Students know the difficulty of the activity thank to color tracks, they also have the possibility to react via emojis, each representing an emotion, a feeling (see **Usage** section).
 
 It is a Moodle plugin manage by a block to add in a course (see **0.1** part).
 
-This plugin is developed by Quentin Fombaron. To hesitate to send your thinking and bug reports to the contact addresses bellow.
+This plugin is developed by Quentin Fombaron. Don't hesitate to send your thinking and bug reports to the contact addresses bellow.
 
 Contacts :
 - [Quentin Fombaron](mailto:quentin.fombaron1@etu.univ-grenoble.alpes.fr)
 - [Caseine](mailto:contact.caseine@grenoble-inp.fr)
+
+<br />\* *The CNP, set up as part of the IDEX Training component, brings together the DAPI, PerForm and IDEX support teams.*<br />
 
 ## Block
 
