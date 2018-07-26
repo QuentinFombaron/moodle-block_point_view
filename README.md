@@ -1,6 +1,6 @@
 # Moodle plugin « Point of View »
 
-*Quentin Fombaron - July 23<SUP>th</SUP> 2018*
+*Quentin Fombaron - July 23<SUP>th</SUP> 2018*<br />
 *Centre des Nouvelles Pédagogies (CNP\*), Univ. Grenoble Alpes - University of  innovation*<br />
 
 The plugin **Point of view** offers the possibility to react and give difficulty levels to activities of a Moodle course. Students know the difficulty of the activity thank to color tracks, they also have the possibility to react via emojis, each representing an emotion, a feeling (see **Usage** section).
@@ -79,7 +79,7 @@ Once a vote has been taken (see **1.1** part), delete this vote by clicking agai
 
 ### 1.4 - How to know the difficulty of an activity?
 
-<img src='https://cdn.pbrd.co/images/HwgeemR.png' alt='1.3.1' width='400px' /><br />
+<img src='https://cdn.pbrd.co/images/HwgeemR.png' alt='1.3.1' width='500px' /><br />
 
 Once it was configured (see **3.3** part), the difficulty track is displayed at the left of the activity name.
 
@@ -87,25 +87,25 @@ Once it was configured (see **3.3** part), the difficulty track is displayed at 
 
 ### 2.0 - How to enable the reaction system?
 
-<img src='https://cdn.pbrd.co/images/HvLvlNh.png' alt='2.0.1' width='300px' /><br />
+<img src='https://cdn.pbrd.co/images/HvLvlNh.png' alt='2.0.1' width='400px' /><br />
 
 On the plugin configuration page, in the `Block setting` tab, check/uncheck the box to enable/disable the reaction system. The activity activation and emojis customization options will be automatically hidden if the checkbox is unchecked.
 
 ### 2.1  - How to enable the Difficulty tracks?
 
-<img src='https://cdn.pbrd.co/images/HvLvuHJ.png' alt='2.1.1' width='300px' /><br />
+<img src='https://cdn.pbrd.co/images/HvLvuHJ.png' alt='2.1.1' width='400px' /><br />
 
 On the plugin configuration page, in the `Block setting` tab, check/uncheck the box to enable/disable the difficulty tracks. The activation options on the activities will be automatically hidden if the box is unchecked.
 
 ### 3.0 - How to enable reactions on an activity?
 
-<img src='https://cdn.pbrd.co/images/HvLwl7b.png' alt='3.0.1' width='300px' /><br />
+<img src='https://cdn.pbrd.co/images/HvLwl7b.png' alt='3.0.1' width='400px' /><br />
 
 Once the reaction system is enabled (see **2.0** part), in the ` Configuration of Reactions and Difficulty Tracks` tab, enable reactions on an activity by simply checking the box to the right of the name of the associated activity.
 
 ### 3.1 - How to activate reactions on all activities of the same type?
 
-<img src='https://cdn.pbrd.co/images/HvLvErjN.png' alt='3.1.1' width='500px' /><br />
+<img src='https://cdn.pbrd.co/images/HvLvErjN.png' alt='3.1.1' width='400px' /><br />
 
 Once the reaction system is enabled (see **2.0** part), in the tab `Configuration of Reactions and Difficulty Tracks`, enable/disable reactions on all activities of the same type by clicking on the associated buttons. For example on the image above, the management of all resources.
 
@@ -117,7 +117,7 @@ Once the reaction system is enabled (see **2.0** part), in the tab `Configuratio
 
 ### 3.3 - How to define difficulty tracks?
 
-<img src='https://cdn.pbrd.co/images/HvLwX98.png' alt='3.3.1' width='350px' /><br />
+<img src='https://cdn.pbrd.co/images/HvLwX98.png' alt='3.3.1' width='400px' /><br />
 
 Once the difficulty tracks are enabled (see **2.1** part), in the `Configuration of Reactions and Difficulty Tracks` tab, define a track to a course by choosing in the drop-down list to the right of the associated activity.
 
@@ -153,13 +153,13 @@ Exemple :
 
 ### 4.1- How to restore emojis by default? 
 
-<img src='https://cdn.pbrd.co/images/HvLxbRo.png' alt='4.1.1' width='700px' /><br />
+<img src='https://cdn.pbrd.co/images/HvLxbRo.png' alt='4.1.1' width='800px' /><br />
 
 Once the reaction system is enabled (see **2.0** part), in the tab `Configuration of Emojis`, reset emojis by pressing the button `Reset emojis`. You will be automatically redirected to the course page.
 
 ### 4.2 - How to modify the text associated with an emoji?
 
-<img src='https://cdn.pbrd.co/images/HvLykZ0.png' alt='4.2.1' width='400px' /><br />
+<img src='https://cdn.pbrd.co/images/HvLykZ0.png' alt='4.2.1' width='500px' /><br />
 
 Once the reaction system is enabled (see **2.0** part), in the `Configuration of Emojis` tab, change the name by replacing the content of the text box associated with each emoji.
 
@@ -169,7 +169,7 @@ Once the reaction system is enabled (see **2.0** part), in the `Configuration of
 
 In the `Reset reactions` tab, press the button above, a confirmation message will appear. Confirm and you will be automatically redirected to the course page. It will delete all votes of all activities the course.
 
-<img src='https://cdn.pbrd.co/images/HvLyxsO.png' alt='4.3.2' width='700px' />
+<img src='https://cdn.pbrd.co/images/HvLyxsO.png' alt='4.3.2' width='800px' />
 
 ## Menu
 
