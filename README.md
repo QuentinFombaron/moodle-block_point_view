@@ -21,7 +21,7 @@ Contacts :
 
 <img src='https://cdn.pbrd.co/images/HvLv679.png' alt='0.1.1' width='250px' /><br />
 
-On the course page, in the side panel, click the `Add a Block` button, then in the block list, choose `Viewpoint`. The block is then added; all that remains is to configure it (See **Configuration** section).
+On the course page, in the side panel, click the `Add a Block` button, then in the block list, choose `Point of View`. The block is then added; all that remains is to configure it (See **Configuration** section).
 
 ### 0.2 Delete the block of a course
 
@@ -79,7 +79,7 @@ Once a vote has been taken (see **1.1** part), delete this vote by clicking agai
 
 ### 1.4 - How to know the difficulty of an activity?
 
-<img src='https://cdn.pbrd.co/images/HwgeemR.png' alt='1.3.1' width='500px' /><br />
+<img src='https://cdn.pbrd.co/images/HwgeemR.png' alt='1.4.1' width='500px' /><br />
 
 Once it was configured (see **3.3** part), the difficulty track is displayed at the left of the activity name.
 
