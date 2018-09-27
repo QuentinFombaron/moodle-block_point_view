@@ -28,6 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
 
+/**
+ * Class block_point_view_external
+ */
 class block_point_view_external extends external_api
 {
     /**
@@ -50,12 +53,22 @@ class block_point_view_external extends external_api
     /**
      * Update the database after added, removed or removed a vote or all votes of course.
      *
-     * @param $func int Function name of database update
-     * @param $userid int User ID
-     * @param $courseid int Course ID
-     * @param $cmid int Course Module ID
-     * @param $vote int Vote ID
+     * @param int $func Function name of database update
+     * @param int $userid  User ID
+     * @param int $courseid Course ID
+     * @param int $cmid Course Module ID
+     * @param int $vote Vote ID
      * @return string Log message
+     * @throws invalid_parameter_exception
+     */
+
+    /**
+     * @param $func
+     * @param $userid
+     * @param $courseid
+     * @param $cmid
+     * @param $vote
+     * @return string
      * @throws invalid_parameter_exception
      */
     public static function update_db($func, $userid, $courseid, $cmid, $vote) {
