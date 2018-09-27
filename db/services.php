@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Block version
+ * Point of View services
  *
  *
  * @package    block_point_view
@@ -26,8 +26,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_point_view';
-$plugin->version   = 2018092700;
-$plugin->requires  = 2017051502;
-$plugin->maturity = MATURITY_BETA;
-$plugin->release = 'v1.0-r4';
+$functions = array(
+    'block_point_view_update_db' => array(
+        'classname'   => 'block_point_view_external',
+        'methodname'  => 'update_db',
+        'classpath'   => 'blocks/point_view/externallib.php',
+        'description' => 'Update Database due to a vote.',
+        'type'        => 'write',
+        'ajax' => true,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+);
+
+$services = array(
+        'Point of View Service' => array(
+        'functions' => array('block_point_view_update_db'),
+        'requiredcapability' => '',
+        'restrictedusers' => 0,
+        'enabled' => 1,
+    )
+);

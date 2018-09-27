@@ -43,7 +43,7 @@ $string['config_header_activities'] = "Configuration des Réactions et Pistes de
 $string['config_header_images'] = "Configuration des Emojis";
 $string['config_header_reset'] = "Réinitialisation des réactions";
 $string['defaulttextbetter'] = "Je m'améliore !";
-$string['defaulttextcontent'] = "Ce plugin offre la possibilité de réagir et de donner des niveaux de difficulté aux activités.</br></br>Il est important de savoir que vous testez la version Beta.</br>Ce plugin est développé par Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=Plugin%20\"Réactions\"%20Moodle%20-%20Commentaire'>CLIQUER ICI</a> pour m'envoyer un mail.</br>Merci d'avance pour vos retours et rapports de bugs.</br></br><i>9 Juillet 2018 (version 1.0.0)</i><br /><br />";
+$string['defaulttextcontent'] = "Ce plugin offre la possibilité de réagir et de donner des niveaux de difficulté aux activités.</br></br>Il est important de savoir que vous testez la version Beta.</br>Ce plugin est développé par Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=Plugin%20\"Réactions\"%20Moodle%20-%20Commentaire'>CLIQUER ICI</a> pour m'envoyer un mail.</br>Merci d'avance pour vos retours et rapports de bugs.</br></br><i>27 Septembre 2018 (version 1.0.0)</i><br /><br />";
 $string['defaulttexteasy'] = "Fastoche !";
 $string['defaulttexthard'] = "Dur dur...";
 $string['disableall'] = 'Tout désactiver dans <b>{$a}</b>';
@@ -101,3 +101,11 @@ $string['howto_text_group'] = "le texte personnalisé des emojis";
 $string['howto_text_group_help'] = "Personnaliser la description affichée au dessus des emojis";
 $string['howto_type'] = 'la gestion des réactions sur les activités du même type';
 $string['howto_type_help'] = 'Activer ou désactiver les réactions sur les activités du même type';
+
+/* Privacy */
+$string['privacy:metadata:activity_votes'] = "Point de Vue stocke le(s) vote(s) que l'utilisateur a effectué sur chaque activité de chaque cours.";
+$string['privacy:metadata:activity_votes_database:courseid'] = "L'ID du cours sur lequel l'utilisateur a effectué le vote.";
+$string['privacy:metadata:activity_votes_database:cmid'] = "L'ID du module sur lequel l'utilisateur a effectué le vote.";
+$string['privacy:metadata:activity_votes_database:userid'] = "L'ID de l'utilisateur qui a effectué le vote.";
+$string['privacy:metadata:activity_votes_database:vote'] = "L'ID du vote que l'utilisateur a effectué.";
+$string['privacy:metadata:activity_votes_database'] = "Informations à propos des votes que chaque utilisateur a effectué.";

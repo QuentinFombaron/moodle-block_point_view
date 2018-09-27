@@ -1,4 +1,4 @@
-define(['jquery'], function($) {
+define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
     return {
         init: function(sectionids, types, moduleids, trackcolor, courseid) {
 
@@ -273,22 +273,22 @@ define(['jquery'], function($) {
                 .addClass('btn-success')
                 .click(function() {
                     /* AJAX call to the PHP function which reset DB */
-                    $.ajax({
-                        type: 'POST',
-                        url: '../blocks/point_view/update_db.php',
-                        dataType: 'json',
-                        data: {
-                            func: 'reset',
-                            userid: null,
-                            courseid: courseid,
-                            cmid: null,
-                            vote: null
-                        },
-
-                        success: function() {
-                            $('#mform1').submit();
+                    ajax.call([
+                        {
+                            methodname: 'block_point_view_update_db',
+                            args: {
+                                func: 'reset',
+                                userid: null,
+                                courseid: courseid,
+                                cmid: null,
+                                vote: null
+                            },
+                            done: (function() {
+                                $('#mform1').submit();
+                            }),
+                            fail: notification.exception
                         }
-                    });
+                    ]);
                 });
 
             $('#id_config_reset_no')
