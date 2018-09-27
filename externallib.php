@@ -58,25 +58,15 @@ class block_point_view_external extends external_api
     /**
      * Update the database after added, removed or removed a vote or all votes of course.
      *
-     * @param int $func Function name of database update
-     * @param int $userid  User ID
+     * @param string $func Function name of database update
+     * @param int $userid User ID
      * @param int $courseid Course ID
      * @param int $cmid Course Module ID
      * @param int $vote Vote ID
      * @return string Log message
      * @throws invalid_parameter_exception
      */
-
-    /**
-     * @param $func
-     * @param $userid
-     * @param $courseid
-     * @param $cmid
-     * @param $vote
-     * @return string
-     * @throws invalid_parameter_exception
-     */
-    public static function update_db($func, $userid, $courseid, $cmid, $vote) {
+    public static function update_db(string $func, int $userid, int $courseid, int $cmid, int $vote) {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
