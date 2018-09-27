@@ -50,7 +50,11 @@ use \core_privacy\local\request\helper;
 
 /**
  * Class provider
- * @package block_point_view\privacy
+ *
+ * @package block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
     // This plugin does store personal user data.

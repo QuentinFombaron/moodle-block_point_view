@@ -30,6 +30,11 @@ require_once($CFG->libdir . '/externallib.php');
 
 /**
  * Class block_point_view_external
+ *
+ * @package block_point_view
+ * @copyright  2018 Quentin Fombaron
+ * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view_external extends external_api
 {
