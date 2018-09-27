@@ -48,10 +48,20 @@ use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\writer;
 use \core_privacy\local\request\helper;
 
+/**
+ * Class provider
+ * @package block_point_view\privacy
+ */
 class provider implements
     // This plugin does store personal user data.
     \core_privacy\local\metadata\provider {
 
+    /**
+     * Point of View Metadata
+     *
+     * @param collection $collection
+     * @return collection
+     */
     public static function get_metadata(collection $collection) : collection {
 
         $collection->add_subsystem_link(
@@ -71,7 +81,6 @@ class provider implements
             ],
             'privacy:metadata:activity_votes_database'
         );
-
 
         return $collection;
     }
