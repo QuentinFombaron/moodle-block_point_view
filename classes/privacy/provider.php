@@ -50,9 +50,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @param collection $collection
      * @return collection
      */
-    public static function get_metadata(collection $collection): collection
-    {
-
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table(
             'block_point_view',
             [
@@ -74,16 +72,15 @@ class provider implements \core_privacy\local\metadata\provider,
      * @param   int $userid The user to search.
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid): contextlist
-    {
-        $sql = "SELECT ctx.id
-                FROM {block_point_view} AS bpv
-                JOIN {user} AS u
+    public static function get_contexts_for_userid(int $userid) : contextlist {
+        $sql = 'SELECT ctx.id
+                FROM {block_point_view} bpv
+                JOIN {user} u
                     ON bpv.userid = u.id
                 JOIN {context} ctx
                     ON ctx.instanceid = u.id
                         AND ctx.contextlevel = :contextlevel
-                WHERE bpv.userid = :userid";
+                WHERE bpv.userid = :userid';
 
         $params = ['userid' => $userid, 'contextlevel' => CONTEXT_USER];
 
@@ -99,8 +96,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function export_user_data(approved_contextlist $contextlist)
-    {
+    public static function export_user_data(approved_contextlist $contextlist) {
         $pointviewdata = [];
         $results = static::get_records($contextlist->get_user()->id);
         foreach ($results as $result) {
@@ -125,8 +121,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @param   context $context The specific context to delete data for.
      * @throws \dml_exception
      */
-    public static function delete_data_for_all_users_in_context(\context $context)
-    {
+    public static function delete_data_for_all_users_in_context(\context $context) {
         if ($context instanceof \context_user) {
             static::delete_data($context->instanceid);
         }
@@ -138,8 +133,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @param   approved_contextlist $contextlist The approved contexts and user information to delete information for.
      * @throws \dml_exception
      */
-    public static function delete_data_for_user(approved_contextlist $contextlist)
-    {
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
         static::delete_data($contextlist->get_user()->id);
     }
 
@@ -149,8 +143,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @param  int $userid The user ID
      * @throws \dml_exception
      */
-    protected static function delete_data($userid)
-    {
+    protected static function delete_data($userid) {
         global $DB;
 
         $DB->delete_records('block_point_view', ['userid' => $userid]);
@@ -163,8 +156,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @return array An array of records.
      * @throws \dml_exception
      */
-    protected static function get_records($userid)
-    {
+    protected static function get_records($userid) {
         global $DB;
 
         return $DB->get_records('block_point_view', ['userid' => $userid]);
