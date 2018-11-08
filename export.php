@@ -101,7 +101,7 @@ try {
 
     require("tabs.php");
 
-    echo html_writer::start_div('buttons');
+    echo html_writer::start_div('export_buttons');
 
     /* CSV Export */
 

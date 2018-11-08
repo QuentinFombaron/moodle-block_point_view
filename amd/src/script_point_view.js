@@ -406,7 +406,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                         cmid: event.data.moduleId,
                                         vote: event.data.reactionSelect
                                     },
-                                    done: (function() {
+                                    done: function() {
 
                                         /* Increment the number of the new reaction of 1 */
                                         (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
@@ -424,7 +424,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                                         /* Update the current reation with the new one */
                                         reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
-                                    }),
+                                    },
                                     fail: notification.exception
                                 }
                             ]);
@@ -442,7 +442,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                         cmid: event.data.moduleId,
                                         vote: event.data.reactionSelect
                                     },
-                                    done: (function() {
+                                    done: function() {
 
                                         /* Decrement the number of old of 1 */
                                         nbReation--;
@@ -472,7 +472,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                                         /* Update the current reaction with 'none reaction' */
                                         reactionVotedArray[event.data.moduleId] = Reactions.NULL;
-                                    }),
+                                    },
                                     fail: notification.exception
                                 }
                             ]);
@@ -490,7 +490,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                         cmid: event.data.moduleId,
                                         vote: event.data.reactionSelect
                                     },
-                                    done: (function() {
+                                    done: function() {
 
                                         /* Increment the number of 'reactionName' reaction of 1 */
                                         (event.data.module).getElementsByClassName(event.data.reactionName + '_nb')[0]
@@ -541,7 +541,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                                         /* Update the current reation with the new one */
                                         reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
-                                    }),
+                                    },
                                     fail: notification.exception
                                 }
                             ]);
