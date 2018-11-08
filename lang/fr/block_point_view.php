@@ -103,9 +103,8 @@ $string['howto_type'] = 'la gestion des réactions sur les activités du même t
 $string['howto_type_help'] = 'Activer ou désactiver les réactions sur les activités du même type';
 
 /* Privacy */
-$string['privacy:metadata:activity_votes'] = "Point de Vue stocke le(s) vote(s) que l'utilisateur a effectué sur chaque activité de chaque cours.";
-$string['privacy:metadata:activity_votes_database:courseid'] = "L'ID du cours sur lequel l'utilisateur a effectué le vote.";
-$string['privacy:metadata:activity_votes_database:cmid'] = "L'ID du module sur lequel l'utilisateur a effectué le vote.";
-$string['privacy:metadata:activity_votes_database:userid'] = "L'ID de l'utilisateur qui a effectué le vote.";
-$string['privacy:metadata:activity_votes_database:vote'] = "L'ID du vote que l'utilisateur a effectué.";
-$string['privacy:metadata:activity_votes_database'] = "Informations à propos des votes que chaque utilisateur a effectué.";
+$string['privacy:metadata:block_point_view'] = "Point de Vue stocke le vote des utilisateurs sur chaque activité.";
+$string['privacy:metadata:activity_votes_database:courseid'] = "ID du Cours";
+$string['privacy:metadata:activity_votes_database:cmid'] = "ID de l'activité du cours";
+$string['privacy:metadata:activity_votes_database:userid'] = "ID de l'utilisateur";
+$string['privacy:metadata:activity_votes_database:vote'] = "Vote : 1 (Fastoche !), 2 (Je m'améliore !), 3 (Dur dur...)";

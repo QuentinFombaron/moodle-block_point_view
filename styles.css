@@ -199,7 +199,7 @@
 }
 
 /* Center the export buttons */
-.buttons {
+.export_buttons {
     display: inline-flex;
     position: absolute;
     top: 30%;

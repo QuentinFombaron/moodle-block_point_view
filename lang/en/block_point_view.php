@@ -104,9 +104,8 @@ $string['howto_type'] = "management of reactions on same type activities";
 $string['howto_type_help'] = "Enable or disable reactions on all activities of same type";
 
 /* Privacy */
-$string['privacy:metadata:activity_votes'] = "Point of View stores the vote(s) that the user has made on each activity of each course.";
-$string['privacy:metadata:activity_votes_database:courseid'] = "The ID of the course on which the user has voted.";
-$string['privacy:metadata:activity_votes_database:cmid'] = "The ID of the module on which the user has voted.";
-$string['privacy:metadata:activity_votes_database:userid'] = "The ID of the user who has made the vote.";
-$string['privacy:metadata:activity_votes_database:vote'] = "The ID of the vote that the user has made.";
-$string['privacy:metadata:activity_votes_database'] = "Information about the votes each user has made.";
+$string['privacy:metadata:block_point_view'] = "The Point of View block stores the user's votes on each activities.";
+$string['privacy:metadata:activity_votes_database:courseid'] = "Course ID";
+$string['privacy:metadata:activity_votes_database:cmid'] = "Course activity ID";
+$string['privacy:metadata:activity_votes_database:userid'] = "User ID";
+$string['privacy:metadata:activity_votes_database:vote'] = "Vote : 1 (Easy !), 2 (I'm getting better !), 3 (So hard...)";

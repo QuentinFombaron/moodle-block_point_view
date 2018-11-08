@@ -22,7 +22,7 @@ define(['jquery'], function($) {
             }
 
             $(function() {
-
+                /* Create an accordeon home made table */
                 /* Create an accordeon home made table */
                 moduleIds.forEach(function(id) {
                     openRow[id] = false;
