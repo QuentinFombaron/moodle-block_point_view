@@ -1,12 +1,12 @@
 /* Tooltip container */
-.tooltipreaction {
+.block_point_view .tooltipreaction {
     position: relative;
     display: inline-block;
     pointer-events: none;
 }
 
 /* Tooltip text */
-.tooltipreaction .tooltiptextreaction {
+.block_point_view .tooltipreaction .tooltiptextreaction {
     visibility: hidden;
     display: table;
     width: max-content;
@@ -30,32 +30,32 @@
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
-.tooltipreaction:hover .tooltiptextreaction {
+.block_point_view .tooltipreaction:hover .tooltiptextreaction {
     visibility: visible;
     opacity: 1;
 }
 
 /* Source for tooltip : https://www.w3schools.com/css/css_tooltip.asp */
 
-.group {
+.block_point_view.group {
     position: absolute;
     left: 87%;
-    top: 10%;
+    top: 25%;
 }
 
-.group_img {
+.block_point_view .group_img {
     height: 20px;
     position: absolute;
 }
 
-.group_nb {
+.block_point_view .group_nb {
     position: absolute;
     top: 3px;
     left: 47px;
 
 }
 
-.reactions {
+.block_point_view.reactions {
     position: absolute;
     left: 86%;
     top: 10%;
@@ -63,7 +63,7 @@
     z-index: 1;
 }
 
-.easy {
+.block_point_view .easy {
     height: 0;
     position: absolute;
     top: -7.5px;
@@ -71,14 +71,14 @@
     pointer-events: none;
 }
 
-.easy_nb {
+.block_point_view .easy_nb {
     display: none;
     position: absolute;
     top: 3px;
     left: 10px;
 }
 
-.better {
+.block_point_view .better {
     height: 0;
     position: absolute;
     top: -7.5px;
@@ -86,14 +86,14 @@
     pointer-events: none;
 }
 
-.better_nb {
+.block_point_view .better_nb {
     display: none;
     position: absolute;
     top: 3px;
     left: 55px;
 }
 
-.hard {
+.block_point_view .hard {
     height: 0;
     position: absolute;
     top: -7.5px;
@@ -101,7 +101,7 @@
     pointer-events: none;
 }
 
-.hard_nb {
+.block_point_view .hard_nb {
     display: none;
     position: absolute;
     top: 3px;
@@ -125,7 +125,7 @@
 }
 
 /* Green dot to inform that user has voted */
-.voted {
+.block_point_view .voted {
     width: 15px;
     height: 15px;
     border-radius: 50%;
@@ -137,12 +137,14 @@
 }
 
 /* Select list of difficulty in the configuration */
+/*
 .selectDifficulty {
     margin-left: 30px;
 }
+*/
 
 /* Difficulty tracks */
-.track {
+.block_point_view.track {
     height: 25px;
     width: 10px;
     margin-right: 5px;
@@ -152,7 +154,7 @@
 }
 
 /* Menu button in block content */
-#menu_point_view_img {
+.block_point_view #menu_point_view_img {
     width: 40px;
     display: block;
     margin-left: auto;
@@ -160,14 +162,14 @@
 }
 
 /* Emojis of overview table */
-.overview_img {
+.block_point_view .overview_img {
     width: 30px;
 }
 
 /** Colums of the overview table **/
 
 /* Disable selection */
-.c6 {
+.block_point_view .c6 {
     font-weight: bold;
     font-size: 1.5em;
     -moz-user-select: none;
@@ -177,29 +179,29 @@
     -ms-user-select: none;
     user-select: none;
 }
-.c0,
-.c5,
-.c6 {
+.block_point_view .c0,
+.block_point_view .c5,
+.block_point_view .c6 {
     width: 5%;
     text-align: center;
 }
 
-.c1 {
+.block_point_view .c1 {
     width: 25%;
 }
 
-.c2,
-.c3,
-.c4 {
+.block_point_view .c2,
+.block_point_view .c3,
+.block_point_view .c4 {
     width: 20%;
 }
 
-.header {
+.block_point_view .header {
     text-align: center;
 }
 
 /* Center the export buttons */
-.export_buttons {
+.block_point_view .export_buttons {
     display: inline-flex;
     position: absolute;
     top: 30%;

@@ -106,7 +106,7 @@ try {
 
     echo $OUTPUT->heading($title, 2);
 
-    echo $OUTPUT->container_start('block_point_view_menu');
+    echo $OUTPUT->container_start('block_point_view');
 
     require("tabs.php");
 

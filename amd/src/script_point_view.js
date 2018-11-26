@@ -320,7 +320,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                     /* Modification of the toolbox position (centered) */
                     $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').css({
-                        'left': (event.data.leftReaction + 10) - (widthParam / 2) + 60
+                        'left': (event.data.leftReaction + 10) - (widthParam / 2) + 70
                     });
 
                     /* Get the number of 'reactionName' reaction */
@@ -661,7 +661,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         var pointViewsModule = searchModule(moduleId);
 
                         /* Create the HTML block necessary to each activity */
-                        var htmlBlock = '<div class="reactions">' +
+                        var htmlBlock = '<div class="block_point_view reactions">' +
                             '<!-- EASY ! --><span class="tooltipreaction">' +
                             '<img src="' + pix.easy + '" alt=" " class="easy"/>' +
                             '<span class="tooltiptextreaction easy_txt">' + pix.easytxt + '</span></span>' +
@@ -674,7 +674,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                             '<img src="' + pix.hard + '" alt=" " class="hard"/>' +
                             '<span class="tooltiptextreaction hard_txt">' + pix.hardtxt + '</span></span>' +
                             '<span class="hard_nb">' + pointViewsModule.typethree + '</span></div>' +
-                            '<!-- GROUP --><div class="group">' +
+                            '<!-- GROUP --><div class="block_point_view group">' +
                             '<img src="" alt=" " class="group_img"/>' +
                             '<span class="group_nb">' + pointViewsModule.total + '</span></div>';
 
@@ -829,11 +829,11 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                 break;
                         }
 
-                        var difficultyBlock = '<div class="track ' + difficulty + 'track"></div>';
+                        var difficultyBlock = '<div class="block_point_view track ' + difficulty + 'track"></div>';
 
                         $('#module-' + key + ' .activityinstance a').prepend(difficultyBlock);
                     } else {
-                        var difficultyBlockEmpty = '<span class="track"></span>';
+                        var difficultyBlockEmpty = '<span class="block_point_view track"></span>';
                         $('#module-' + key + ' .activityinstance a').prepend(difficultyBlockEmpty);
                     }
                 });
@@ -845,7 +845,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                 $('.blacktrack').css({'background-color': envconf.blacktrack});
 
                 /* Add animation to menu button */
-                $('#menu_point_view_img')
+                $('.block_point_view #menu_point_view_img')
                     .mouseover(function() {
                         $(this).css({
                             '-webkit-filter': 'invert(100%)',
