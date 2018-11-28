@@ -30,6 +30,19 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
+try {
+    require_login();
+} catch (coding_exception $e) {
+    echo 'Exception [coding_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
+    $e->getMessage(), "\n";
+} catch (require_login_exception $e) {
+    echo 'Exception [require_login_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
+    $e->getMessage(), "\n";
+} catch (moodle_exception $e) {
+    echo 'Exception [moodle_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
+    $e->getMessage(), "\n";
+}
+
 /**
  * Class block_point_view_external
  *
@@ -175,8 +188,7 @@ class block_point_view_external extends external_api {
      *
      * @return external_description
      */
-    public static function update_db_returns()
-    {
+    public static function update_db_returns() {
         return new external_value(PARAM_TEXT, 'Log message');
     }
 
@@ -199,9 +211,9 @@ class block_point_view_external extends external_api {
     /**
      * Get course reactions from database
      *
-     * @param $userid
-     * @param $courseid
-     * @return array
+     * @param int $userid User ID
+     * @param int $courseid Course ID
+     * @return array Course reactions
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
@@ -252,7 +264,6 @@ class block_point_view_external extends external_api {
             $pointviews = (!empty($result)) ? array_values($result) : array();
         }
 
-
         return $pointviews;
     }
 
@@ -295,9 +306,9 @@ class block_point_view_external extends external_api {
     /**
      * Get pictures images location
      *
-     * @param $courseid
-     * @param $contextid
-     * @return array
+     * @param int $courseid Course ID
+     * @param int $contextid Context ID
+     * @return array Pictures parameters
      * @throws coding_exception
      * @throws dml_exception
      * @throws invalid_parameter_exception
@@ -435,8 +446,8 @@ class block_point_view_external extends external_api {
     /**
      * Get modules of a course
      *
-     * @param $courseid
-     * @return array
+     * @param int $courseid course ID
+     * @return array Seleted modules
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
@@ -461,7 +472,8 @@ class block_point_view_external extends external_api {
 
             if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
 
-                if ($blockinstance->config->{'moduleselectm' . $row->id} != 0 && $blockinstance->config->enable_point_views_checkbox) {
+                if ($blockinstance->config->{'moduleselectm' . $row->id} != 0
+                    && $blockinstance->config->enable_point_views_checkbox) {
 
                     array_push($moduleselect, $row->id);
 
@@ -501,8 +513,8 @@ class block_point_view_external extends external_api {
     /**
      * Get difficulty tracks
      *
-     * @param $courseid
-     * @return array
+     * @param int $courseid Course ID
+     * @return array Difficulty levels
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
@@ -529,7 +541,10 @@ class block_point_view_external extends external_api {
 
                 if ($blockinstance->config->enable_difficulties_checkbox) {
 
-                    $difficultylevels[$row->id] = array('id'=> $row->id, 'difficultyLevel'=> $blockinstance->config->{'difficulty_' . $row->id});
+                    $difficultylevels[$row->id] = array(
+                        'id' => $row->id,
+                        'difficultyLevel' => $blockinstance->config->{'difficulty_' . $row->id}
+                        );
 
                 }
             }
@@ -573,8 +588,8 @@ class block_point_view_external extends external_api {
     /**
      * Get section ids range
      *
-     * @param $sectionid
-     * @return array
+     * @param int $sectionid Max section ID
+     * @return array Section IDs
      * @throws invalid_parameter_exception
      */
     public static function get_section_range($sectionid) {
@@ -617,8 +632,10 @@ class block_point_view_external extends external_api {
     /**
      * Get course data
      *
-     * @param $courseid
-     * @return array
+     * @param int $courseid Course ID
+     * @param int $contextid Context ID
+     * @return array Types and course IDs
+     * @throws coding_exception
      * @throws invalid_parameter_exception
      * @throws moodle_exception
      */
@@ -636,7 +653,7 @@ class block_point_view_external extends external_api {
     }
 
     /**
-     * Return types and ids course array
+     * Return types and course IDs array
      *
      * @return external_description
      */

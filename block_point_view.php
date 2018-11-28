@@ -124,7 +124,8 @@ class block_point_view extends block_base {
 
                 $this->content->text .= html_writer::link(
                     $url,
-                    '<img src="' . $CFG->wwwroot . '/blocks/point_view/pix/overview.png" id="menu_point_view_img" class="block_point_view"/>'
+                    '<img src="' . $CFG->wwwroot .
+                    '/blocks/point_view/pix/overview.png" id="menu_point_view_img" class="block_point_view"/>'
                 );
 
                 $this->content->text .= html_writer::end_tag('div');
