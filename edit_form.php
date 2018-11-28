@@ -157,6 +157,8 @@ class block_point_view_edit_form extends block_edit_form {
                     HTML_WRITER::link("#", get_string('config_header_activities', 'block_point_view'))
                 );
 
+                $sectionid = 1;
+
                 /* IF there is no activities */
                 if (empty($activities)) {
 
@@ -172,8 +174,6 @@ class block_point_view_edit_form extends block_edit_form {
                 } else {
 
                     $oldsection = "";
-
-                    $sectionid = 1;
 
                     /* Enable/Disable by types */
                     block_point_view_manage_types($mform, $coursedata['types']);
@@ -510,15 +510,13 @@ class block_point_view_edit_form extends block_edit_form {
                     );
                 }
 
-                $trackcolor = array(
-                    'greentrack' => get_config('block_point_view', 'green_track_color_admin'),
-                    'bluetrack' => get_config('block_point_view', 'blue_track_color_admin'),
-                    'redtrack' => get_config('block_point_view', 'red_track_color_admin'),
-                    'blacktrack' => get_config('block_point_view', 'black_track_color_admin'),
+                $envconf = array(
+                    'courseid' => $COURSE->id,
+                    'contextid' => $this->block->context->id
                 );
 
                 /* AMD Call */
-                $params = array(range(2, $sectionid), $coursedata['types'], $coursedata['ids'], $trackcolor, $COURSE->id);
+                $params = array($sectionid, $envconf);
 
                 $PAGE->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
 

@@ -43,7 +43,7 @@ $string['config_header_activities'] = "Configuration des Réactions et Pistes de
 $string['config_header_images'] = "Configuration des Emojis";
 $string['config_header_reset'] = "Réinitialisation des réactions";
 $string['defaulttextbetter'] = "Je m'améliore !";
-$string['defaulttextcontent'] = "Ce plugin offre la possibilité de réagir et de donner des niveaux de difficulté aux activités.</br></br>Il est important de savoir que vous testez la version Beta.</br>Ce plugin est développé par Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=Plugin%20\"Réactions\"%20Moodle%20-%20Commentaire'>CLIQUER ICI</a> pour m'envoyer un mail.</br>Merci d'avance pour vos retours et rapports de bugs.</br></br><i>8 Octobre 2018 (version 1.0.0)</i><br /><br />Vous pouvez modifier ou effacer ce texte dans le menu de configuration du bloc<br /><br />";
+$string['defaulttextcontent'] = "Ce plugin offre la possibilité de réagir et de donner des niveaux de difficulté aux activités.</br></br>Il est important de savoir que vous testez la version Beta.</br>Ce plugin est développé par Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=Plugin%20\"Réactions\"%20Moodle%20-%20Commentaire'>CLIQUER ICI</a> pour m'envoyer un mail.</br>Merci d'avance pour vos retours et rapports de bugs.</br></br><i>28 Novembre 2018 (version 1.0.0)</i><br /><br />Vous pouvez modifier ou effacer ce texte dans le menu de configuration du bloc<br /><br />";
 $string['defaulttexteasy'] = "Fastoche !";
 $string['defaulttexthard'] = "Dur dur...";
 $string['disableall'] = 'Tout désactiver dans <b>{$a}</b>';
