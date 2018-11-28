@@ -88,7 +88,12 @@ try {
 
     $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
-    $paramsamd = array(array_column($result, 'cmid'));
+    $envconf = array(
+        'userid' => $USER->id,
+        'courseid' => $COURSE->id,
+    );
+
+    $paramsamd = array($envconf);
 
     $PAGE->requires->js_call_amd('block_point_view/script_menu_point_view', 'init', $paramsamd);
 
@@ -106,7 +111,7 @@ try {
 
     echo $OUTPUT->heading($title, 2);
 
-    echo $OUTPUT->container_start('block_point_view_menu');
+    echo $OUTPUT->container_start('block_point_view');
 
     require("tabs.php");
 

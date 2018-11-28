@@ -51,10 +51,15 @@ const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
  * Returns the activities in current course
  *
  * @param int $courseid ID of the course
+ * @param null $contextid
  * @return array Activities with completion settings in the course
+ * @throws coding_exception
  * @throws moodle_exception
  */
-function block_point_view_get_course_data ($courseid) {
+function block_point_view_get_course_data ($courseid, $contextid = null) {
+    global $PAGE;
+
+    $PAGE->set_context($contextid);
 
     $modinfo = get_fast_modinfo($courseid, -1);
 

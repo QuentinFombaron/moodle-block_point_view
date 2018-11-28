@@ -43,7 +43,7 @@ $string['config_header_activities'] = "Configuration of Reaction and Difficulty 
 $string['config_header_images'] = "Emojis configuration";
 $string['config_header_reset'] = "Reset reactions";
 $string['defaulttextbetter'] = "I'm getting better !";
-$string['defaulttextcontent'] = "This plugin gives the possibility to react and to give difficulties levels to activities.<br /><br />It is important to know that you are testing the Beta version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Reaction\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>October 8<SUP>th</SUP> 2018 (version 1.0.0)</i><br /><br />You can edit or delete this text in the block configuration menu<br /><br />";
+$string['defaulttextcontent'] = "This plugin gives the possibility to react and to give difficulties levels to activities.<br /><br />It is important to know that you are testing the Beta version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Reaction\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>November 28<SUP>th</SUP> 2018 (version 1.0.0)</i><br /><br />You can edit or delete this text in the block configuration menu<br /><br />";
 $string['defaulttexteasy'] = "Easy !";
 $string['defaulttexthard'] = "So hard...";
 $string['disableall'] = 'Disable all in <b>{$a}</b>';

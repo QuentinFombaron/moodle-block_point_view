@@ -42,6 +42,7 @@ try {
     $e->getMessage(), "\n";
 }
 
+
 /**
  * block_point_view Class
  *
@@ -51,8 +52,7 @@ try {
  * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_point_view extends block_base
-{
+class block_point_view extends block_base {
     /**
      * Block initializations
      *
@@ -96,17 +96,15 @@ class block_point_view extends block_base
 
             }
 
+            $this->content = new stdClass();
+
             if (has_capability('block/point_view:view', $this->context)) {
 
                 if (isset($this->config) && isset($this->config->text)) {
 
-                    $this->content = new stdClass();
-
                     $this->content->text = $this->config->text;
 
                 } else {
-
-                    $this->content = new stdClass();
 
                     $this->content->text = get_string('defaulttextcontent', 'block_point_view');
 
@@ -126,7 +124,7 @@ class block_point_view extends block_base
 
                 $this->content->text .= html_writer::link(
                     $url,
-                    '<img src="' . $CFG->wwwroot . '/blocks/point_view/pix/overview.png" id="menu_point_view_img"/>'
+                    '<img src="' . $CFG->wwwroot . '/blocks/point_view/pix/overview.png" id="menu_point_view_img" class="block_point_view"/>'
                 );
 
                 $this->content->text .= html_writer::end_tag('div');
@@ -139,153 +137,19 @@ class block_point_view extends block_base
 
             if (!$PAGE->user_is_editing()) {
 
-                $enablepointviewscheckbox = (isset($this->config->enable_point_views_checkbox)) ?
-                    $this->config->enable_point_views_checkbox :
-                    0;
-
-                if ($enablepointviewscheckbox) {
-
-                    $sql = 'SELECT cmid,
-                    IFNULL(COUNT(cmid), 0) AS total,
-                    IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
-                    IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
-                    IFNULL(TableTypeThree.TotalTypethree, 0) AS typethree,
-                    IFNULL(TableUser.UserVote, 0) AS uservote
-                  FROM {block_point_view}
-                    NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_point_view}
-                      WHERE vote = 1 GROUP BY cmid) AS TableTypeOne
-                    NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeTwo FROM {block_point_view}
-                      WHERE vote = 2 GROUP BY cmid) AS TableTypeTwo
-                    NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypethree FROM {block_point_view}
-                      WHERE vote = 3 GROUP BY cmid) AS TableTypeThree
-                    NATURAL LEFT JOIN (SELECT cmid, vote AS UserVote FROM {block_point_view} WHERE userid = :userid) AS TableUser
-                    WHERE courseid = :courseid
-                  GROUP BY cmid;';
-
-                    $params = array('userid' => $USER->id, 'courseid' => $COURSE->id);
-
-                    $result = $DB->get_records_sql($sql, $params);
-
-                    /* Parameters for the Javascript */
-                    $pointviews = (!empty($result)) ? array_values($result) : array();
-
-                } else {
-
-                    $pointviews = null;
-
-                }
-
-                $sqlid = $DB->get_records('course_modules', array('course' => $COURSE->id), null, 'id');
-
-                $moduleselect = array();
-
-                $difficultylevels = array();
-
-                foreach ($sqlid as $row) {
-
-                    if (isset($this->config->{'moduleselectm' . $row->id})) {
-
-                        if ($this->config->{'moduleselectm' . $row->id} != 0 && $this->config->enable_point_views_checkbox) {
-
-                            array_push($moduleselect, $row->id);
-
-                        }
-
-                        if ($this->config->enable_difficulties_checkbox) {
-
-                            $difficultylevels[$row->id] = $this->config->{'difficulty_' . $row->id};
-
-                        }
-                    }
-                }
-
-                $pixparam = array(
-                    'easy' => $CFG->wwwroot . '/blocks/point_view/pix/easy.png',
-                    'easytxt' => (isset($this->config->text_easy)) ?
-                        $this->config->text_easy
-                        : get_string('defaulttexteasy', 'block_point_view'),
-                    'better' => $CFG->wwwroot . '/blocks/point_view/pix/better.png',
-                    'bettertxt' => (isset($this->config->text_better)) ?
-                        $this->config->text_better
-                        : get_string('defaulttextbetter', 'block_point_view'),
-                    'hard' => $CFG->wwwroot . '/blocks/point_view/pix/hard.png',
-                    'hardtxt' => (isset($this->config->text_hard)) ?
-                        $this->config->text_hard
-                        : get_string('defaulttexthard', 'block_point_view'),
-                    'group_' => $CFG->wwwroot . '/blocks/point_view/pix/group_.png',
-                    'group_E' => $CFG->wwwroot . '/blocks/point_view/pix/group_E.png',
-                    'group_B' => $CFG->wwwroot . '/blocks/point_view/pix/group_B.png',
-                    'group_H' => $CFG->wwwroot . '/blocks/point_view/pix/group_H.png',
-                    'group_EB' => $CFG->wwwroot . '/blocks/point_view/pix/group_EB.png',
-                    'group_EH' => $CFG->wwwroot . '/blocks/point_view/pix/group_EH.png',
-                    'group_BH' => $CFG->wwwroot . '/blocks/point_view/pix/group_BH.png',
-                    'group_EBH' => $CFG->wwwroot . '/blocks/point_view/pix/group_EBH.png',
-                );
-
-                $pixfiles = array(
-                    'easy',
-                    'better',
-                    'hard',
-                    'group_',
-                    'group_E',
-                    'group_B',
-                    'group_H',
-                    'group_EB',
-                    'group_EH',
-                    'group_BH',
-                    'group_EBH'
-                );
-
-                $fs = get_file_storage();
-
-                if (get_config('block_point_view', 'enable_pix_admin')) {
-
-                    foreach ($pixfiles as $file) {
-
-                        if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
-
-                            $pixparam[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
-
-                        }
-                    }
-                } else {
-
-                    $fs->delete_area_files(1, 'block_point_view');
-
-                }
-
-                if (isset($this->config->enable_pix_checkbox) && $this->config->enable_pix_checkbox) {
-
-                    foreach ($pixfiles as $file) {
-
-                        if ($fs->file_exists($this->context->id, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
-
-                            $pixparam[$file] = block_point_view_pix_url($this->context->id, 'point_views_pix', $file);
-
-                        }
-                    }
-                } else {
-
-                    $fs->delete_area_files($this->context->id, 'block_point_view');
-
-                }
-
                 $envconf = array(
-                    'greentrack' => get_config('block_point_view', 'green_track_color_admin'),
-                    'bluetrack' => get_config('block_point_view', 'blue_track_color_admin'),
-                    'redtrack' => get_config('block_point_view', 'red_track_color_admin'),
-                    'blacktrack' => get_config('block_point_view', 'black_track_color_admin'),
                     'userid' => $USER->id,
-                    'courseid' => $COURSE->id
+                    'courseid' => $COURSE->id,
+                    'contextid' => $this->context->id
                 );
 
-                $paramsamd = array($pointviews, $moduleselect, $difficultylevels, $pixparam, $envconf);
+                $paramsamd = array($envconf);
 
                 $this->page->requires->js_call_amd('block_point_view/script_point_view', 'init', $paramsamd);
             }
         } else if (!get_config(
-            'block_point_view',
-            'enable_point_views_admin')
+                'block_point_view',
+                'enable_point_views_admin')
             && has_capability('block/point_view:view', $this->context)) {
 
             $this->content->text = get_string('blockdisabled', 'block_point_view');

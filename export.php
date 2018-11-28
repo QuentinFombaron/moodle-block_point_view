@@ -97,7 +97,7 @@ try {
 
     echo $OUTPUT->heading($title, 2);
 
-    echo $OUTPUT->container_start('block_point_view_export');
+    echo $OUTPUT->container_start('block_point_view');
 
     require("tabs.php");
 
