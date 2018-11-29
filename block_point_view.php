@@ -213,7 +213,7 @@ class block_point_view extends block_base {
      *
      * @return array
      */
-    function applicable_formats() {
+    public function applicable_formats() {
         return array(
             'all' => false,
             'site-index' => false,
