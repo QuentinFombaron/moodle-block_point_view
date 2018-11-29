@@ -209,6 +209,19 @@ class block_point_view extends block_base {
     }
 
     /**
+     * Enable to add the block only in a course
+     *
+     * @return array
+     */
+    function applicable_formats() {
+        return array(
+            'all' => false,
+            'site-index' => false,
+            'course-view' => true,
+            );
+    }
+
+    /**
      * Copy any block-specific data when copying to a new block instance.
      *
      * @param int $fromid the id number of the block instance to copy from
