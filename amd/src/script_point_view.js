@@ -890,6 +890,9 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         }
                     });
 
+                    /* Dont' hide tooltip when reaction are in the top of course*/
+                    $('#region-main > .card').css({'overflow-x': 'unset'});
+
                     /* Set the colors of difficulty tracks */
                     $('.greentrack').css({'background-color': trackcolor.greentrack});
                     $('.bluetrack').css({'background-color': trackcolor.bluetrack});

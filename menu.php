@@ -28,44 +28,47 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
 try {
-    $id = required_param('instanceid', PARAM_INT);
-
-    $contextid = required_param('contextid', PARAM_INT);
-
     $courseid = required_param('courseid', PARAM_INT);
-
-    $enablepix = required_param('enablepix', PARAM_INT);
-
-    $tab = optional_param('tab', 'overview', PARAM_ALPHA);
-
-    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
     $context = CONTEXT_COURSE::instance($courseid);
 
-    $block = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
+    if (has_capability('block/point_view:access_menu', $context)) {
 
-    $blockcontext = CONTEXT_BLOCK::instance($id);
+        $id = required_param('instanceid', PARAM_INT);
 
-    require_login();
+        $contextid = required_param('contextid', PARAM_INT);
 
-    confirm_sesskey();
+        $enablepix = required_param('enablepix', PARAM_INT);
 
-    require_capability('block/point_view:view', $blockcontext);
+        $tab = optional_param('tab', 'overview', PARAM_ALPHA);
 
-    $PAGE->set_course($course);
+        $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
-    $PAGE->set_url(
-        '/blocks/point_view/menu.php',
-        array(
-            'instanceid' => $id,
-            'contextid' => $contextid,
-            'courseid' => $courseid,
-            'enablepix' => $enablepix,
-            'sesskey' => sesskey()
-        )
-    );
 
-    $sql = 'SELECT cmid,
+        $block = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
+
+        $blockcontext = CONTEXT_BLOCK::instance($id);
+
+        require_login();
+
+        confirm_sesskey();
+
+        require_capability('block/point_view:view', $blockcontext);
+
+        $PAGE->set_course($course);
+
+        $PAGE->set_url(
+            '/blocks/point_view/menu.php',
+            array(
+                'instanceid' => $id,
+                'contextid' => $contextid,
+                'courseid' => $courseid,
+                'enablepix' => $enablepix,
+                'sesskey' => sesskey()
+            )
+        );
+
+        $sql = 'SELECT cmid,
             IFNULL(COUNT(cmid), 0) AS total,
             IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
             IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
@@ -80,185 +83,187 @@ try {
             WHERE courseid = :courseid
           GROUP BY cmid;';
 
-    $params = array('courseid' => $COURSE->id);
+        $params = array('courseid' => $COURSE->id);
 
-    $result = $DB->get_records_sql($sql, $params);
+        $result = $DB->get_records_sql($sql, $params);
 
-    $PAGE->set_context($context);
+        $PAGE->set_context($context);
 
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
+        $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
-    $envconf = array(
-        'userid' => $USER->id,
-        'courseid' => $COURSE->id,
-    );
-
-    $paramsamd = array($envconf);
-
-    $PAGE->requires->js_call_amd('block_point_view/script_menu_point_view', 'init', $paramsamd);
-
-    $title = get_string('menu', 'block_point_view');
-
-    $PAGE->set_title($title);
-
-    $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
-
-    $PAGE->navbar->add($title);
-
-    $PAGE->set_pagelayout('report');
-
-    echo $OUTPUT->header();
-
-    echo $OUTPUT->heading($title, 2);
-
-    echo $OUTPUT->container_start('block_point_view');
-
-    require("tabs.php");
-
-    if (!empty($result)) {
-
-        $activities = (block_point_view_get_course_data($courseid))['activities'];
-
-        $sqldata = $DB->get_records('block_point_view', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');
-
-        $table = new html_table();
-
-        $table->head = array(
-            get_string('colsection', 'block_point_view'),
-            get_string('colmodule', 'block_point_view'),
-            '',
-            get_string('colreactions', 'block_point_view'),
-            '',
-            'Total',
-            ''
-            );
-
-        $table->attributes['class'] = 'generaltable';
-
-        $table->rowclasses = array();
-
-        $table->data = array();
-
-        $users = $DB->get_records('user', null, '', user_picture::fields());
-
-        $pixparam = array(
-            'easy' => $CFG->wwwroot . '/blocks/point_view/pix/easy.png',
-            'better' => $CFG->wwwroot . '/blocks/point_view/pix/better.png',
-            'hard' => $CFG->wwwroot . '/blocks/point_view/pix/hard.png',
+        $envconf = array(
+            'userid' => $USER->id,
+            'courseid' => $COURSE->id,
         );
 
-        $fs = get_file_storage();
+        $paramsamd = array($envconf);
 
-        if (get_config('block_point_view', 'enable_pix_admin')) {
+        $PAGE->requires->js_call_amd('block_point_view/script_menu_point_view', 'init', $paramsamd);
 
-            foreach ($pixparam as $file => $data) {
+        $title = get_string('menu', 'block_point_view');
 
-                if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
+        $PAGE->set_title($title);
 
-                    $pixparam[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
+        $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
 
-                }
-            }
-        } else if ($enablepix) {
+        $PAGE->navbar->add($title);
 
-            foreach ($pixparam as $file => $data) {
+        $PAGE->set_pagelayout('report');
 
-                if ($fs->file_exists($contextid, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
+        echo $OUTPUT->header();
 
-                    $pixparam[$file] = block_point_view_pix_url($contextid, 'point_views_pix', $file);
+        echo $OUTPUT->heading($title, 2);
 
-                }
-            }
-        }
+        echo $OUTPUT->container_start('block_point_view');
 
-        foreach ($activities as $index => $activity) {
+        require("tabs.php");
 
-            if (isset($result[($activity['id'])]->cmid)) {
+        if (!empty($result)) {
 
-                $details = array(
-                    'easy' => array(),
-                    'better' => array(),
-                    'hard' => array()
-                );
+            $activities = (block_point_view_get_course_data($courseid))['activities'];
 
-                foreach ($sqldata as $row) {
+            $sqldata = $DB->get_records('block_point_view', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');
 
-                    if ($row->cmid == $activity['id']) {
+            $table = new html_table();
 
-                        switch ($row->vote) {
-                            case 1 :
-                                array_push($details['easy'], intval($row->userid));
-                                break;
-                            case 2 :
-                                array_push($details['better'], intval($row->userid));
-                                break;
-                            case 3 :
-                                array_push($details['hard'], intval($row->userid));
-                                break;
-                        }
+            $table->head = array(
+                get_string('colsection', 'block_point_view'),
+                get_string('colmodule', 'block_point_view'),
+                '',
+                get_string('colreactions', 'block_point_view'),
+                '',
+                'Total',
+                ''
+            );
+
+            $table->attributes['class'] = 'generaltable';
+
+            $table->rowclasses = array();
+
+            $table->data = array();
+
+            $users = $DB->get_records('user', null, '', user_picture::fields());
+
+            $pixparam = array(
+                'easy' => $CFG->wwwroot . '/blocks/point_view/pix/easy.png',
+                'better' => $CFG->wwwroot . '/blocks/point_view/pix/better.png',
+                'hard' => $CFG->wwwroot . '/blocks/point_view/pix/hard.png',
+            );
+
+            $fs = get_file_storage();
+
+            if (get_config('block_point_view', 'enable_pix_admin')) {
+
+                foreach ($pixparam as $file => $data) {
+
+                    if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
+
+                        $pixparam[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
+
                     }
                 }
+            } else if ($enablepix) {
 
-                array_push($table->rowclasses,
-                    'row_module' . $activity['id'],
-                    'row_module' . $activity['id'] . '_details'
-                );
+                foreach ($pixparam as $file => $data) {
 
-                $attributes = ['class' => 'iconlarge activityicon'];
+                    if ($fs->file_exists($contextid, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
 
-                $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+                        $pixparam[$file] = block_point_view_pix_url($contextid, 'point_views_pix', $file);
 
-                array_push($table->data,
-                    array(
-                        get_section_name($COURSE, $activity['section']),
-                        $icon . format_string($activity['name']),
-                        html_writer::empty_tag(
-                            'img',
-                            array('src' => $pixparam['easy'], 'class' => 'overview_img')) .
-                        ' <span class="votePercent">' .
-                        round(100 * intval($result[($activity['id'])]->typeone)
-                            / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
-                            $result[($activity['id'])]->typeone . '</span>',
-                        html_writer::empty_tag(
-                            'img',
-                            array('src' => $pixparam['better'], 'class' => 'overview_img')) .
-                        ' <span class="votePercent">' .
-                        round(100 * intval($result[($activity['id'])]->typetwo)
-                            / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
-                            $result[($activity['id'])]->typetwo . '</span>',
-                        html_writer::empty_tag(
-                            'img',
-                            array('src' => $pixparam['hard'], 'class' => 'overview_img')) .
-                        ' <span class="votePercent">' .
-                        round(100 * intval($result[($activity['id'])]->typethree)
-                            / intval($result[($activity['id'])]->total)) . '% </span><span class="voteInt">' .
-                            $result[($activity['id'])]->typethree . '</span>',
-                        $result[($activity['id'])]->total,
-                        '+'
-                    ),
-                    array(
-                        '',
-                        '',
-                        tostring($OUTPUT, $details['easy'], $users, $course),
-                        tostring($OUTPUT, $details['better'], $users, $course),
-                        tostring($OUTPUT, $details['hard'], $users, $course),
-                        ''
-                    )
-                );
+                    }
+                }
             }
+
+            foreach ($activities as $index => $activity) {
+
+                if (isset($result[($activity['id'])]->cmid)) {
+
+                    $details = array(
+                        'easy' => array(),
+                        'better' => array(),
+                        'hard' => array()
+                    );
+
+                    foreach ($sqldata as $row) {
+
+                        if ($row->cmid == $activity['id']) {
+
+                            switch ($row->vote) {
+                                case 1 :
+                                    array_push($details['easy'], intval($row->userid));
+                                    break;
+                                case 2 :
+                                    array_push($details['better'], intval($row->userid));
+                                    break;
+                                case 3 :
+                                    array_push($details['hard'], intval($row->userid));
+                                    break;
+                            }
+                        }
+                    }
+
+                    array_push($table->rowclasses,
+                        'row_module' . $activity['id'],
+                        'row_module' . $activity['id'] . '_details'
+                    );
+
+                    $attributes = ['class' => 'iconlarge activityicon'];
+
+                    $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+
+                    array_push($table->data,
+                        array(
+                            get_section_name($COURSE, $activity['section']),
+                            $icon . format_string($activity['name']),
+                            html_writer::empty_tag(
+                                'img',
+                                array('src' => $pixparam['easy'], 'class' => 'overview_img')) .
+                            ' <span class="votePercent">' .
+                            round(100 * intval($result[($activity['id'])]->typeone)
+                                / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
+                            $result[($activity['id'])]->typeone . '</span>',
+                            html_writer::empty_tag(
+                                'img',
+                                array('src' => $pixparam['better'], 'class' => 'overview_img')) .
+                            ' <span class="votePercent">' .
+                            round(100 * intval($result[($activity['id'])]->typetwo)
+                                / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
+                            $result[($activity['id'])]->typetwo . '</span>',
+                            html_writer::empty_tag(
+                                'img',
+                                array('src' => $pixparam['hard'], 'class' => 'overview_img')) .
+                            ' <span class="votePercent">' .
+                            round(100 * intval($result[($activity['id'])]->typethree)
+                                / intval($result[($activity['id'])]->total)) . '% </span><span class="voteInt">' .
+                            $result[($activity['id'])]->typethree . '</span>',
+                            $result[($activity['id'])]->total,
+                            '+'
+                        ),
+                        array(
+                            '',
+                            '',
+                            tostring($OUTPUT, $details['easy'], $users, $course),
+                            tostring($OUTPUT, $details['better'], $users, $course),
+                            tostring($OUTPUT, $details['hard'], $users, $course),
+                            ''
+                        )
+                    );
+                }
+            }
+
+            echo html_writer::table($table);
+
+        } else {
+
+            echo html_writer::tag('p', get_string('noneactivity', 'block_point_view'));
+
         }
 
-        echo html_writer::table($table);
+        echo $OUTPUT->container_end();
 
-    } else {
-
-        echo html_writer::tag('p', get_string('noneactivity', 'block_point_view'));
+        echo $OUTPUT->footer();
 
     }
-
-    echo $OUTPUT->container_end();
-
-    echo $OUTPUT->footer();
 
 } catch (coding_exception $e) {
 

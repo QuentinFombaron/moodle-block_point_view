@@ -44,110 +44,114 @@ confirm_sesskey();
 
 try {
 
-    $id = required_param('instanceid', PARAM_INT);
-
-    $contextid = required_param('contextid', PARAM_INT);
-
     $courseid = required_param('courseid', PARAM_INT);
-
-    $enablepix = required_param('enablepix', PARAM_INT);
-
-    $tab = optional_param('tab', 'export', PARAM_ALPHA);
-
-    $format = optional_param('format', null, PARAM_ALPHA);
-
-    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
     $context = CONTEXT_COURSE::instance($courseid);
 
-    $block = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
+    if (has_capability('block/point_view:access_menu', $context)) {
 
-    $config = unserialize(base64_decode($block->configdata));
+        $id = required_param('instanceid', PARAM_INT);
 
-    $blockcontext = CONTEXT_BLOCK::instance($id);
+        $contextid = required_param('contextid', PARAM_INT);
 
-    $PAGE->set_course($course);
+        $enablepix = required_param('enablepix', PARAM_INT);
 
-    $PAGE->set_url(
-        '/blocks/point_view/export.php',
-        array(
-            'instanceid' => $id,
-            'contextid' => $contextid,
-            'courseid' => $courseid,
-            'enablepix' => $enablepix,
-            'sesskey' => sesskey()
-        )
-    );
+        $tab = optional_param('tab', 'export', PARAM_ALPHA);
 
-    $PAGE->set_context($context);
+        $format = optional_param('format', null, PARAM_ALPHA);
 
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
+        $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
-    $title = get_string('menu', 'block_point_view');
+        $block = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
 
-    $PAGE->set_title($title);
+        $config = unserialize(base64_decode($block->configdata));
 
-    $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
+        $blockcontext = CONTEXT_BLOCK::instance($id);
 
-    $PAGE->navbar->add($title);
+        $PAGE->set_course($course);
 
-    $PAGE->set_pagelayout('report');
+        $PAGE->set_url(
+            '/blocks/point_view/export.php',
+            array(
+                'instanceid' => $id,
+                'contextid' => $contextid,
+                'courseid' => $courseid,
+                'enablepix' => $enablepix,
+                'sesskey' => sesskey()
+            )
+        );
 
-    echo $OUTPUT->header();
+        $PAGE->set_context($context);
 
-    echo $OUTPUT->heading($title, 2);
+        $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
-    echo $OUTPUT->container_start('block_point_view');
+        $title = get_string('menu', 'block_point_view');
 
-    require("tabs.php");
+        $PAGE->set_title($title);
 
-    echo html_writer::start_div('export_buttons');
+        $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
 
-    /* CSV Export */
+        $PAGE->navbar->add($title);
 
-    $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'csv'];
+        $PAGE->set_pagelayout('report');
 
-    $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+        echo $OUTPUT->header();
 
-    $label = get_string('exportcsv', 'block_point_view');
+        echo $OUTPUT->heading($title, 2);
 
-    $options = ['class' => 'exportCSVButton'];
+        echo $OUTPUT->container_start('block_point_view');
 
-    echo $OUTPUT->single_button($url, $label, 'post', $options);
+        require("tabs.php");
 
-    echo html_writer::tag('p', '&nbsp;');
+        echo html_writer::start_div('export_buttons');
 
-    /* ODS Export */
+        /* CSV Export */
 
-    $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'ods'];
+        $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'csv'];
 
-    $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+        $url = new moodle_url('/blocks/point_view/download.php', $parameters);
 
-    $label = get_string('exportods', 'block_point_view');
+        $label = get_string('exportcsv', 'block_point_view');
 
-    $options = ['class' => 'exportODSButton'];
+        $options = ['class' => 'exportCSVButton'];
 
-    echo $OUTPUT->single_button($url, $label, 'post', $options);
+        echo $OUTPUT->single_button($url, $label, 'post', $options);
 
-    echo html_writer::tag('p', '&nbsp;');
+        echo html_writer::tag('p', '&nbsp;');
 
-    /* XLS Export */
+        /* ODS Export */
 
-    $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'xls'];
+        $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'ods'];
 
-    $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+        $url = new moodle_url('/blocks/point_view/download.php', $parameters);
 
-    $label = get_string('exportxls', 'block_point_view');
+        $label = get_string('exportods', 'block_point_view');
 
-    $options = ['class' => 'exportXLSButton'];
+        $options = ['class' => 'exportODSButton'];
 
-    echo $OUTPUT->single_button($url, $label, 'post', $options);
+        echo $OUTPUT->single_button($url, $label, 'post', $options);
 
-    echo html_writer::end_div();
+        echo html_writer::tag('p', '&nbsp;');
 
-    echo $OUTPUT->container_end();
+        /* XLS Export */
 
-    echo $OUTPUT->footer();
+        $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'xls'];
+
+        $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+
+        $label = get_string('exportxls', 'block_point_view');
+
+        $options = ['class' => 'exportXLSButton'];
+
+        echo $OUTPUT->single_button($url, $label, 'post', $options);
+
+        echo html_writer::end_div();
+
+        echo $OUTPUT->container_end();
+
+        echo $OUTPUT->footer();
+
+    }
 
 } catch (coding_exception $e) {
 

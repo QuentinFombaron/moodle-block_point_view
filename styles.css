@@ -208,13 +208,3 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
-
-/* Dont' hide tooltip when reaction are in the top of course*/
-#region-main > .card {
-    overflow-x: unset;
-}
-
-/* Hide the confirm button to reset reactions */
-#config_reset_confirm {
-    display: none;
-}
