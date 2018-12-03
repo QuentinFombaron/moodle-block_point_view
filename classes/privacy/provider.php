@@ -29,8 +29,10 @@ namespace block_point_view\privacy;
 defined('MOODLE_INTERNAL') || die();
 
 use \core_privacy\local\metadata\collection;
+use core_privacy\local\request\approved_userlist;
 use \core_privacy\local\request\contextlist;
 use \core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\userlist;
 
 /**
  * Class provider
@@ -40,7 +42,14 @@ use \core_privacy\local\request\approved_contextlist;
  * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\provider,
+class provider implements
+    // This tool stores user data.
+    \core_privacy\local\metadata\provider,
+
+    // This plugin is capable of determining which users have data within it.
+    \core_privacy\local\request\core_userlist_provider,
+
+    // This tool may provide access to and deletion of user data.
     \core_privacy\local\request\plugin\provider
 {
 
@@ -160,5 +169,46 @@ class provider implements \core_privacy\local\metadata\provider,
         global $DB;
 
         return $DB->get_records('block_point_view', ['userid' => $userid]);
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_user) {
+            return;
+        }
+
+        $params = [
+            'contextid' => $context->id,
+            'contextuser' => CONTEXT_USER,
+        ];
+
+        $sql = "SELECT bpv.userid as userid
+                  FROM {block_point_view} bpv
+                  JOIN {context} ctx
+                       ON ctx.instanceid = bpv.userid
+                       AND ctx.contextlevel = :contextuser
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist $userlist The approved context and user information to delete information for.
+     * @throws \dml_exception
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if ($context instanceof \context_user) {
+            static::delete_data($context->instanceid);
+        }
     }
 }
