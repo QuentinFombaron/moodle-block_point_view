@@ -69,10 +69,10 @@ try {
         );
 
         $sql = 'SELECT cmid,
-            IFNULL(COUNT(cmid), 0) AS total,
-            IFNULL(TableTypeOne.TotalTypeOne, 0) AS typeone,
-            IFNULL(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
-            IFNULL(TableTypeThree.TotalTypethree, 0) AS typethree
+            COALESCE(COUNT(cmid), 0) AS total,
+            COALESCE(TableTypeOne.TotalTypeOne, 0) AS typeone,
+            COALESCE(TableTypeTwo.TotalTypeTwo, 0) AS typetwo,
+            COALESCE(TableTypeThree.TotalTypethree, 0) AS typethree
           FROM {block_point_view}
             NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypeOne FROM {block_point_view}
               WHERE vote = 1 GROUP BY cmid) AS TableTypeOne
