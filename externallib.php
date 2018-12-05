@@ -254,7 +254,7 @@ class block_point_view_external extends external_api {
                 WHERE vote = 3 GROUP BY cmid) AS TableTypeThree
               NATURAL LEFT JOIN (SELECT cmid, vote AS UserVote FROM {block_point_view} WHERE userid = :userid) AS TableUser
                 WHERE courseid = :courseid
-            GROUP BY cmid;';
+            GROUP BY cmid, TableTypeOne.TotalTypeOne, TableTypeTwo.TotalTypeTwo, TableTypeThree.TotalTypethree, TableUser.UserVote;';
 
             $params = array('userid' => $userid, 'courseid' => $courseid);
 

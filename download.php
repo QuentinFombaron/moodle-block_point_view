@@ -66,7 +66,7 @@ try {
                 NATURAL LEFT JOIN (SELECT cmid, COUNT(vote) AS TotalTypethree FROM {block_point_view}
                   WHERE vote = 3 GROUP BY cmid) AS TableTypeThree
                 WHERE courseid = :courseid
-              GROUP BY cmid;';
+              GROUP BY cmid, TableTypeOne.TotalTypeOne, TableTypeTwo.TotalTypeTwo, TableTypeThree.TotalTypethree;';
 
                 $params = array('courseid' => $courseid);
 
