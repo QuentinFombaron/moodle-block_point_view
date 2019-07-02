@@ -67,9 +67,9 @@ $string['nonetrack'] = "None track";
 $string['no_activities_config_message'] = "No activity";
 $string['pixcurrently'] = "Currently used";
 $string['pixreset'] = "Reset emojis";
-$string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(Configuration will be saved and you will be redirected in course page)</i>";
+$string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(Configuration will be saved and you will be redirected to the course page)</i>";
 $string['point_viewpix'] = "Emojis";
-$string['point_viewpixdesc'] = "<h5 style='color:red'>Important :</h5> Name the files <b><span style='font-family: Courier'>[emoji_name].png</span></b> for the emoji pictures, for instance: <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span> and <span style='font-family: Courier'>hard.png</span>. Also need groups of emojis <b><span style='font-family: Courier'>group_[emojis_initials].png</span></b>, for instance: <span style='font-family: Courier'>group_EB.png</span> for the group of Easy and Better reactions. Don't forget the file <b><span style='font-family: Courier'>group_.png</span></b>  for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected : <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span>, <span style='font-family: Courier'>hard.png</span>, <span style='font-family: Courier'>group_.png</span>, <span style='font-family: Courier'>group_E.png</span>, <span style='font-family: Courier'>group_B.png</span>, <span style='font-family: Courier'>group_H.png</span>, <span style='font-family: Courier'>group_EB.png</span>, <span style='font-family: Courier'>group_EH.png</span>, <span style='font-family: Courier'>group_BH.png</span> et <span style='font-family: Courier'>group_EBH.png</span>";
+$string['point_viewpixdesc'] = "<h5 style='color:red'>Important :</h5> Name the files <b><span style='font-family: Courier'>[emoji_name].png</span></b> for the emoji pictures, for instance: <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span> and <span style='font-family: Courier'>hard.png</span>. Also need groups of emojis <b><span style='font-family: Courier'>group_[emojis_initials].png</span></b>, for instance: <span style='font-family: Courier'>group_EB.png</span> for the group of Easy and Better reactions. Don't forget the file <b><span style='font-family: Courier'>group_.png</span></b>  for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected : <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span>, <span style='font-family: Courier'>hard.png</span>, <span style='font-family: Courier'>group_.png</span>, <span style='font-family: Courier'>group_E.png</span>, <span style='font-family: Courier'>group_B.png</span>, <span style='font-family: Courier'>group_H.png</span>, <span style='font-family: Courier'>group_EB.png</span>, <span style='font-family: Courier'>group_EH.png</span>, <span style='font-family: Courier'>group_BH.png</span> and <span style='font-family: Courier'>group_EBH.png</span>";
 $string['reactionreset'] = 'Reset <b>{$a}</b> course reactions';
 $string['redtrack'] = "Red track";
 $string['textbetter'] = "<b>I'm getting better !</b> text";
@@ -104,7 +104,7 @@ $string['howto_type'] = "management of reactions on same type activities";
 $string['howto_type_help'] = "Enable or disable reactions on all activities of same type";
 
 /* Privacy */
-$string['privacy:metadata:block_point_view'] = "The Point of View block stores the user's votes on each activities.";
+$string['privacy:metadata:block_point_view'] = "The Point of View block stores the user's votes on each activity.";
 $string['privacy:metadata:activity_votes_database:courseid'] = "Course ID";
 $string['privacy:metadata:activity_votes_database:cmid'] = "Course activity ID";
 $string['privacy:metadata:activity_votes_database:userid'] = "User ID";
