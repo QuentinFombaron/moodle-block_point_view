@@ -42,8 +42,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                     /* Shortcut to the "SAVE" button at the bottom of the page */
                     $('#id_go_to_save').click(function() {
-                        window.onbeforeunload = null;
-                        $('#mform1').submit();
+                        $('#id_submitbutton').click();
                     }).removeClass('btn-secondary').addClass('btn-primary');
 
                     /**
@@ -256,7 +255,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                         idConfigDifficulty.change({module: idConfigDifficulty}, selectChange);
                     });
-
+                    
                     /* Button state at the loading */
                     sectionids.forEach(function(sectionid) {
                         $('#id_enable_' + sectionid).click({id: sectionid}, treatEnableForm)
@@ -295,7 +294,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         .addClass('btn-outline-warning')
                         .click(function() {
                             $('#id_config_enable_pix_checkbox:checked').prop('checked', false);
-                            $('#mform1').submit();
+                            $('#id_submitbutton').click();
                         });
 
                     /* Hide fieldsets if Reactions or Difficulties checkboxes are disabled */
@@ -305,7 +304,8 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     $('#id_config_enable_difficulties_checkbox').click(checkConf);
 
                     $('div[data-groupname="config_reset_confirm"]').css({'display': 'none'});
-
+                    
+                    /* Reset vote */
                     $('#id_config_reset_yes')
                         .removeClass('btn-secondary')
                         .addClass('btn-success')
@@ -316,15 +316,15 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                     methodname: 'block_point_view_update_db',
                                     args: {
                                         func: 'reset',
-                                        userid: null,
+                                        userid: 0, // Can't be set to null
                                         courseid: courseId,
-                                        cmid: null,
-                                        vote: null
+                                        cmid: 0, // Can't be set to null
+                                        vote: 0 // Can't be set to null
                                     },
                                     done: (function() {
-                                        $('#mform1').submit();
+                                    	$('#mform1').submit();
                                     }),
-                                    fail: notification.exception
+                                fail: notification.exception
                                 }
                             ]);
                         });
