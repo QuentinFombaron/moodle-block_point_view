@@ -773,13 +773,19 @@ class block_point_view_external extends external_api {
         );
     }
 
-    public static function get_enrol_list($userid) {
+    /**
+     * Get enrol list
+     *
+     * @param string $userId
+     * @return array
+     */
+    public static function get_enrol_list($userId) {
 
         $courses = get_courses();
         $ids = array();
         foreach ($courses as $course) {
             $context = context_course::instance(intval($course->id));
-            if (is_enrolled($context, $userid)) {
+            if (is_enrolled($context, $userId)) {
                 array_push($ids, intval($course->id));
             }
         }

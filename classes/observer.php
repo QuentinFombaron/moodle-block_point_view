@@ -18,7 +18,7 @@
  * Event observer.
  *
  * @package    block_point_view
- * @copyright  2020 Jayson haulkory
+ * @copyright  2020 Jayson Haulkory
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,19 +26,19 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Event observer.
- * Stores all actions about modules create/update/delete in plugin own's table.
- * This allows the block to avoid expensive queries to the log table.
  *
- * @package    block_recent_activity
- * @copyright  2014 Marina Glancy
+ * @package    block_point_view
+ * @copyright  2020 Jayson Haulkory
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view_observer {
 
     /**
-     * Reactions automaticaly activated when a new activity is created (only if reactions are enabled).
+     * Reactions automatically activated when a new activity is created (only if reactions are enabled).
      *
      * @param \core\event\base $event
+     * @return string
+     * @throws dml_exception
      */
     public static function store(\core\event\base $event) {
         global $DB, $CFG, $COURSE;
