@@ -98,6 +98,15 @@ $functions = array(
         'type'        => 'read',
         'ajax' => true,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'block_point_view_get_enrol_list' => array(
+        'classname'   => 'block_point_view_external',
+        'methodname'  => 'get_enrol_list',
+        'classpath'   => 'blocks/point_view/externallib.php',
+        'description' => 'ids list of courses enrolled by user',
+        'type'        => 'read',
+        'ajax' => true,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     )
 );
 
@@ -111,7 +120,8 @@ $services = array(
             'block_point_view_get_difficulty_levels',
             'block_point_view_get_section_range',
             'block_point_view_get_course_data',
-            'block_point_view_get_track_colors'
+            'block_point_view_get_track_colors',
+            'block_point_view_get_enrol_list'
         ),
         'requiredcapability' => '',
         'restrictedusers' => 0,

@@ -74,14 +74,14 @@ class block_point_view_edit_form extends block_edit_form {
                     'header',
                     'config_header',
                     get_string('blocksettings', 'block')
-                );
+                    );
 
                 /* Block content */
                 $mform->addElement(
                     'text',
                     'config_text',
                     get_string('contentinputlabel', 'block_point_view')
-                );
+                    );
 
                 $mform->setDefault('config_text', get_string('defaulttextcontent', 'block_point_view'));
 
@@ -91,7 +91,7 @@ class block_point_view_edit_form extends block_edit_form {
                     'config_text',
                     'howto_text',
                     'block_point_view'
-                );
+                    );
 
                 /* Reaction activation checkbox */
                 $enablepointviews = array();
@@ -103,7 +103,7 @@ class block_point_view_edit_form extends block_edit_form {
                     null,
                     array(),
                     array(0, 1)
-                );
+                    );
 
                 $mform->addGroup(
                     $enablepointviews,
@@ -111,13 +111,13 @@ class block_point_view_edit_form extends block_edit_form {
                     get_string('enablepoint_views', 'block_point_view'),
                     array(' '),
                     false
-                );
+                    );
 
                 $mform->addHelpButton(
                     'config_enable_point_views_group',
                     'howto_enable_point_views_checkbox',
                     'block_point_view'
-                );
+                    );
 
                 /* Difficulties activation checkbox */
                 $enabledifficulties = array();
@@ -129,7 +129,7 @@ class block_point_view_edit_form extends block_edit_form {
                     null,
                     array(),
                     array(0, 1)
-                );
+                    );
 
                 $mform->addGroup(
                     $enabledifficulties,
@@ -137,13 +137,13 @@ class block_point_view_edit_form extends block_edit_form {
                     get_string('enabledifficulties', 'block_point_view'),
                     array(' '),
                     false
-                );
+                    );
 
                 $mform->addHelpButton(
                     'config_enable_difficulties_group',
                     'howto_enable_difficulties_group',
                     'block_point_view'
-                );
+                    );
 
                 /* ----------------------------------------------------------------------------------------------------- */
 
@@ -155,28 +155,38 @@ class block_point_view_edit_form extends block_edit_form {
                     'header',
                     'activities',
                     HTML_WRITER::link("#", get_string('config_header_activities', 'block_point_view'))
-                );
+                    );
 
                 $sectionid = 1;
 
-                /* IF there is no activities */
-                if (empty($activities)) {
+                /* Shortcuts */
+                $mform->addElement(
+                    'button',
+                    'go_to_save',
+                    get_string('go_to_save', 'block_point_view')
+                    );
+
+                $mform->addElement(
+                    'button',
+                    'close_field',
+                    get_string('close_field', 'block_point_view')
+                    );
+
+                /* IF there is no activities or IF you are in courses view and there is no courses */
+                if (empty($activities) AND empty(get_courses())) {
 
                     $warningstring = get_string('no_activities_config_message', 'block_point_view');
 
                     $activitieswarning = HTML_WRITER::tag(
                         'div',
                         $warningstring, ['class' => 'warning']
-                    );
+                        );
 
                     $mform->addElement('static', '', '', $activitieswarning);
 
                 } else {
 
                     $oldsection = "";
-
-                    /* Enable/Disable by types */
-                    block_point_view_manage_types($mform, $coursedata['types']);
 
                     $mform->addElement('html', '<br>');
 
@@ -187,98 +197,129 @@ class block_point_view_edit_form extends block_edit_form {
                         get_string('redtrack', 'block_point_view'),
                         get_string('blacktrack', 'block_point_view')
                     );
+                    if (empty($activities) || ($COURSE->id == 1)) {
+                        /* Only for courses */
+                        foreach (get_courses() as $course) {
+                            $temp = array ('id' => $course->id,
+                                'fullname' => $course->fullname,
+                                'category' => $course->category);
+                            if ($temp['id'] != 1) { /* Need to be modified to display */
+                                $attributes = ['class' => 'iconlarge activityicon'];
 
-                    /* Enable/Disable by activity or section */
-                    foreach ($activities as $index => $activity) {
+                                $icon = $OUTPUT->pix_icon('i/course', 'course', 'core', $attributes);
 
-                        if ($oldsection != $activity['section']) {
+                                $activityoption = array();
 
-                            $oldsection = $activity['section'];
+                                $activityoption[] =& $mform->createElement(
+                                    'advcheckbox',
+                                    'config_moduleselectm' . $temp['id'],
+                                    '',
+                                    null,
+                                    array('group' => $sectionid, 'class' => $temp['category'] . ' check_section_' . $sectionid),
+                                    array(0, $temp['id'])
+                                    );
 
-                            $sectionid++;
+                                $activityoption[] =& $mform->createElement(
+                                    'select',
+                                    'config_difficulty_' . $temp['id'],
+                                    '',
+                                    $difficulties,
+                                    array('class' => 'selectDifficulty')
+                                    );
 
-                            $sectionname = get_section_name($COURSE, $oldsection);
+                                $mform->addGroup(
+                                    $activityoption,
+                                    'config_activity_' . $temp['id'],
+                                    $icon . format_string($temp['fullname']),
+                                    array(' '),
+                                    false
+                                    );
 
-                            $enabledisable = array();
-
-                            $enabledisable[] =& $mform->createElement(
-                                'html',
-                                '<br>'
-                            );
-
-                            $enabledisable[] =& $mform->createElement(
-                                'button',
-                                'enable_' . $sectionid,
-                                get_string('enableall', 'block_point_view', $sectionname)
-                            );
-
-                            $enabledisable[] =& $mform->createElement(
-                                'button',
-                                'disable_' . $sectionid,
-                                get_string('disableall', 'block_point_view', $sectionname)
-                            );
-
-                            $mform->addGroup(
-                                $enabledisable,
-                                'manage_checkbox_' . $sectionid,
-                                '<br><h4>' . (string)$sectionname . '</h4>',
-                                array(' '),
-                                false
-                            );
-
-                            $mform->addHelpButton(
-                                'manage_checkbox_' . $sectionid,
-                                'howto_manage_checkbox',
-                                'block_point_view'
-                            );
-
+                            }
                         }
 
-                        $attributes = ['class' => 'iconlarge activityicon'];
+                    } else {
+                        /* Enable/Disable by types */
+                        block_point_view_manage_types($mform, $coursedata['types']);
+                        /* Enable/Disable by activity or section */
+                        foreach ($activities as $index => $activity) {
 
-                        $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+                            if ($oldsection != $activity['section']) {
 
-                        $activityoption = array();
+                                $oldsection = $activity['section'];
 
-                        $activityoption[] =& $mform->createElement(
-                            'advcheckbox',
-                            'config_moduleselectm' . $activity['id'],
-                            '',
-                            null,
-                            array('group' => $sectionid, 'class' => $activity['type'] . ' check_section_' . $sectionid),
-                            array(0, $activity['id'])
-                        );
+                                $sectionid++;
 
-                        $activityoption[] = &$mform->createElement(
-                            'select',
-                            'config_difficulty_' . $activity['id'],
-                            '',
-                            $difficulties,
-                            array('class' => 'selectDifficulty')
-                        );
+                                $sectionname = get_section_name($COURSE, $oldsection);
 
-                        $mform->addGroup(
-                            $activityoption,
-                            'config_activity_' . $activity['id'],
-                            $icon . format_string($activity['name']),
-                            array(' '),
-                            false
-                        );
+                                $enabledisable = array();
 
+                                $enabledisable[] =& $mform->createElement(
+                                    'html',
+                                    '<br>'
+                                    );
+
+                                $enabledisable[] =& $mform->createElement(
+                                    'button',
+                                    'enable_' . $sectionid,
+                                    get_string('enableall', 'block_point_view', $sectionname)
+                                    );
+
+                                $enabledisable[] =& $mform->createElement(
+                                    'button',
+                                    'disable_' . $sectionid,
+                                    get_string('disableall', 'block_point_view', $sectionname)
+                                    );
+
+                                $mform->addGroup(
+                                    $enabledisable,
+                                    'manage_checkbox_' . $sectionid,
+                                    '<br><h4>' . (string)$sectionname . '</h4>',
+                                    array(' '),
+                                    false
+                                    );
+
+                                $mform->addHelpButton(
+                                    'manage_checkbox_' . $sectionid,
+                                    'howto_manage_checkbox',
+                                    'block_point_view'
+                                    );
+
+                            }
+
+                            $attributes = ['class' => 'iconlarge activityicon'];
+
+                            $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+
+                            $activityoption = array();
+
+                            $activityoption[] =& $mform->createElement(
+                                'advcheckbox',
+                                'config_moduleselectm' . $activity['id'],
+                                '',
+                                null,
+                                array('group' => $sectionid, 'class' => $activity['type'] . ' check_section_' . $sectionid),
+                                array(0, $activity['id'])
+                                );
+
+                            $activityoption[] = &$mform->createElement(
+                                'select',
+                                'config_difficulty_' . $activity['id'],
+                                '',
+                                $difficulties,
+                                array('class' => 'selectDifficulty')
+                                );
+
+                            $mform->addGroup(
+                                $activityoption,
+                                'config_activity_' . $activity['id'],
+                                $icon . format_string($activity['name']),
+                                array(' '),
+                                false
+                                );
+
+                        }
                     }
-
-                    /* Shortcuts */
-                    $mform->addElement(
-                        'button',
-                        'go_to_save',
-                        get_string('go_to_save', 'block_point_view')
-                    );
-
-                    $mform->addElement(
-                        'button',
-                        'close_field',
-                        get_string('close_field', 'block_point_view')
-                    );
 
                     /* ----------------------------------------------------------------------------------------------------- */
 
@@ -287,7 +328,7 @@ class block_point_view_edit_form extends block_edit_form {
                         'header',
                         'config_images',
                         HTML_WRITER::link("#", get_string('config_header_images', 'block_point_view'))
-                    );
+                        );
 
                     $fs = get_file_storage();
 
@@ -306,23 +347,23 @@ class block_point_view_edit_form extends block_edit_form {
                             0,
                             '/',
                             $file.'.png')
-                        ) {
+                            ) {
 
-                            ${$file.'img'} = block_point_view_pix_url($this->block->context->id, 'point_views_pix', $file);
+                                ${$file.'img'} = block_point_view_pix_url($this->block->context->id, 'point_views_pix', $file);
 
                         } else if ($fs->file_exists(
-                            1,
-                            'block_point_view',
-                            'point_views_pix_admin',
-                            0, '/',
-                            $file.'.png')
-                        ) {
+                                1,
+                                'block_point_view',
+                                'point_views_pix_admin',
+                                0, '/',
+                                $file.'.png')
+                                ) {
 
-                            ${$file.'img'} = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
+                                    ${$file.'img'} = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
 
                         } else {
 
-                            ${$file.'img'} = $CFG->wwwroot . '/blocks/point_view/pix/'.$file.'.png';
+                                    ${$file.'img'} = $CFG->wwwroot . '/blocks/point_view/pix/'.$file.'.png';
 
                         }
 
@@ -336,20 +377,20 @@ class block_point_view_edit_form extends block_edit_form {
                         <img src="' . $betterimg . '" style="width: 30px"/>
                         <img src="' . $hardimg . '" style="width: 30px"/>
                         &nbsp;&nbsp;'
-                    );
+                        );
 
                     $pixpreview[] =& $mform->createElement(
                         'button',
                         'config_reset_pix',
                         get_string('pixreset', 'block_point_view')
-                    );
+                        );
 
                     $pixpreview[] =& $mform->createElement(
                         'static',
                         'config_reset_pix_text',
                         '',
                         get_string('pixresettext', 'block_point_view')
-                    );
+                        );
 
                     $mform->addGroup(
                         $pixpreview,
@@ -357,19 +398,19 @@ class block_point_view_edit_form extends block_edit_form {
                         get_string('pixcurrently', 'block_point_view'),
                         array(' '),
                         false
-                    );
+                        );
 
                     $mform->addHelpButton(
                         'config_pix_preview_group',
                         'howto_pix_preview_group',
                         'block_point_view'
-                    );
+                        );
 
                     $mform->disabledIf(
                         'config_reset_pix',
                         'config_enable_pix_checkbox',
                         'notchecked'
-                    );
+                        );
 
                     $enableperso = array();
 
@@ -380,7 +421,7 @@ class block_point_view_edit_form extends block_edit_form {
                         null,
                         array(),
                         array(0, 1)
-                    );
+                        );
 
                     $mform->addGroup(
                         $enableperso,
@@ -388,13 +429,13 @@ class block_point_view_edit_form extends block_edit_form {
                         get_string('enablecustompix', 'block_point_view'),
                         array(' '),
                         false
-                    );
+                        );
 
                     $mform->addHelpButton(
                         'config_enable_pix',
                         'howto_enable_pix',
                         'block_point_view'
-                    );
+                        );
 
                     $mform->addElement(
                         'filemanager',
@@ -402,20 +443,20 @@ class block_point_view_edit_form extends block_edit_form {
                         get_string('point_viewpix', 'block_point_view'),
                         null,
                         array('subdirs' => 0, 'maxfiles' => 11, 'accepted_types' => '.png')
-                    );
+                        );
 
                     $mform->disabledIf(
                         'config_point_views_pix',
                         'config_enable_pix_checkbox',
                         'notchecked'
-                    );
+                        );
 
                     $mform->addElement(
                         'static',
                         '',
                         '',
                         get_string('point_viewpixdesc', 'block_point_view')
-                    );
+                        );
 
                     foreach ($pixfiles as $file) {
 
@@ -424,29 +465,29 @@ class block_point_view_edit_form extends block_edit_form {
                         ${$file.'text'}[] =& $mform->createElement('text',
                             'config_text_'.$file,
                             get_string('text'.$file, 'block_point_view')
-                        );
+                            );
 
                         $mform->setDefault('config_text_'.$file, get_string('defaulttext'.$file, 'block_point_view'));
 
                         $mform->setType('config_text_'.$file, PARAM_RAW);
 
                         $mform->addGroup(${$file.'text'}, 'config_'.$file.'_text_group',
-                            html_writer::empty_tag(
-                                'img',
-                                array(
-                                    'src' => ${$file.'img'},
-                                    'style' => 'width:30px'
-                                )
+                        html_writer::empty_tag(
+                            'img',
+                            array(
+                                'src' => ${$file.'img'},
+                                'style' => 'width:30px'
+                                    )
                             ) . get_string('emojidesc', 'block_point_view'),
                             array(' '),
                             false
-                        );
+                            );
 
                         $mform->addHelpButton(
                             'config_'.$file.'_text_group',
                             'howto_text_group',
                             'block_point_view'
-                        );
+                            );
 
                     }
 
@@ -457,7 +498,7 @@ class block_point_view_edit_form extends block_edit_form {
                         'header',
                         'config_reset',
                         HTML_WRITER::link("#", get_string('config_header_reset', 'block_point_view'))
-                    );
+                        );
 
                     $reinit = array();
 
@@ -465,7 +506,7 @@ class block_point_view_edit_form extends block_edit_form {
                         'button',
                         'config_reaction_reset_button',
                         get_string('reactionreset', 'block_point_view', $COURSE->fullname)
-                    );
+                        );
 
                     $mform->addGroup(
                         $reinit,
@@ -473,13 +514,13 @@ class block_point_view_edit_form extends block_edit_form {
                         '',
                         array(' '),
                         false
-                    );
+                        );
 
                     $mform->addHelpButton(
                         'config_reaction_reset',
                         'howto_reaction_reset',
                         'block_point_view'
-                    );
+                        );
 
                     $reinitconfirm = array();
 
@@ -487,27 +528,27 @@ class block_point_view_edit_form extends block_edit_form {
                         'button',
                         'config_reset_yes',
                         get_string('yes', 'block_point_view')
-                    );
+                        );
 
                     $reinitconfirm[] =& $mform->createElement(
                         'button',
                         'config_reset_no',
                         get_string('no', 'block_point_view')
-                    );
+                        );
 
                     $reinitconfirm[] =& $mform->createElement(
                         'static',
                         'config_reset_pix_text',
                         '',
                         get_string('pixresettext', 'block_point_view')
-                    );
+                        );
 
                     $mform->addGroup($reinitconfirm,
                         'config_reset_confirm',
                         get_string('confirmation', 'block_point_view', $COURSE->fullname),
                         array(' '),
                         false
-                    );
+                        );
                 }
 
                 $envconf = array(
@@ -527,7 +568,7 @@ class block_point_view_edit_form extends block_edit_form {
                     '',
                     '',
                     get_string('blockdisabled', 'block_point_view')
-                );
+                    );
 
             }
 
@@ -586,7 +627,7 @@ class block_point_view_edit_form extends block_edit_form {
                     $data['config_point_views_pix'],
                     'filename',
                     false
-                );
+                    );
 
             } catch (coding_exception $e) {
 
@@ -612,7 +653,7 @@ class block_point_view_edit_form extends block_edit_form {
                             'errorfilemanager',
                             'block_point_view',
                             $pathinfo['filename']
-                        ) . '<br />';
+                            ) . '<br />';
 
                     } catch (coding_exception $e) {
 
@@ -648,7 +689,7 @@ class block_point_view_edit_form extends block_edit_form {
                     'maxfiles' => 20,
                     'accepted_types' => array('.png')
                 )
-            );
+                );
 
             $defaults->config_point_views_pix = $draftid;
 

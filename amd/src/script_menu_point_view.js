@@ -22,7 +22,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                 .done(function(ajaxResult0) {
 
                     var moduleIds = [];
-
                     ajaxResult0.forEach(function(element) {
                         moduleIds.push(parseInt(element.cmid));
                     });

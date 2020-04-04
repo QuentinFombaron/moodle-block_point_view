@@ -15,19 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Block version
+ * Add event handlers for the lesson
  *
- *
- * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @package    mod_lesson
+ * @category   event
+ * @copyright  2015 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_point_view';
-$plugin->version   = 2020022100;
-$plugin->requires  = 2017051502;
-$plugin->maturity = MATURITY_BETA;
-$plugin->release = 'v1.0';
+$observers = array(
+
+    array(
+        'eventname' => '\core\event\course_module_created',
+        'callback' => 'block_point_view_observer::store',
+        'internal' => false,
+    ),
+
+
+    array(
+        'eventname' => '\core\event\course_created',
+        'callback' => 'block_point_view_observer::store',
+        'internal' => false,
+    ),
+);

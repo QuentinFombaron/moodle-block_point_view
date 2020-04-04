@@ -110,18 +110,18 @@
 
 /* "Save changes" button in configuration */
 #id_go_to_save {
-    position: fixed;
-    top: 390px;
-    right: 100px;
-    z-index: 9999;
+    position: absolute;
+    top: 0px;
+    right: 10%;
+    z-index: 19;
 }
 
 /* "Close field" button in configuration */
 #id_close_field {
-    position: fixed;
-    top: 430px;
-    right: 100px;
-    z-index: 9999;
+    position: absolute;
+    top: 25px;
+    right: 10%;
+    z-index: 19;
 }
 
 /* Green dot to inform that user has voted */
@@ -137,11 +137,12 @@
 }
 
 /* Select list of difficulty in the configuration */
+
 /*
 .selectDifficulty {
     margin-left: 30px;
 }
-*/
+/
 
 /* Difficulty tracks */
 .block_point_view.track {
@@ -207,4 +208,28 @@
     top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+/* CSS For combo box course/category front page */
+#frontpage-category-combo .reaction_box,
+#frontpage-category-combo .difficulty_box{
+    top : 0px;
+}
+
+.reaction_box {
+    position: relative;
+    left: 72%;
+    top: -30px;
+    width: 10%;
+}
+
+.difficulty_box{
+    position: relative; 
+    top: -37px; 
+    width: 10px;
+    height: 0px;
+}
+
+.coursebox a {
+	position:relative; 
+	left: 10px;
 }

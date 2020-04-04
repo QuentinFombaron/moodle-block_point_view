@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
+require_once($CFG->dirroot.'/course/renderer.php');
 
 try {
     require_login();
@@ -216,7 +217,7 @@ class block_point_view extends block_base {
     public function applicable_formats() {
         return array(
             'all' => false,
-            'site-index' => false,
+            'site-index' => true,
             'course-view' => true,
             );
     }
