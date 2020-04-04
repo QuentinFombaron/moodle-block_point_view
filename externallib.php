@@ -445,7 +445,7 @@ class block_point_view_external extends external_api {
     }
 
     /**
-     * Get modules of a course
+     * Get modules of a course or course in home page
      *
      * @param int $courseid course ID
      * @return array Seleted modules
@@ -455,30 +455,50 @@ class block_point_view_external extends external_api {
     public static function get_moduleselect($courseid) {
         global $DB;
 
-        self::validate_parameters(self::get_moduleselect_parameters(), array(
-                'courseid' => $courseid
-            )
-        );
-
-        $coursecontext = context_course::instance($courseid);
-        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-        $blockinstance = block_instance('point_view', $blockrecord);
-
-        $sqlid = $DB->get_records('course_modules', array('course' => $courseid), null, 'id');
-
         $moduleselect = array();
 
-        foreach ($sqlid as $row) {
+        if ($courseid != 1) {
+            self::validate_parameters(self::get_moduleselect_parameters(), array(
+                'courseid' => $courseid
+            )
+                );
 
-            if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
+            $coursecontext = context_course::instance($courseid);
+            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
+            $blockinstance = block_instance('point_view', $blockrecord);
 
-                if ($blockinstance->config->{'moduleselectm' . $row->id} != 0
+            $sqlid = $DB->get_records('course_modules', array('course' => $courseid), null, 'id');
+
+            foreach ($sqlid as $row) {
+
+                if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
+
+                    if ($blockinstance->config->{'moduleselectm' . $row->id} != 0
                     && $blockinstance->config->enable_point_views_checkbox) {
+                        array_push($moduleselect, $row->id);
 
-                    array_push($moduleselect, $row->id);
-
+                    }
                 }
+            }
+        } else {
+            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => 2), '*', MUST_EXIST);
+            $blockinstance = block_instance('point_view', $blockrecord);
+            $sqlcourses = get_courses();
+
+            foreach ($sqlcourses as $row) {
+                if ($row->id != 1) {
+                    if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
+
+                        if ($blockinstance->config->{'moduleselectm' . $row->id} != 0
+                        && $blockinstance->config->enable_point_views_checkbox) {
+                            array_push($moduleselect, $row->id);
+
+                        }
+                    }
+                }
+
             }
         }
 
@@ -522,32 +542,56 @@ class block_point_view_external extends external_api {
     public static function get_difficulty_levels($courseid) {
         global $DB;
 
-        self::validate_parameters(self::get_difficulty_levels_parameters(), array(
-                'courseid' => $courseid
-            )
-        );
-
-        $coursecontext = context_course::instance($courseid);
-        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-        $blockinstance = block_instance('point_view', $blockrecord);
-
-        $sqlid = $DB->get_records('course_modules', array('course' => $courseid), null, 'id');
-
         $difficultylevels = array();
 
-        foreach ($sqlid as $row) {
+        if ($courseid != 1) {
+            self::validate_parameters(self::get_difficulty_levels_parameters(), array(
+                'courseid' => $courseid
+            )
+                );
 
-            if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
+            $coursecontext = context_course::instance($courseid);
+            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
+            $blockinstance = block_instance('point_view', $blockrecord);
 
-                if ($blockinstance->config->enable_difficulties_checkbox) {
+            $sqlid = $DB->get_records('course_modules', array('course' => $courseid), null, 'id');
 
-                    $difficultylevels[$row->id] = array(
-                        'id' => $row->id,
-                        'difficultyLevel' => $blockinstance->config->{'difficulty_' . $row->id}
+            foreach ($sqlid as $row) {
+
+                if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
+
+                    if ($blockinstance->config->enable_difficulties_checkbox) {
+
+                        $difficultylevels[$row->id] = array(
+                            'id' => $row->id,
+                            'difficultyLevel' => $blockinstance->config->{'difficulty_' . $row->id}
                         );
 
+                    }
                 }
+            }
+        } else {
+            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => 2), '*', MUST_EXIST);
+            $blockinstance = block_instance('point_view', $blockrecord);
+            $sqlcourses = get_courses();
+
+            foreach ($sqlcourses as $row) {
+                if ($row->id != 1) {
+                    if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
+
+                        if ($blockinstance->config->enable_difficulties_checkbox) {
+
+                            $difficultylevels[$row->id] = array(
+                                'id' => $row->id,
+                                'difficultyLevel' => $blockinstance->config->{'difficulty_' . $row->id}
+                            );
+
+                        }
+                    }
+                }
+
             }
         }
 
@@ -642,14 +686,25 @@ class block_point_view_external extends external_api {
      */
     public static function get_course_data($courseid, $contextid) {
         self::validate_parameters(self::get_course_data_parameters(), array(
-                'courseid' => $courseid,
-                'contextid' => $contextid
-            )
-        );
+            'courseid' => $courseid,
+            'contextid' => $contextid
+        )
+            );
+        if ($courseid !== 1) {
 
-        $coursedata = block_point_view_get_course_data($courseid, $contextid);
+            $coursedata = block_point_view_get_course_data($courseid, $contextid);
 
-        return array('types' => $coursedata['types'], 'ids' => $coursedata['ids']);
+            return array('types' => $coursedata['types'], 'ids' => $coursedata['ids']);
+        } else {
+            $courses = get_courses();
+            $ids = array();
+            $types = array();
+            foreach ($courses as $course) {
+                array_push($ids, intval($course->id));
+                array_push($types, $course->category);
+            }
+            return array('types' => $types, 'ids' => $ids);
+        }
 
     }
 
@@ -714,6 +769,46 @@ class block_point_view_external extends external_api {
                 'bluetrack' => new external_value(PARAM_TEXT, 'Blue track color', VALUE_REQUIRED),
                 'redtrack' => new external_value(PARAM_TEXT, 'Red track color', VALUE_REQUIRED),
                 'blacktrack' => new external_value(PARAM_TEXT, 'Black track color', VALUE_REQUIRED),
+            )
+        );
+    }
+
+    public static function get_enrol_list($userid) {
+
+        $courses = get_courses();
+        $ids = array();
+        foreach ($courses as $course) {
+            $context = context_course::instance(intval($course->id));
+            if (is_enrolled($context, $userid)) {
+                array_push($ids, intval($course->id));
+            }
+        }
+        return array('ids' => $ids);
+    }
+    /**
+     * All necessary parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_enrol_list_parameters() {
+        return new external_function_parameters(
+            array(
+                'userid' => new external_value(PARAM_INT, 'id of user', VALUE_REQUIRED)
+            )
+            );
+    }
+
+    /**
+     * Return section ids array
+     *
+     * @return external_description
+     */
+    public static function get_enrol_list_returns() {
+        return new external_single_structure(
+            array(
+                'ids' => new external_multiple_structure(
+                    new external_value(PARAM_TEXT, 'Course ID', VALUE_REQUIRED)
+                    ),
             )
         );
     }

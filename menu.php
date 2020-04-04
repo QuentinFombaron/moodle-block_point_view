@@ -120,8 +120,6 @@ try {
 
         if (!empty($result)) {
 
-            $activities = (block_point_view_get_course_data($courseid))['activities'];
-
             $sqldata = $DB->get_records('block_point_view', ['courseid' => $COURSE->id], '', 'id,cmid,userid,vote');
 
             $table = new html_table();
@@ -173,84 +171,165 @@ try {
                     }
                 }
             }
+            if ($COURSE->id == 1) { /* Consulting courses votes */
+                $courses = get_courses();
+                foreach ($courses as $activity) {
 
-            foreach ($activities as $index => $activity) {
+                    if (isset($result[($activity->id)]->cmid)) {
 
-                if (isset($result[($activity['id'])]->cmid)) {
+                        $details = array(
+                            'easy' => array(),
+                            'better' => array(),
+                            'hard' => array()
+                        );
 
-                    $details = array(
-                        'easy' => array(),
-                        'better' => array(),
-                        'hard' => array()
-                    );
+                        foreach ($sqldata as $row) {
 
-                    foreach ($sqldata as $row) {
+                            if ($row->cmid == $activity->id) {
 
-                        if ($row->cmid == $activity['id']) {
-
-                            switch ($row->vote) {
-                                case 1 :
-                                    array_push($details['easy'], intval($row->userid));
-                                    break;
-                                case 2 :
-                                    array_push($details['better'], intval($row->userid));
-                                    break;
-                                case 3 :
-                                    array_push($details['hard'], intval($row->userid));
-                                    break;
+                                switch ($row->vote) {
+                                    case 1 :
+                                        array_push($details['easy'], intval($row->userid));
+                                        break;
+                                    case 2 :
+                                        array_push($details['better'], intval($row->userid));
+                                        break;
+                                    case 3 :
+                                        array_push($details['hard'], intval($row->userid));
+                                        break;
+                                }
                             }
                         }
+
+                        array_push($table->rowclasses,
+                            'row_module' . $activity->id,
+                            'row_module' . $activity->id . '_details'
+                            );
+
+                        $attributes = ['class' => 'iconlarge activityicon'];
+
+                        $icon = $OUTPUT->pix_icon('i/course', 'course', 'core', $attributes);
+
+                        $sectioncourse = $DB->get_record('course_categories', array('id' => $activity->category, ),  'name');
+
+                        array_push($table->data,
+                            array(
+                                $sectioncourse->name,
+                                $icon . format_string($activity->fullname),
+                                html_writer::empty_tag(
+                                    'img',
+                                    array('src' => $pixparam['easy'], 'class' => 'overview_img')) .
+                                ' <span class="votePercent">' .
+                                round(100 * intval($result[($activity->id)]->typeone)
+                                    / intval($result[($activity->id)]->total)) . '%</span><span class="voteInt">' .
+                                $result[($activity->id)]->typeone . '</span>',
+                                html_writer::empty_tag(
+                                    'img',
+                                    array('src' => $pixparam['better'], 'class' => 'overview_img')) .
+                                ' <span class="votePercent">' .
+                                round(100 * intval($result[($activity->id)]->typetwo)
+                                    / intval($result[($activity->id)]->total)) . '%</span><span class="voteInt">' .
+                                $result[($activity->id)]->typetwo . '</span>',
+                                html_writer::empty_tag(
+                                    'img',
+                                    array('src' => $pixparam['hard'], 'class' => 'overview_img')) .
+                                ' <span class="votePercent">' .
+                                round(100 * intval($result[($activity->id)]->typethree)
+                                    / intval($result[($activity->id)]->total)) . '% </span><span class="voteInt">' .
+                                $result[($activity->id)]->typethree . '</span>',
+                                $result[($activity->id)]->total,
+                                '+'
+                            ),
+                            array(
+                                '',
+                                '',
+                                tostring($OUTPUT, $details['easy'], $users, $course),
+                                tostring($OUTPUT, $details['better'], $users, $course),
+                                tostring($OUTPUT, $details['hard'], $users, $course),
+                                ''
+                            )
+                            );
                     }
+                }
+            } else { /* Consulting modules votes in a course */
+                $activities = (block_point_view_get_course_data($courseid))['activities'];
+                foreach ($activities as $index => $activity) {
 
-                    array_push($table->rowclasses,
-                        'row_module' . $activity['id'],
-                        'row_module' . $activity['id'] . '_details'
-                    );
+                    if (isset($result[($activity['id'])]->cmid)) {
 
-                    $attributes = ['class' => 'iconlarge activityicon'];
+                        $details = array(
+                            'easy' => array(),
+                            'better' => array(),
+                            'hard' => array()
+                        );
 
-                    $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+                        foreach ($sqldata as $row) {
 
-                    array_push($table->data,
-                        array(
-                            get_section_name($COURSE, $activity['section']),
-                            $icon . format_string($activity['name']),
-                            html_writer::empty_tag(
-                                'img',
-                                array('src' => $pixparam['easy'], 'class' => 'overview_img')) .
-                            ' <span class="votePercent">' .
-                            round(100 * intval($result[($activity['id'])]->typeone)
-                                / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
-                            $result[($activity['id'])]->typeone . '</span>',
-                            html_writer::empty_tag(
-                                'img',
-                                array('src' => $pixparam['better'], 'class' => 'overview_img')) .
-                            ' <span class="votePercent">' .
-                            round(100 * intval($result[($activity['id'])]->typetwo)
-                                / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
-                            $result[($activity['id'])]->typetwo . '</span>',
-                            html_writer::empty_tag(
-                                'img',
-                                array('src' => $pixparam['hard'], 'class' => 'overview_img')) .
-                            ' <span class="votePercent">' .
-                            round(100 * intval($result[($activity['id'])]->typethree)
-                                / intval($result[($activity['id'])]->total)) . '% </span><span class="voteInt">' .
-                            $result[($activity['id'])]->typethree . '</span>',
-                            $result[($activity['id'])]->total,
-                            '+'
-                        ),
-                        array(
-                            '',
-                            '',
-                            tostring($OUTPUT, $details['easy'], $users, $course),
-                            tostring($OUTPUT, $details['better'], $users, $course),
-                            tostring($OUTPUT, $details['hard'], $users, $course),
-                            ''
-                        )
-                    );
+                            if ($row->cmid == $activity['id']) {
+
+                                switch ($row->vote) {
+                                    case 1 :
+                                        array_push($details['easy'], intval($row->userid));
+                                        break;
+                                    case 2 :
+                                        array_push($details['better'], intval($row->userid));
+                                        break;
+                                    case 3 :
+                                        array_push($details['hard'], intval($row->userid));
+                                        break;
+                                }
+                            }
+                        }
+
+                        array_push($table->rowclasses,
+                            'row_module' . $activity['id'],
+                            'row_module' . $activity['id'] . '_details'
+                            );
+
+                        $attributes = ['class' => 'iconlarge activityicon'];
+
+                        $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
+
+                        array_push($table->data,
+                            array(
+                                get_section_name($COURSE, $activity['section']),
+                                $icon . format_string($activity['name']),
+                                html_writer::empty_tag(
+                                    'img',
+                                    array('src' => $pixparam['easy'], 'class' => 'overview_img')) .
+                                ' <span class="votePercent">' .
+                                round(100 * intval($result[($activity['id'])]->typeone)
+                                    / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
+                                $result[($activity['id'])]->typeone . '</span>',
+                                html_writer::empty_tag(
+                                    'img',
+                                    array('src' => $pixparam['better'], 'class' => 'overview_img')) .
+                                ' <span class="votePercent">' .
+                                round(100 * intval($result[($activity['id'])]->typetwo)
+                                    / intval($result[($activity['id'])]->total)) . '%</span><span class="voteInt">' .
+                                $result[($activity['id'])]->typetwo . '</span>',
+                                html_writer::empty_tag(
+                                    'img',
+                                    array('src' => $pixparam['hard'], 'class' => 'overview_img')) .
+                                ' <span class="votePercent">' .
+                                round(100 * intval($result[($activity['id'])]->typethree)
+                                    / intval($result[($activity['id'])]->total)) . '% </span><span class="voteInt">' .
+                                $result[($activity['id'])]->typethree . '</span>',
+                                $result[($activity['id'])]->total,
+                                '+'
+                            ),
+                            array(
+                                '',
+                                '',
+                                tostring($OUTPUT, $details['easy'], $users, $course),
+                                tostring($OUTPUT, $details['better'], $users, $course),
+                                tostring($OUTPUT, $details['hard'], $users, $course),
+                                ''
+                            )
+                            );
+                    }
                 }
             }
-
             echo html_writer::table($table);
 
         } else {
