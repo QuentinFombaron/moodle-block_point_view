@@ -84,7 +84,7 @@ class block_point_view extends block_base {
      * @throws moodle_exception
      */
     public function get_content() {
-        global $PAGE, $USER, $CFG, $DB, $COURSE;
+        global $USER, $CFG, $COURSE;
 
         if (get_config('block_point_view', 'enable_point_views_admin')) {
 
@@ -137,7 +137,7 @@ class block_point_view extends block_base {
 
             }
 
-            if (!$PAGE->user_is_editing()) {
+            if (!$this->page->user_is_editing()) {
 
                 $envconf = array(
                     'userid' => $USER->id,

@@ -773,6 +773,12 @@ class block_point_view_external extends external_api {
         );
     }
 
+    /**
+     * Get enrol list
+     *
+     * @param $userid
+     * @return array
+     */
     public static function get_enrol_list($userid) {
 
         $courses = get_courses();
