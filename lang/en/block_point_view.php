@@ -19,8 +19,8 @@
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,7 +43,7 @@ $string['config_header_activities'] = "Configuration of Reaction and Difficulty 
 $string['config_header_images'] = "Emojis configuration";
 $string['config_header_reset'] = "Reset reactions";
 $string['defaulttextbetter'] = "I'm getting better !";
-$string['defaulttextcontent'] = "This plugin gives the possibility to react and to give difficulties levels to activities.<br /><br />It is important to know that you are testing the Beta version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:quentin.fombaron1@etu.univ-grenoble-alpes.fr?subject=\"Reaction\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>November 28<SUP>th</SUP> 2018 (version 1.0.0)</i><br /><br />You can edit or delete this text in the block configuration menu<br /><br />";
+$string['defaulttextcontent'] = "This plugin gives the possibility to react and to give difficulties levels to activities.<br /><br />It is important to know that you are testing the Beta version.<br />This plugin is developed by Quentin Fombaron (<a href='mailto:q.fombaron@outlook.fr?subject=\"Reaction\"%20Moodle%20plugin%20-%20Feedback'>CLICK HERE</a> to send me an email).<br />Thank you in advance for your returns and bug reports.<br /><br /><i>April 04<SUP>th</SUP> 2020 (version 1.0.0)</i><br /><br />You can edit or delete this text in the block configuration menu<br /><br />";
 $string['defaulttexteasy'] = "Easy !";
 $string['defaulttexthard'] = "So hard...";
 $string['disableall'] = 'Disable all in <b>{$a}</b>';
@@ -67,9 +67,9 @@ $string['nonetrack'] = "None track";
 $string['no_activities_config_message'] = "No activity";
 $string['pixcurrently'] = "Currently used";
 $string['pixreset'] = "Reset emojis";
-$string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(Configuration will be saved and you will be redirected in course page)</i>";
+$string['pixresettext'] = "&nbsp;<i style='font-size: 0.8em'>(Configuration will be saved and you will be redirected to the course page)</i>";
 $string['point_viewpix'] = "Emojis";
-$string['point_viewpixdesc'] = "<h5 style='color:red'>Important :</h5> Name the files <b><span style='font-family: Courier'>[emoji_name].png</span></b> for the emoji pictures, for instance: <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span> and <span style='font-family: Courier'>hard.png</span>. Also need groups of emojis <b><span style='font-family: Courier'>group_[emojis_initials].png</span></b>, for instance: <span style='font-family: Courier'>group_EB.png</span> for the group of Easy and Better reactions. Don't forget the file <b><span style='font-family: Courier'>group_.png</span></b>  for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected : <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span>, <span style='font-family: Courier'>hard.png</span>, <span style='font-family: Courier'>group_.png</span>, <span style='font-family: Courier'>group_E.png</span>, <span style='font-family: Courier'>group_B.png</span>, <span style='font-family: Courier'>group_H.png</span>, <span style='font-family: Courier'>group_EB.png</span>, <span style='font-family: Courier'>group_EH.png</span>, <span style='font-family: Courier'>group_BH.png</span> et <span style='font-family: Courier'>group_EBH.png</span>";
+$string['point_viewpixdesc'] = "<h5 style='color:red'>Important :</h5> Name the files <b><span style='font-family: Courier'>[emoji_name].png</span></b> for the emoji pictures, for instance: <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span> and <span style='font-family: Courier'>hard.png</span>. Also need groups of emojis <b><span style='font-family: Courier'>group_[emojis_initials].png</span></b>, for instance: <span style='font-family: Courier'>group_EB.png</span> for the group of Easy and Better reactions. Don't forget the file <b><span style='font-family: Courier'>group_.png</span></b>  for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected : <span style='font-family: Courier'>easy.png</span>, <span style='font-family: Courier'>better.png</span>, <span style='font-family: Courier'>hard.png</span>, <span style='font-family: Courier'>group_.png</span>, <span style='font-family: Courier'>group_E.png</span>, <span style='font-family: Courier'>group_B.png</span>, <span style='font-family: Courier'>group_H.png</span>, <span style='font-family: Courier'>group_EB.png</span>, <span style='font-family: Courier'>group_EH.png</span>, <span style='font-family: Courier'>group_BH.png</span> and <span style='font-family: Courier'>group_EBH.png</span>";
 $string['reactionreset'] = 'Reset <b>{$a}</b> course reactions';
 $string['redtrack'] = "Red track";
 $string['textbetter'] = "<b>I'm getting better !</b> text";
@@ -104,7 +104,7 @@ $string['howto_type'] = "management of reactions on same type activities";
 $string['howto_type_help'] = "Enable or disable reactions on all activities of same type";
 
 /* Privacy */
-$string['privacy:metadata:block_point_view'] = "The Point of View block stores the user's votes on each activities.";
+$string['privacy:metadata:block_point_view'] = "The Point of View block stores the user's votes on each activity.";
 $string['privacy:metadata:activity_votes_database:courseid'] = "Course ID";
 $string['privacy:metadata:activity_votes_database:cmid'] = "Course activity ID";
 $string['privacy:metadata:activity_votes_database:userid'] = "User ID";

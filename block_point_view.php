@@ -19,8 +19,8 @@
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
+require_once($CFG->dirroot.'/course/renderer.php');
 
 try {
     require_login();
@@ -48,8 +49,8 @@ try {
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view extends block_base {
@@ -216,7 +217,7 @@ class block_point_view extends block_base {
     public function applicable_formats() {
         return array(
             'all' => false,
-            'site-index' => false,
+            'site-index' => true,
             'course-view' => true,
             );
     }

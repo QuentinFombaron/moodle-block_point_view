@@ -19,8 +19,8 @@
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -76,26 +76,64 @@ try {
 
                 $users = $DB->get_records('user', null, '', user_picture::fields());
 
+                $courses = get_courses();
+
+                $vote = array (
+                    1 => "easy",
+                    2 => "better",
+                    3 => "hard"
+                );
+
                 $data = array();
 
-                foreach ($activities as $index => $activity) {
+                if ($courseid == 1) {
 
-                    if (isset($result[($activity['id'])]->cmid)) {
+                    foreach ($courses as $activity) {
 
-                        foreach ($pointview as $row) {
+                        $sectioncourse = $DB->get_record('course_categories', array('id' => $activity->category, ), 'name');
 
-                            if ($row->cmid == $activity['id']) {
+                        if (isset($result[($activity->id)]->cmid)) {
 
-                                array_push($data, array(
+                            foreach ($pointview as $row) {
+
+                                if ($row->cmid == $activity->id) {
+
+                                    array_push($data, array(
+                                        $sectioncourse->name,
+                                        format_string($activity->fullname),
+                                        $result[($activity->id)]->typeone,
+                                        $result[($activity->id)]->typetwo,
+                                        $result[($activity->id)]->typethree,
+                                        $result[($activity->id)]->total,
+                                        $vote[$row->vote],
+                                        $users[($row->userid)]->firstname . ' ' . $users[($row->userid)]->lastname
+                                    )
+                                        );
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    foreach ($activities as $index => $activity) {
+
+                        if (isset($result[($activity['id'])]->cmid)) {
+
+                            foreach ($pointview as $row) {
+
+                                if ($row->cmid == $activity['id']) {
+
+                                    array_push($data, array(
                                         get_section_name($course, $activity['section']),
                                         format_string($activity['name']),
                                         $result[($activity['id'])]->typeone,
                                         $result[($activity['id'])]->typetwo,
                                         $result[($activity['id'])]->typethree,
                                         $result[($activity['id'])]->total,
+                                        $vote[$row->vote],
                                         $users[($row->userid)]->firstname . ' ' . $users[($row->userid)]->lastname
                                     )
-                                );
+                                        );
+                                }
                             }
                         }
                     }
@@ -119,6 +157,7 @@ try {
                 'better_vote_number',
                 'hard_vote_number',
                 'total_vote_number',
+                'user_vote',
                 'user'
             );
 
