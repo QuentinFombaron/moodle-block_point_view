@@ -111,7 +111,7 @@
 /* "Save changes" button in configuration */
 #id_go_to_save {
     position: absolute;
-    top: 0px;
+    top: 0;
     right: 10%;
     z-index: 19;
 }
@@ -211,8 +211,8 @@
 }
 /* CSS For combo box course/category front page */
 #frontpage-category-combo .reaction_box,
-#frontpage-category-combo .difficulty_box{
-    top : 0px;
+#frontpage-category-combo .difficulty_box {
+    top: 0;
 }
 
 .reaction_box {
@@ -222,14 +222,14 @@
     width: 10%;
 }
 
-.difficulty_box{
-    position: relative; 
-    top: -37px; 
+.difficulty_box {
+    position: relative;
+    top: -37px;
     width: 10px;
-    height: 0px;
+    height: 0;
 }
 
 .coursebox a {
-	position:relative; 
-	left: 10px;
+    position: relative;
+    left: 10px;
 }

@@ -19,8 +19,8 @@
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

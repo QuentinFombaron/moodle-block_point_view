@@ -19,8 +19,8 @@
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -49,8 +49,8 @@ try {
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view_edit_form extends block_edit_form {
@@ -62,13 +62,13 @@ class block_point_view_edit_form extends block_edit_form {
      */
     protected function specific_definition($mform) {
 
-        global $CFG, $COURSE, $OUTPUT, $PAGE;
+        global $CFG, $COURSE, $OUTPUT;
 
         try {
 
             if (get_config('block_point_view', 'enable_point_views_admin')) {
 
-                $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
+                $this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
                 $mform->addElement(
                     'header',
@@ -559,7 +559,7 @@ class block_point_view_edit_form extends block_edit_form {
                 /* AMD Call */
                 $params = array($sectionid, $envconf);
 
-                $PAGE->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
+                $this->page->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
 
             } else {
 
