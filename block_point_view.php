@@ -88,9 +88,6 @@ class block_point_view extends block_base {
 
         if (get_config('block_point_view', 'enable_point_views_admin')) {
 
-            /* CSS import */
-            $this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
-
             if ($this->content !== null) {
 
                 return $this->content;

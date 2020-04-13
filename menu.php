@@ -89,7 +89,7 @@ try {
 
         $PAGE->set_context($context);
 
-        $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
+        $PAGE->requires->css('/blocks/point_view/styles.css');
 
         $envconf = array(
             'userid' => $USER->id,

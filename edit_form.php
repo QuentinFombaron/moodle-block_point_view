@@ -62,13 +62,10 @@ class block_point_view_edit_form extends block_edit_form {
      */
     protected function specific_definition($mform) {
 
-        global $CFG, $COURSE, $OUTPUT;
+        global $CFG, $PAGE, $COURSE, $OUTPUT;
 
         try {
-
             if (get_config('block_point_view', 'enable_point_views_admin')) {
-
-                $this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
                 $mform->addElement(
                     'header',
@@ -559,7 +556,7 @@ class block_point_view_edit_form extends block_edit_form {
                 /* AMD Call */
                 $params = array($sectionid, $envconf);
 
-                $this->page->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
+                $PAGE->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
 
             } else {
 
