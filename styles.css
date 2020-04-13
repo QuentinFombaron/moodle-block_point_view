@@ -110,18 +110,18 @@
 
 /* "Save changes" button in configuration */
 #id_go_to_save {
-    position: absolute;
-    top: 0;
-    right: 10%;
-    z-index: 19;
+    position: fixed;
+    top: 390px;
+    right: 100px;
+    z-index: 9999;
 }
 
 /* "Close field" button in configuration */
 #id_close_field {
-    position: absolute;
-    top: 25px;
-    right: 10%;
-    z-index: 19;
+    position: fixed;
+    top: 430px;
+    right: 100px;
+    z-index: 9999;
 }
 
 /* Green dot to inform that user has voted */
