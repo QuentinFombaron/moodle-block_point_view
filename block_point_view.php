@@ -19,8 +19,8 @@
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -49,8 +49,8 @@ try {
  *
  *
  * @package    block_point_view
- * @copyright  2018 Quentin Fombaron
- * @author     Quentin Fombaron <quentin.fombaron1@etu.univ-grenoble-alpes.fr>
+ * @copyright  2020 Quentin Fombaron
+ * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view extends block_base {
@@ -84,12 +84,9 @@ class block_point_view extends block_base {
      * @throws moodle_exception
      */
     public function get_content() {
-        global $PAGE, $USER, $CFG, $DB, $COURSE;
+        global $USER, $CFG, $COURSE;
 
         if (get_config('block_point_view', 'enable_point_views_admin')) {
-
-            /* CSS import */
-            $this->page->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
 
             if ($this->content !== null) {
 
@@ -137,7 +134,7 @@ class block_point_view extends block_base {
 
             }
 
-            if (!$PAGE->user_is_editing()) {
+            if (!$this->page->user_is_editing()) {
 
                 $envconf = array(
                     'userid' => $USER->id,

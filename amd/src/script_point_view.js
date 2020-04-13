@@ -8,10 +8,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                 /* Resize the activity name field to give space to Likes icons */
                 $('.mod-indent-outer').css({'width': '85%'});
 
-                /* folder friendly */
-                $('.folder .mod-indent-outer').each(function (index, element) {
-                    if (!$(element).find(".activityinstance").length > 0){
-                        $(element).prepend('<div class="activityinstance" style="width: 0px;"><a></a></div>');
+                /* Folder friendly */
+                $('.folder .mod-indent-outer').each(function(index, element) {
+                    if (!$(element).find(".activityinstance").length > 0) {
+                        $(element).prepend('<div class="activityinstance" style="width: 0;"><a></a></div>');
                     }
                 });
 
@@ -151,8 +151,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                             /* Modify the image source of the reaction group */
                             $('#module-' + moduleId + ' .group_img').attr('src', pix[groupImg]);
                         }
+
+                        /**
+                         * Update PointView SQL
+                         */
                         function updatePointViewSql() {
-                        	var ajaxPromises = ajax.call([
+                            var ajaxPromises = ajax.call([
                                 {
                                     methodname: 'block_point_view_get_database',
                                     args: {
@@ -235,7 +239,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                 if (parseInt((event.data.module).getElementsByClassName('better_nb')[0].innerText) === 0) {
                                     $('#module-' + (event.data.moduleId) + ' .better')
                                         .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                                    /*... .attr('src', '../blocks/point_view/pix/better_BW.png'); */
+                                    /** ... .attr('src', '../blocks/point_view/pix/better_BW.png'); */
                                 }
                                 if (parseInt((event.data.module).getElementsByClassName('hard_nb')[0].innerText) === 0) {
                                     $('#module-' + (event.data.moduleId) + ' .hard')
@@ -462,7 +466,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                          */
                         function onClick(event) {
                             /* Test if action is on main if true then test if user is enrolled in course */
-                            var isOnMainPage = (courseId != 1 ? true : (custom.ids).includes(event.data.moduleId.toString(10)));
+                            var isOnMainPage = (courseId !== 1 ? true : (custom.ids).includes(event.data.moduleId.toString(10)));
                             if (isOnMainPage) {
                                 if (userId !== null && userId !== 1) {
 
@@ -497,10 +501,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                                 done: function() {
 
                                                     /* Increment the number of the new reaction of 1 */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').text(nbReation + 1);
+                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
+                                                        .text(nbReation + 1);
 
                                                     /* Update the text appearance to know that this is the selected reaction */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').css({
+                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
+                                                        .css({
                                                         'font-weight': 'bold',
                                                         'color': '#5585B6'
                                                     });
@@ -535,10 +541,15 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                                     nbReation--;
 
                                                     /* Update the number of old reaction */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').text(nbReation);
+                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
+                                                        .text(nbReation);
 
-                                                    /* Update the text appearance to know that this is no longer the selected reaction */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').css({
+                                                    /**
+                                                    * Update the text appearance to know that this is no longer
+                                                    * the selected reaction
+                                                    */
+                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
+                                                        .css({
                                                         'font-weight': 'normal',
                                                         'color': 'black'
                                                     });
@@ -549,7 +560,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                                         */
                                                     if (nbReation === 0) {
                                                         $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                                            .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
+                                                            .css({
+                                                                '-webkit-filter': 'grayscale(100%)',
+                                                                'filter': 'grayscale(100%)'
+                                                            });
                                                     }
 
                                                     /* Update the value of total number reaction with an decrement of 1 */
@@ -579,10 +593,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                                 done: function() {
 
                                                     /* Increment the number of 'reactionName' reaction of 1 */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb').text(nbReation + 1);
+                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
+                                                        .text(nbReation + 1);
 
                                                     /* Update the text appearance to know that this is the selected reaction */
-                                                    $('#module-' + (event.data.moduleId) + ' .' + (event.data.reactionName) + '_nb').css({
+                                                    $('#module-' + (event.data.moduleId) + ' .' + (event.data.reactionName) + '_nb')
+                                                        .css({
                                                         'font-weight': 'bold',
                                                         'color': '#5585B6'
                                                     });
@@ -606,10 +622,14 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                                         .getElementsByClassName(reationSelectName + '_nb')[0].innerText) - 1;
 
                                                     /* Update the value of the old reaction */
-                                                    $('#module-' + event.data.moduleId + ' .' + reationSelectName + '_nb').text(nbReationSelect);
+                                                    $('#module-' + event.data.moduleId + ' .' + reationSelectName + '_nb')
+                                                        .text(nbReationSelect);
 
-                                                    /* Update the text appearance to know that this is no longer the selected reaction */
-                                                    $('#module-' + (event.data.moduleId) + ' .' + reationSelectName + '_nb').css({
+                                                    /** Update the text appearance to know that this is no longer
+                                                     * the selected reaction
+                                                     */
+                                                    $('#module-' + (event.data.moduleId) + ' .' + reationSelectName + '_nb')
+                                                        .css({
                                                         'font-weight': 'normal',
                                                         'color': 'black'
                                                     });
@@ -620,7 +640,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                                     */
                                                     if (nbReationSelect === 0) {
                                                         $('#module-' + (event.data.moduleId) + ' .' + reationSelectName)
-                                                            .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
+                                                            .css({
+                                                                '-webkit-filter': 'grayscale(100%)',
+                                                                'filter': 'grayscale(100%)'
+                                                            });
                                                     }
 
                                                     /* Update the current reation with the new one */
@@ -632,7 +655,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                     }
                                 }
                             } else {
-                                alert("You are not enrolled in this course, you can't react to this.");
+                                /** FIXME alert("You are not enrolled in this course, you can't react to this."); */
                             }
                         }
 
@@ -739,51 +762,58 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                             .mouseout(function() {
                                 $(this).css({'background': ''});
                             });
-                        CreateReactions();
-                        function CreateReactions() {
+                        createReactions();
+
+                        /**
+                         * Create reaction
+                         */
+                        function createReactions() {
                             /* For each selected module, create a reaction zone */
                             moduleSelect.forEach(function(moduleIdParam) {
                                 var moduleId = parseInt(moduleIdParam);
+                                var courseBoxSelector = $('.coursebox[data-courseid="' + moduleId + '"]');
+                                var pointViewsModule = searchModule(moduleId);
 
-                                if ((document.getElementById('module-' + moduleId) !== null) || (document.querySelectorAll('[data-courseid="' + moduleId + '"]')) !== null) {
-                                    var pointViewsModule = searchModule(moduleId);
+                                /* Create the HTML block necessary to each activity */
+                                var htmlBlock = '<div class="block_point_view reactions">' +
+                                    '<!-- EASY ! --><span class="tooltipreaction">' +
+                                    '<img src="' + pix.easy + '" alt=" " class="easy"/>' +
+                                    '<span class="tooltiptextreaction easy_txt">' + pix.easytxt + '</span></span>' +
+                                    '<span class="easy_nb">' + pointViewsModule.typeone + '</span>' +
+                                    '<!-- I\'M GETTING BETTER --><span class="tooltipreaction">' +
+                                    '<img src="' + pix.better + '" alt=" " class="better"/>' +
+                                    '<span class="tooltiptextreaction better_txt">' + pix.bettertxt + '</span></span>' +
+                                    '<span class="better_nb">' + pointViewsModule.typetwo + '</span>' +
+                                    '<!-- SO HARD... --><span class="tooltipreaction">' +
+                                    '<img src="' + pix.hard + '" alt=" " class="hard"/>' +
+                                    '<span class="tooltiptextreaction hard_txt">' + pix.hardtxt + '</span></span>' +
+                                    '<span class="hard_nb">' + pointViewsModule.typethree + '</span></div>' +
+                                    '<!-- GROUP --><div class="block_point_view group">' +
+                                    '<img src="" alt=" " class="group_img"/>' +
+                                    '<span class="group_nb">' + pointViewsModule.total + '</span></div>';
 
-                                    $('.coursebox[data-courseid="' + moduleId + '"]').prop('id', 'module-' + moduleId);
+                                if (
+                                    (document.getElementById('module-' + moduleId) !== null) ||
+                                    (document.querySelectorAll('[data-courseid="' + moduleId + '"]')) !== null) {
+                                    courseBoxSelector.prop('id', 'module-' + moduleId);
 
-                                    /* Create the HTML block necessary to each activity */
-                                    var htmlBlock = '<div class="block_point_view reactions">' +
-                                        '<!-- EASY ! --><span class="tooltipreaction">' +
-                                        '<img src="' + pix.easy + '" alt=" " class="easy"/>' +
-                                        '<span class="tooltiptextreaction easy_txt">' + pix.easytxt + '</span></span>' +
-                                        '<span class="easy_nb">' + pointViewsModule.typeone + '</span>' +
-                                        '<!-- I\'M GETTING BETTER --><span class="tooltipreaction">' +
-                                        '<img src="' + pix.better + '" alt=" " class="better"/>' +
-                                        '<span class="tooltiptextreaction better_txt">' + pix.bettertxt + '</span></span>' +
-                                        '<span class="better_nb">' + pointViewsModule.typetwo + '</span>' +
-                                        '<!-- SO HARD... --><span class="tooltipreaction">' +
-                                        '<img src="' + pix.hard + '" alt=" " class="hard"/>' +
-                                        '<span class="tooltiptextreaction hard_txt">' + pix.hardtxt + '</span></span>' +
-                                        '<span class="hard_nb">' + pointViewsModule.typethree + '</span></div>' +
-                                        '<!-- GROUP --><div class="block_point_view group">' +
-                                        '<img src="" alt=" " class="group_img"/>' +
-                                        '<span class="group_nb">' + pointViewsModule.total + '</span></div>';
                                     /* Export the HTML block */
-                                    if (courseId != 1) {
+                                    if (courseId !== 1) {
                                         $('#module-' + moduleId + ' .activityinstance').append(htmlBlock);
-                                        manageReact(moduleId,'#module-');
-                                    } else if ($('.coursebox[data-courseid="' + moduleId + '"]').find('.reaction_box').length == 0) {
-                                        $('.coursebox[data-courseid="' + moduleId + '"]').append("<div class='reaction_box'></div>");
-                                        $('.coursebox[data-courseid="' + moduleId + '"]').append("<div class='difficulty_box'></div>");
+                                        manageReact(moduleId, '#module-');
+                                    } else if (courseBoxSelector.find('.reaction_box').length === 0) {
+                                        courseBoxSelector.append("<div class='reaction_box'></div>");
+                                        courseBoxSelector.append("<div class='difficulty_box'></div>");
                                         $('.coursebox[data-courseid="' + moduleId + '"] .reaction_box').append(htmlBlock);
-                                        manageReact(moduleId,'#module-');
+                                        manageReact(moduleId, '#module-');
                                     }
                                 }
-                                if ($('.course_category_tree .coursebox[data-courseid="' + moduleId + '"]').find('.reaction_box').length == 0) {
-                                    $('.course_category_tree .coursebox[data-courseid="' + moduleId + '"]').append("<div class='reaction_box'></div>");
-                                    $('.course_category_tree .coursebox[data-courseid="' + moduleId + '"]').append("<div class='difficulty_box'></div>");
-                                    $('.course_category_tree .coursebox[data-courseid="' + moduleId + '"] .reaction_box').append(htmlBlock);
-                                    if ($('.course_category_tree .coursebox[data-courseid="' + moduleId + '"]').find('.reaction_box').length !== 0) {
-                                        manageReact(moduleId,'.course_category_tree #module-');
+                                if (courseBoxSelector.find('.reaction_box').length === 0) {
+                                    courseBoxSelector.append("<div class='reaction_box'></div>");
+                                    courseBoxSelector.append("<div class='difficulty_box'></div>");
+                                    courseBoxSelector.append(htmlBlock);
+                                    if (courseBoxSelector.find('.reaction_box').length !== 0) {
+                                        manageReact(moduleId, '.course_category_tree #module-');
                                     }
                                 }
 
@@ -823,6 +853,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                             });
                         }
 
+                        /**
+                         * @param {string} moduleIdParam
+                         * @param {string} zone
+                         */
                         function manageReact(moduleIdParam, zone) {
 
                             var moduleId = parseInt(moduleIdParam);
@@ -924,7 +958,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                         /* Display difficulty tracks */
                         difficultylevels.forEach(function(value) {
-                            var position = (courseId == 1 ? " .difficulty_box" : " .activityinstance a");
+                            var position = (courseId === 1 ? " .difficulty_box" : " .activityinstance a");
                             $('.coursebox[data-courseid="' + value.id + '"]').prop('id', 'module-' + value.id);
                             if (value.difficultyLevel !== '0') {
                                 var difficulty;
@@ -954,8 +988,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                         $('.notloaded').click(function() {
                             $.ajax({
-                                complete: function(){
-                                    setTimeout(function(){ CreateReactions(); }, 4000);
+                                complete: function() {
+                                    setTimeout(function() {
+                                        createReactions();
+                                    }, 4000);
                                 }
                             });
                         });

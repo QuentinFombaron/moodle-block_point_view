@@ -17,9 +17,8 @@
 /**
  * Add event handlers for the lesson
  *
- * @package    mod_lesson
- * @category   event
- * @copyright  2015 Jean-Michel Vedrine
+ * @package    block_point_view
+ * @copyright  2020 Jayson Haulkory
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
