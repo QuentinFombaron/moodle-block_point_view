@@ -10,7 +10,7 @@ It is a Moodle plugin managed by a block to be added in a course (see **0.1** pa
 This plugin is developed by Quentin Fombaron. It is initialy developped for [caseine.org](http://www.caseine.org). Do not hesitate to send your thinking and bug reports to the contact addresses bellow.
 
 Contacts :
-- [Quentin Fombaron](mailto:quentin.fombaron1@etu.univ-grenoble.alpes.fr)
+- [Quentin Fombaron](mailto:q.fombaron@outlook.fr)
 - [Caseine](mailto:contact.caseine@grenoble-inp.fr)
 
 <br />\* *The CNP, set up as part of the IDEX Training component, brings together the DAPI, PerForm and IDEX support teams.*<br />
