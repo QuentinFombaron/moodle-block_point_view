@@ -30,19 +30,6 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
-try {
-    require_login();
-} catch (coding_exception $e) {
-    echo 'Exception [coding_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (require_login_exception $e) {
-    echo 'Exception [require_login_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (moodle_exception $e) {
-    echo 'Exception [moodle_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-}
-
 /**
  * Class block_point_view_external
  *
@@ -330,16 +317,16 @@ class block_point_view_external extends external_api {
 
         $pixparam = array(
             'easy' => $CFG->wwwroot . '/blocks/point_view/pix/easy.png',
-            'easytxt' => (isset($blockinstance->config->text_easy)) ?
-                $blockinstance->config->text_easy
+            'easytxt' => (isset($blockinstance->config->pix_text_easy)) ?
+                $blockinstance->config->pix_text_easy
                 : get_string('defaulttexteasy', 'block_point_view' ),
             'better' => $CFG->wwwroot . '/blocks/point_view/pix/better.png',
-            'bettertxt' => (isset($blockinstance->config->text_better)) ?
-                $blockinstance->config->text_better
+            'bettertxt' => (isset($blockinstance->config->pix_text_better)) ?
+                $blockinstance->config->pix_text_better
                 : get_string('defaulttextbetter', 'block_point_view'),
             'hard' => $CFG->wwwroot . '/blocks/point_view/pix/hard.png',
-            'hardtxt' => (isset($blockinstance->config->text_hard)) ?
-                $blockinstance->config->text_hard
+            'hardtxt' => (isset($blockinstance->config->pix_text_hard)) ?
+                $blockinstance->config->pix_text_hard
                 : get_string('defaulttexthard', 'block_point_view'),
             'group_' => $CFG->wwwroot . '/blocks/point_view/pix/group_.png',
             'group_E' => $CFG->wwwroot . '/blocks/point_view/pix/group_E.png',

@@ -28,19 +28,6 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once(__DIR__ . '/../../config.php');
 
-try {
-    require_login();
-} catch (coding_exception $e) {
-    echo 'Exception [coding_exception] (blocks/point_view/lib.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (require_login_exception $e) {
-    echo 'Exception [require_login_exception] (blocks/point_view/lib.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (moodle_exception $e) {
-    echo 'Exception [moodle_exception] (blocks/point_view/lib.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-}
-
 /** Administration configuration to enable Reactions */
 const DEFAULT_POINT_VIEW_ENABLE_REACTIONS = 1;
 
@@ -56,7 +43,7 @@ const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
  * @throws coding_exception
  * @throws moodle_exception
  */
-function block_point_view_get_course_data ($courseid, $contextid = null) {
+function block_point_view_get_course_data($courseid, $contextid = null) {
     global $PAGE;
 
     $PAGE->set_context($contextid);
