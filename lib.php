@@ -24,6 +24,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\session\manager;
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once(__DIR__ . '/../../config.php');
@@ -175,48 +177,73 @@ function block_point_view_manage_types($mform, $types) {
 }
 
 /**
- * File serving.
+ * Form for editing HTML block instances.
  *
- * @param stdClass $course The course object.
- * @param stdClass $bi Block instance record.
- * @param context $context The context object.
- * @param string $filearea The file area.
- * @param array $args List of arguments.
- * @param bool $forcedownload Whether or not to force the download of the file.
- * @param array $options Array of options.
- * @return void|false
+ * @param stdClass $course Course object
+ * @param stdClass $bi Block instance record
+ * @param stdClass $context Context object
+ * @param string $filearea File area
+ * @param array $args Extra arguments
+ * @param bool $forcedownload Whether or not force download
+ * @param array $options Additional options affecting the file serving
+ *
+ * @return bool
+ *
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
  */
 function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $CFG, $USER;
+
+    if ($context->contextlevel != CONTEXT_BLOCK) {
+        send_file_not_found();
+    }
+
+    if ($context->get_course_context(false)) {
+        require_course_login($course);
+    } else if ($CFG->forcelogin) {
+        require_login();
+    } else {
+
+        $parentcontext = $context->get_parent_context();
+
+        if ($parentcontext->contextlevel === CONTEXT_COURSECAT) {
+
+            if (!core_course_category::get($parentcontext->instanceid, IGNORE_MISSING)) {
+                send_file_not_found();
+            }
+
+        } else if ($parentcontext->contextlevel === CONTEXT_USER && $parentcontext->instanceid != $USER->id) {
+            send_file_not_found();
+        }
+    }
 
     $fs = get_file_storage();
 
-    if (($filearea == 'point_views_pix') || ($filearea == 'point_views_pix_admin')) {
+    $filename = array_pop($args);
 
-        $itemid = array_shift($args);
+    $filepath = '/';
 
-        if ($itemid != 0) {
-            return false;
+    if ($filearea === 'content') {
+
+        if (!$file = $fs->get_file($context->id, 'block_point_view', 'content', 0, $filepath, $filename) or $file->is_directory()) {
+            send_file_not_found();
+        }
+    }
+
+    if (($filearea === 'point_views_pix') || ($filearea === 'point_views_pix_admin')) {
+
+        if (!$file = $fs->get_file($context->id, 'block_point_view', $filearea, 0, $filepath, $filename . '.png') or $file->is_directory()) {
+            send_file_not_found();
         }
 
-        $filename = array_shift($args);
-
-        $filepath = '/';
-
-        $file = $fs->get_file($context->id, 'block_point_view', $filearea, $itemid, $filepath, $filename . '.png');
-
-    } else {
-
-        return false;
-
     }
 
-    if (!$file) {
+    manager::write_close();
+    send_stored_file($file, null, 0, true, $options);
 
-        return false;
-
-    }
-
-    send_stored_file($file, 0, 0, true, $options);
+    return true;
 }
 
 /**
@@ -261,4 +288,50 @@ function tostring($output, $data, $users, $course) {
     }
 
     return $string;
+}
+
+/**
+ * Perform global search replace such as when migrating site to new URL.
+ *
+ * @param $search
+ * @param $replace
+ *
+ * @throws dml_exception
+ */
+function block_point_view_global_db_replace($search, $replace) {
+    global $DB;
+
+    $instances = $DB->get_recordset('block_instances', array('blockname' => 'point_view'));
+    foreach ($instances as $instance) {
+        $config = unserialize(base64_decode($instance->configdata));
+        if (isset($config->text) and is_string($config->text)) {
+            $config->text = str_replace($search, $replace, $config->text);
+            $DB->update_record('block_instances', ['id' => $instance->id,
+                'configdata' => base64_encode(serialize($config)), 'timemodified' => time()]);
+        }
+    }
+    $instances->close();
+}
+
+/**
+ * Given an array with a file path, it returns the itemid and the filepath for the defined filearea.
+ *
+ * @param string $filearea
+ * @param array $args
+ *
+ * @return array
+ */
+function block_point_view_get_path_from_pluginfile($filearea, $args) {
+    array_shift($args);
+
+    if (empty($args)) {
+        $filepath = '/';
+    } else {
+        $filepath = '/' . implode('/', $args) . '/';
+    }
+
+    return [
+        'itemid' => 0,
+        'filepath' => $filepath,
+    ];
 }

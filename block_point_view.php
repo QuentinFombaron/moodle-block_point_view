@@ -56,6 +56,18 @@ class block_point_view extends block_base {
     }
 
     /**
+     * Enable to add the block only in a course
+     *
+     * @return array
+     */
+    public function applicable_formats() {
+        return array(
+            'site-index' => true,
+            'course-view' => true,
+        );
+    }
+
+    /**
      * Content of Point of View block
      *
      * @return Object
@@ -78,6 +90,23 @@ class block_point_view extends block_base {
 
             if (has_capability('block/point_view:view', $this->context)) {
 
+                $filteropt = new stdClass;
+                if ($this->content_is_trusted()) {
+                    $filteropt->noclean = true;
+                }
+                $this->content = new stdClass;
+                $this->content->footer = '';
+                if (isset($this->config->text)) {
+                    $this->config->text = file_rewrite_pluginfile_urls($this->config->text, 'pluginfile.php', $this->context->id, 'block_point_view', 'content', NULL);
+                    $format = FORMAT_HTML;
+                    if (isset($this->config->format)) {
+                        $format = $this->config->format;
+                    }
+                    $this->content->text = format_text($this->config->text, $format, $filteropt);
+                } else {
+                    $this->content->text = '<span>'.get_string('defaulttextcontent', 'block_point_view').'</span>';
+                }
+
                 $parameters = [
                     'instanceid' => $this->instance->id,
                     'contextid' => $this->context->id,
@@ -87,20 +116,6 @@ class block_point_view extends block_base {
                 ];
 
                 $url = new moodle_url('/blocks/point_view/menu.php', $parameters);
-
-
-                $this->content = new stdClass;
-                $this->content->footer = '';
-                if (isset($this->config->text)) {
-                    $this->config->text = file_rewrite_pluginfile_urls($this->config->text, 'pluginfile.php', $this->context->id, 'block_point_view', 'content', NULL);
-                    $format = FORMAT_HTML;
-                    if (isset($this->config->format)) {
-                        $format = $this->config->format;
-                    }
-                    $this->content->text = format_text($this->config->text, $format);
-                } else {
-                    $this->content->text = '<span>'.get_string('defaulttextcontent', 'block_point_view').'</span>';
-                }
 
                 $this->content->text .= html_writer::link(
                     $url,
@@ -139,9 +154,33 @@ class block_point_view extends block_base {
     }
 
     /**
+     * Is content trusted
+     *
+     * @return bool
+     *
+     * @throws coding_exception
+     */
+    function content_is_trusted() {
+        global $SCRIPT;
+
+        if (!$context = context::instance_by_id($this->instance->parentcontextid, IGNORE_MISSING)) {
+            return false;
+        }
+        if ($context->contextlevel == CONTEXT_USER) {
+            if ($SCRIPT === '/my/index.php') {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Serialize and store config data
      *
-     * Save data from filemanager when user is saving configuration.
+     * Save data from file manager when user is saving configuration.
      * Delete file storage if user disable custom emojis.
      *
      * @param mixed $data
@@ -151,13 +190,19 @@ class block_point_view extends block_base {
 
         $config = clone($data);
 
-        $config->text = file_save_draft_area_files($data->text['itemid'], $this->context->id, 'block_point_view', 'content', 0, array('subdirs'=>true), $data->text['text']);
+        $config->text = file_save_draft_area_files(
+            $data->text['itemid'],
+            $this->context->id,
+            'block_point_view',
+            'content',
+            0,
+            array('subdirs'=>true),
+            $data->text['text']
+        );
+
         $config->format = $data->text['format'];
 
-        $fs = get_file_storage();
-
         if ($config->enable_pix_checkbox) {
-
             $config->point_views_pix = file_save_draft_area_files(
                 $data->point_views_pix,
                 $this->context->id,
@@ -165,11 +210,9 @@ class block_point_view extends block_base {
                 'point_views_pix',
                 0
             );
-
         } else {
-
-            $fs->delete_area_files($this->context->id, 'block_point_view');
-
+            $fs = get_file_storage();
+            $fs->delete_area_files($this->context->id, 'block_point_view', 'point_views_pix');
         }
 
         parent::instance_config_save($config, $nolongerused);
@@ -192,19 +235,6 @@ class block_point_view extends block_base {
     }
 
     /**
-     * Enable to add the block only in a course
-     *
-     * @return array
-     */
-    public function applicable_formats() {
-        return array(
-            'all' => false,
-            'site-index' => true,
-            'course-view' => true,
-            );
-    }
-
-    /**
      * Copy any block-specific data when copying to a new block instance.
      *
      * @param int $fromid the id number of the block instance to copy from
@@ -215,6 +245,30 @@ class block_point_view extends block_base {
         $fromcontext = context_block::instance($fromid);
 
         $fs = get_file_storage();
+
+        if (!$fs->is_area_empty($fromcontext->id, 'block_point_view', 'content', 0, false)) {
+
+            $draftitemid = 0;
+
+            file_prepare_draft_area(
+                $draftitemid,
+                $fromcontext->id,
+                'block_point_view',
+                'content',
+                0,
+                array('subdirs' => true)
+            );
+
+            file_save_draft_area_files(
+                $draftitemid,
+                $this->context->id,
+                'block_point_view',
+                'content',
+                0,
+                array('subdirs' => true)
+            );
+
+        }
 
         if (!$fs->is_area_empty($fromcontext->id, 'block_point_view', 'point_views_pix', 0, false)) {
 
