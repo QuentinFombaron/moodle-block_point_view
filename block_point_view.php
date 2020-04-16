@@ -30,20 +30,6 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 require_once($CFG->dirroot.'/course/renderer.php');
 
-try {
-    require_login();
-} catch (coding_exception $e) {
-    echo 'Exception [coding_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (require_login_exception $e) {
-    echo 'Exception [require_login_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (moodle_exception $e) {
-    echo 'Exception [moodle_exception] (blocks/point_view/block_point_view.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-}
-
-
 /**
  * block_point_view Class
  *
