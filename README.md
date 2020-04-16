@@ -1,6 +1,6 @@
 # Moodle plugin « Point of View »
 
-*Quentin Fombaron - November 28<SUP>th</SUP> 2018*<br />
+*Quentin Fombaron - April 17<SUP>th</SUP> 2020*<br />
 *Centre des Nouvelles Pédagogies (CNP\*), Univ. Grenoble Alpes - University of  innovation*<br />
 
 The plugin **Point of view** offers the possibility to react and give difficulty levels to activities of a Moodle course. Students know the difficulty of the activity thank to color tracks, they also have the possibility to react via emojis, each representing an emotion, a feeling (see **Usage** section).
