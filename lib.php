@@ -28,8 +28,6 @@ use core\session\manager;
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once(__DIR__ . '/../../config.php');
-
 /** Administration configuration to enable Reactions */
 const DEFAULT_POINT_VIEW_ENABLE_REACTIONS = 1;
 
@@ -293,8 +291,8 @@ function tostring($output, $data, $users, $course) {
 /**
  * Perform global search replace such as when migrating site to new URL.
  *
- * @param $search
- * @param $replace
+ * @param string $search
+ * @param string $replace
  *
  * @throws dml_exception
  */

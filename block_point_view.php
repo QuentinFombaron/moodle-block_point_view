@@ -97,7 +97,14 @@ class block_point_view extends block_base {
                 $this->content = new stdClass;
                 $this->content->footer = '';
                 if (isset($this->config->text)) {
-                    $this->config->text = file_rewrite_pluginfile_urls($this->config->text, 'pluginfile.php', $this->context->id, 'block_point_view', 'content', NULL);
+                    $this->config->text = file_rewrite_pluginfile_urls(
+                        $this->config->text,
+                        'pluginfile.php',
+                        $this->context->id,
+                        'block_point_view',
+                        'content',
+                        null
+                    );
                     $format = FORMAT_HTML;
                     if (isset($this->config->format)) {
                         $format = $this->config->format;
@@ -160,7 +167,7 @@ class block_point_view extends block_base {
      *
      * @throws coding_exception
      */
-    function content_is_trusted() {
+    public function content_is_trusted() {
         global $SCRIPT;
 
         if (!$context = context::instance_by_id($this->instance->parentcontextid, IGNORE_MISSING)) {
@@ -196,7 +203,7 @@ class block_point_view extends block_base {
             'block_point_view',
             'content',
             0,
-            array('subdirs'=>true),
+            array('subdirs' => true),
             $data->text['text']
         );
 

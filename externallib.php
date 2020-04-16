@@ -26,7 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 

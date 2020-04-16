@@ -674,22 +674,29 @@ class block_point_view_edit_form extends block_edit_form {
 
         if (!empty($this->block->config) && is_object($this->block->config)) {
 
-
             $text = $this->block->config->text;
-            $draftid_editor = file_get_submitted_draft_itemid('config_text');
+            $draftideditor = file_get_submitted_draft_itemid('config_text');
             if (empty($text)) {
                 $currenttext = '';
             } else {
                 $currenttext = $text;
             }
-            $defaults->config_text['text'] = file_prepare_draft_area($draftid_editor, $this->block->context->id, 'block_point_view', 'content', 0, array('subdirs'=>true), $currenttext);
-            $defaults->config_text['itemid'] = $draftid_editor;
+            $defaults->config_text['text'] = file_prepare_draft_area(
+                $draftideditor,
+                $this->block->context->id,
+                'block_point_view',
+                'content',
+                0,
+                array('subdirs' => true),
+                $currenttext
+            );
+            $defaults->config_text['itemid'] = $draftideditor;
             $defaults->config_text['format'] = $this->block->config->format;
 
-            $draftid = file_get_submitted_draft_itemid('config_point_views_pix');
+            $draftidpix = file_get_submitted_draft_itemid('config_point_views_pix');
 
             file_prepare_draft_area(
-                $draftid,
+                $draftidpix,
                 $this->block->context->id,
                 'block_point_view',
                 'point_views_pix',
@@ -701,9 +708,9 @@ class block_point_view_edit_form extends block_edit_form {
                 )
                 );
 
-            $defaults->config_point_views_pix = $draftid;
+            $defaults->config_point_views_pix = $draftidpix;
 
-            $this->block->config->point_views_pix = $draftid;
+            $this->block->config->point_views_pix = $draftidpix;
         }
 
         unset($this->block->config->text);
