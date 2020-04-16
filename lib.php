@@ -43,7 +43,7 @@ const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
  * @throws coding_exception
  * @throws moodle_exception
  */
-function block_point_view_get_course_data ($courseid, $contextid = null) {
+function block_point_view_get_course_data($courseid, $contextid = null) {
     global $PAGE;
 
     $PAGE->set_context($contextid);

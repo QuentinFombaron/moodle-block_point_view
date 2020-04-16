@@ -74,14 +74,15 @@ class block_point_view_edit_form extends block_edit_form {
                     );
 
                 /* Block content */
+
+                $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $this->block->context);
                 $mform->addElement(
-                    'text',
+                    'editor',
                     'config_text',
-                    get_string('contentinputlabel', 'block_point_view')
-                    );
-
-                $mform->setDefault('config_text', get_string('defaulttextcontent', 'block_point_view'));
-
+                    get_string('contentinputlabel', 'block_point_view'),
+                    null,
+                    $editoroptions
+                );
                 $mform->setType('config_text', PARAM_RAW);
 
                 $mform->addHelpButton(
@@ -460,13 +461,13 @@ class block_point_view_edit_form extends block_edit_form {
                         ${$file.'text'} = array();
 
                         ${$file.'text'}[] =& $mform->createElement('text',
-                            'config_text_'.$file,
+                            'config_pix_text_'.$file,
                             get_string('text'.$file, 'block_point_view')
                             );
 
-                        $mform->setDefault('config_text_'.$file, get_string('defaulttext'.$file, 'block_point_view'));
+                        $mform->setDefault('config_pix_text_'.$file, get_string('defaulttext'.$file, 'block_point_view'));
 
-                        $mform->setType('config_text_'.$file, PARAM_RAW);
+                        $mform->setType('config_pix_text_'.$file, PARAM_RAW);
 
                         $mform->addGroup(${$file.'text'}, 'config_'.$file.'_text_group',
                         html_writer::empty_tag(
@@ -481,8 +482,8 @@ class block_point_view_edit_form extends block_edit_form {
                             );
 
                         $mform->addHelpButton(
-                            'config_'.$file.'_text_group',
-                            'howto_text_group',
+                            'config_'.$file.'_pix_text_group',
+                            'howto_pix_text_group',
                             'block_point_view'
                             );
 
@@ -673,6 +674,18 @@ class block_point_view_edit_form extends block_edit_form {
 
         if (!empty($this->block->config) && is_object($this->block->config)) {
 
+
+            $text = $this->block->config->text;
+            $draftid_editor = file_get_submitted_draft_itemid('config_text');
+            if (empty($text)) {
+                $currenttext = '';
+            } else {
+                $currenttext = $text;
+            }
+            $defaults->config_text['text'] = file_prepare_draft_area($draftid_editor, $this->block->context->id, 'block_point_view', 'content', 0, array('subdirs'=>true), $currenttext);
+            $defaults->config_text['itemid'] = $draftid_editor;
+            $defaults->config_text['format'] = $this->block->config->format;
+
             $draftid = file_get_submitted_draft_itemid('config_point_views_pix');
 
             file_prepare_draft_area(
@@ -691,9 +704,15 @@ class block_point_view_edit_form extends block_edit_form {
             $defaults->config_point_views_pix = $draftid;
 
             $this->block->config->point_views_pix = $draftid;
-
         }
 
+        unset($this->block->config->text);
         parent::set_data($defaults);
+
+        if (!isset($this->block->config)) {
+            $this->block->config = new stdClass();
+        }
+        $this->block->config->text = $text;
+
     }
 }

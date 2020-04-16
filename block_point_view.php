@@ -24,12 +24,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/blocks/point_view/lib.php');
-require_once($CFG->dirroot.'/course/renderer.php');
-
 /**
  * block_point_view Class
  *
@@ -84,16 +78,6 @@ class block_point_view extends block_base {
 
             if (has_capability('block/point_view:view', $this->context)) {
 
-                if (isset($this->config) && isset($this->config->text)) {
-
-                    $this->content->text = $this->config->text;
-
-                } else {
-
-                    $this->content->text = get_string('defaulttextcontent', 'block_point_view');
-
-                }
-
                 $parameters = [
                     'instanceid' => $this->instance->id,
                     'contextid' => $this->context->id,
@@ -104,7 +88,19 @@ class block_point_view extends block_base {
 
                 $url = new moodle_url('/blocks/point_view/menu.php', $parameters);
 
-                $this->content->text .= html_writer::start_tag('div', array('class' => 'menu_point_view'));
+
+                $this->content = new stdClass;
+                $this->content->footer = '';
+                if (isset($this->config->text)) {
+                    $this->config->text = file_rewrite_pluginfile_urls($this->config->text, 'pluginfile.php', $this->context->id, 'block_point_view', 'content', NULL);
+                    $format = FORMAT_HTML;
+                    if (isset($this->config->format)) {
+                        $format = $this->config->format;
+                    }
+                    $this->content->text = format_text($this->config->text, $format);
+                } else {
+                    $this->content->text = '<span>'.get_string('defaulttextcontent', 'block_point_view').'</span>';
+                }
 
                 $this->content->text .= html_writer::link(
                     $url,
@@ -112,12 +108,10 @@ class block_point_view extends block_base {
                     '/blocks/point_view/pix/overview.png" id="menu_point_view_img" class="block_point_view"/>'
                 );
 
-                $this->content->text .= html_writer::end_tag('div');
+                unset($filteropt);
 
             } else {
-
                 $this->content->text = '';
-
             }
 
             if (!$this->page->user_is_editing()) {
@@ -145,6 +139,8 @@ class block_point_view extends block_base {
     }
 
     /**
+     * Serialize and store config data
+     *
      * Save data from filemanager when user is saving configuration.
      * Delete file storage if user disable custom emojis.
      *
@@ -153,9 +149,12 @@ class block_point_view extends block_base {
      */
     public function instance_config_save($data, $nolongerused = false) {
 
-        $fs = get_file_storage();
+        $config = clone($data);
 
-        $config = clone $data;
+        $config->text = file_save_draft_area_files($data->text['itemid'], $this->context->id, 'block_point_view', 'content', 0, array('subdirs'=>true), $data->text['text']);
+        $config->format = $data->text['format'];
+
+        $fs = get_file_storage();
 
         if ($config->enable_pix_checkbox) {
 
