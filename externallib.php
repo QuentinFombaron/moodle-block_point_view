@@ -365,7 +365,7 @@ class block_point_view_external extends external_api {
             }
         } else {
 
-            $fs->delete_area_files(1, 'block_point_view');
+            $fs->delete_area_files(1, 'block_point_view', 'point_views_pix_admin');
 
         }
 
@@ -381,7 +381,7 @@ class block_point_view_external extends external_api {
             }
         } else {
 
-            $fs->delete_area_files($contextid, 'block_point_view');
+            $fs->delete_area_files($contextid, 'block_point_view', 'point_views_pix');
 
         }
 

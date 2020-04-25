@@ -42,7 +42,7 @@ class block_point_view_observer {
      */
     public static function store(\core\event\base $event) {
         global $DB, $CFG, $COURSE;
-        echo $COURSE->id;
+
         if (intval($COURSE->id) !== intval(1)) {
             $coursecontext = context_course::instance($event->courseid);
             $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
@@ -53,6 +53,7 @@ class block_point_view_observer {
             $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
                 'parentcontextid' => intval($homepagecontext->id)), '*');
         }
+        
         if (!empty($blockrecord->configdata)) {
             $blockinstance = block_instance('point_view', $blockrecord);
             $blockinstance->config->enable_point_views_checkbox;

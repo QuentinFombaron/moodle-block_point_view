@@ -294,7 +294,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         .addClass('btn-outline-warning')
                         .click(function() {
                             $('#id_config_enable_pix_checkbox:checked').prop('checked', false);
-                            $('#mform1').submit();
+                            $('#id_submitbutton').click();
                         });
 
                     /* Hide fieldsets if Reactions or Difficulties checkboxes are disabled */

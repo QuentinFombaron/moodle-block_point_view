@@ -24,8 +24,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
@@ -666,7 +664,7 @@ class block_point_view_edit_form extends block_edit_form {
     }
 
     /**
-     * Filemanager data
+     * File manager and Editor data
      *
      * @param {array} $defaults
      */

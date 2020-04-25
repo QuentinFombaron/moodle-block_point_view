@@ -128,33 +128,22 @@ function block_point_view_manage_types($mform, $types) {
 
     foreach ($types as $type) {
 
-        if ($type == 'quiz') {
-
-            $typename = 'quizzes';
-
-        } else if ($type == 'glossary') {
-
-            $typename = 'glossaries';
-
-        } else {
-
-            $typename = $type.'s';
-
-        }
-
         $manage = array();
 
             $manage[] =& $mform->createElement(
                 'button',
                 'enableall' . $type,
-                get_string('enable_type', 'block_point_view', ucfirst($typename)),
+                get_string('enable_type', 'block_point_view')
+                .' <b>' . get_string($type, 'block_point_view') . '</b>',
                 array('class' => 'manage')
             );
 
             $manage[] =& $mform->createElement(
                 'button',
                 'disableall' . $type,
-                get_string('disable_type', 'block_point_view', ucfirst($typename))
+                get_string('disable_type', 'block_point_view')
+                .' <b>' . get_string($type, 'block_point_view') . '</b>',
+                array('class' => 'manage')
             );
 
             $mform->addGroup(
@@ -232,7 +221,14 @@ function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $
 
     if (($filearea === 'point_views_pix') || ($filearea === 'point_views_pix_admin')) {
 
-        if (!$file = $fs->get_file($context->id, 'block_point_view', $filearea, 0, $filepath, $filename . '.png') or $file->is_directory()) {
+        if (!$file = $fs->get_file(
+            $context->id,
+            'block_point_view',
+            $filearea,
+            0,
+            $filepath,
+            $filename .
+            '.png') or $file->is_directory()) {
             send_file_not_found();
         }
 
