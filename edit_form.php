@@ -467,20 +467,22 @@ class block_point_view_edit_form extends block_edit_form {
 
                         $mform->setType('config_pix_text_'.$file, PARAM_RAW);
 
-                        $mform->addGroup(${$file.'text'}, 'config_'.$file.'_text_group',
-                        html_writer::empty_tag(
+                        $mform->addGroup(
+                            ${$file.'text'},
+                            'config_'.$file.'_text_group',
+                                html_writer::empty_tag(
                             'img',
-                            array(
-                                'src' => ${$file.'img'},
-                                'style' => 'width:30px'
+                                    array(
+                                        'src' => ${$file.'img'},
+                                        'style' => 'width:30px'
                                     )
-                            ) . get_string('emojidesc', 'block_point_view'),
+                                ) . get_string('emojidesc', 'block_point_view'),
                             array(' '),
                             false
-                            );
+                        );
 
                         $mform->addHelpButton(
-                            'config_'.$file.'_pix_text_group',
+                            'config_'.$file.'_text_group',
                             'howto_pix_text_group',
                             'block_point_view'
                             );

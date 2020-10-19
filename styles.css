@@ -50,7 +50,6 @@
 
 .block_point_view .group_nb {
     position: absolute;
-    top: 3px;
     left: 47px;
 
 }
@@ -128,6 +127,7 @@
 .block_point_view .voted {
     width: 15px;
     height: 15px;
+    top: 3px;
     border-radius: 50%;
     font-size: 13px;
     color: white;

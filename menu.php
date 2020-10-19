@@ -252,7 +252,7 @@ try {
                     }
                 }
             } else { /* Consulting modules votes in a course */
-                $activities = (block_point_view_get_course_data($courseid))['activities'];
+                $activities = (block_point_view_get_course_data($courseid)['activities']);
                 foreach ($activities as $index => $activity) {
 
                     if (isset($result[($activity['id'])]->cmid)) {

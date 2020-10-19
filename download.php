@@ -51,7 +51,7 @@ try {
             try {
                 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
-                $activities = (block_point_view_get_course_data($courseid))['activities'];
+                $activities = (block_point_view_get_course_data($courseid)['activities']);
 
                 $sql = 'SELECT cmid,
               COALESCE(COUNT(cmid), 0) AS total,

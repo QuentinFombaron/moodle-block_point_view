@@ -138,7 +138,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                 groupImg += 'H';
                             }
 
-                            if (reactionVotedArray[moduleId] !== Reactions.NULL) {
+                            if (reactionVotedArray[moduleId] !== null && reactionVotedArray[moduleId] !== Reactions.NULL) {
                                 var groupNb = $('#module-' + moduleId + ' .group_nb');
                                 groupNb.addClass('voted');
                                 if (totalVoteArray[moduleId] >= 10) {
@@ -407,9 +407,13 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                             var widthParam = $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').width();
 
+                            var translation = event.data.leftReaction - (widthParam / 2) - 10;
                             /* Modification of the toolbox position (centered) */
                             $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').css({
-                                'left': (event.data.leftReaction + 10) - (widthParam / 2) + 70
+                                '-webkit-transform': 'translateX(' + translation + 'px)',
+                                '-moz-transform': 'translateX(' + translation + 'px)',
+                                '-ms-transform': 'translateX(' + translation + 'px)',
+                                'transform': 'translateX(' + translation + 'px)'
                             });
 
                             /* Get the number of 'reactionName' reaction */
@@ -736,7 +740,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                     updateGroupImg(event.data.module, event.data.moduleId);
 
                                     /* Show the reaction group image with nice animation */
-                                    $('#module-' + (event.data.moduleId) + ' .group_img').show(0).delay(500).animate({
+                                    $('#module-' + (event.data.moduleId) + ' .group_img').delay(500).show(0).animate({
                                         top: 0,
                                         left: 0,
                                         height: 20
@@ -817,9 +821,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                     }
                                 }
 
-                                var module = document.getElementById('module-' + moduleId);
-                                updateGroupImg(module, moduleId);
-
                                 /* Initialise reactionVotedArray and CSS */
                                 switch (parseInt(pointViewsModule.uservote)) {
                                     case 1:
@@ -850,6 +851,11 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                         reactionVotedArray[moduleId] = Reactions.NULL;
                                         break;
                                 }
+
+                                var module = document.getElementById('module-' + moduleId);
+                                if (module !== null) {
+                                    updateGroupImg(module, moduleId);
+                                }
                             });
                         }
 
@@ -858,102 +864,96 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                          * @param {string} zone
                          */
                         function manageReact(moduleIdParam, zone) {
-
                             var moduleId = parseInt(moduleIdParam);
                             /* Shortcut to select the 'module-' + moduleId ID in the page */
                             var module = document.getElementById('module-' + moduleId);
 
-                            if (parseInt(module.getElementsByClassName('group_nb')[0].innerText) === 0) {
-                                /* Also show the number of total reaction */
-                                $(zone + moduleId + ' .group_nb').hide();
+                            if (module !== null) {
+                                if (parseInt(module.getElementsByClassName('group_nb')[0].innerText) === 0) {
+                                    /* Also show the number of total reaction */
+                                    $(zone + moduleId + ' .group_nb').hide();
+                                }
+
+                                updateGroupImg(module, moduleId);
+
+                                /* Management of the reaction group */
+                                $(zone + moduleId + ' .group_img')
+                                    /* MOUSE OVER */
+                                    .mouseover({module: module, moduleId: moduleId}, groupImgMouseOver)
+                                    /* ON CLICK */
+                                    .click({module: module, moduleId: moduleId}, groupImgMouseOver)
+                                    /* MOUSE OUT */
+                                    .mouseout({moduleId: moduleId}, groupImgMouseOut)
+                                ;
+
+                                /* Management of the 'Easy !' reaction */
+                                $(zone + moduleId + ' .easy')
+                                    /* MOUSE OVER */
+                                    .mouseover({
+                                        module: module, moduleId: moduleId, reactionName: 'easy',
+                                        className: 'easy_txt', leftReaction: -30
+                                    }, mouseOver)
+                                    /* MOUSE OUT */
+                                    .mouseout({
+                                        module: module, moduleId: moduleId, leftReaction: -20,
+                                        reactionName: 'easy'
+                                    }, mouseOut)
+                                    /* ON CLICK */
+                                    .click({
+                                        module: module, moduleId: moduleId, reactionName: 'easy',
+                                        reactionSelect: Reactions.EASY
+                                    }, onClick)
+                                ;
+
+                                /* Management of the 'I'm getting better !' reaction */
+                                $(zone + moduleId + ' .better')
+                                    /* MOUSE OVER */
+                                    .mouseover({
+                                        module: module, moduleId: moduleId, reactionName: 'better',
+                                        className: 'better_txt', leftReaction: 15
+                                    }, mouseOver)
+                                    /* MOUSE OUT */
+                                    .mouseout({
+                                        module: module, moduleId: moduleId, leftReaction: 25,
+                                        reactionName: 'better'
+                                    }, mouseOut)
+                                    /* ON CLICK */
+                                    .click({
+                                        module: module, moduleId: moduleId, reactionName: 'better',
+                                        reactionSelect: Reactions.BETTER
+                                    }, onClick)
+                                ;
+
+                                var hardSelector = $(zone + moduleId + ' .hard');
+                                var hardLeft = parseInt((hardSelector.css('left')).slice(0, -2), 10);
+
+                                /* Management of the 'So hard...' reaction */
+                                hardSelector
+                                    /* MOUSE OVER */
+                                    .mouseover({
+                                        module: module, moduleId: moduleId, reactionName: 'hard',
+                                        className: 'hard_txt', leftReaction: (hardLeft - 20)
+                                    }, mouseOver)
+                                    /* MOUSE OUT */
+                                    .mouseout({
+                                        module: module, moduleId: moduleId, leftReaction: (hardLeft - 10),
+                                        reactionName: 'hard'
+                                    }, mouseOut)
+                                    /* ON CLICK */
+                                    .click({
+                                        module: module, moduleId: moduleId, reactionName: 'hard',
+                                        reactionSelect: Reactions.HARD
+                                    }, onClick)
+                                ;
+
+                                /* Management of the reaction zone */
+                                $(zone + moduleId + ' .reactions')
+                                    /* MOUSE OVER */
+                                    .mouseover({moduleId: moduleId}, reactionMouseOver)
+                                    /* MOUSE OUT */
+                                    .mouseout({module: module, moduleId: moduleId}, reactionMouseOut)
+                                ;
                             }
-
-                            updateGroupImg(module, moduleId);
-
-                            /* Management of the reaction group */
-                            $(zone + moduleId + ' .group_img')
-
-                            /* MOUSE OVER */
-                                .mouseover({module: module, moduleId: moduleId}, groupImgMouseOver)
-                                .click({module: module, moduleId: moduleId}, groupImgMouseOver)
-
-                                /* MOUSE OUT */
-                                .mouseout({moduleId: moduleId}, groupImgMouseOut);
-
-                            /* Management of the 'Easy !' reaction */
-                            $(zone + moduleId + ' .easy')
-
-                            /* MOUSE OVER */
-                                .mouseover({
-                                    module: module, moduleId: moduleId, reactionName: 'easy',
-                                    className: 'easy_txt', leftReaction: -30
-                                }, mouseOver)
-
-                                /* MOUSE OUT */
-                                .mouseout({
-                                    module: module, moduleId: moduleId, leftReaction: -20,
-                                    reactionName: 'easy'
-                                }, mouseOut)
-
-                                /* ON CLICK */
-                                .click({
-                                    module: module, moduleId: moduleId, reactionName: 'easy',
-                                    reactionSelect: Reactions.EASY
-                                }, onClick);
-
-                            /* Management of the 'I'm getting better !' reaction */
-                            $(zone + moduleId + ' .better')
-
-                            /* MOUSE OVER */
-                                .mouseover({
-                                    module: module, moduleId: moduleId, reactionName: 'better',
-                                    className: 'better_txt', leftReaction: 15
-                                }, mouseOver)
-
-                                /* MOUSE OUT */
-                                .mouseout({
-                                    module: module, moduleId: moduleId, leftReaction: 25,
-                                    reactionName: 'better'
-                                }, mouseOut)
-
-                                /* ON CLICK */
-                                .click({
-                                    module: module, moduleId: moduleId, reactionName: 'better',
-                                    reactionSelect: Reactions.BETTER
-                                }, onClick);
-
-                            var hardSelector = $(zone + moduleId + ' .hard');
-                            var hardLeft = parseInt((hardSelector.css('left')).slice(0, -2), 10);
-
-                            /* Management of the 'So hard...' reaction */
-                            hardSelector
-
-                            /* MOUSE OVER */
-                                .mouseover({
-                                    module: module, moduleId: moduleId, reactionName: 'hard',
-                                    className: 'hard_txt', leftReaction: (hardLeft - 20)
-                                }, mouseOver)
-
-                                /* MOUSE OUT */
-                                .mouseout({
-                                    module: module, moduleId: moduleId, leftReaction: (hardLeft - 10),
-                                    reactionName: 'hard'
-                                }, mouseOut)
-
-                                /* ON CLICK */
-                                .click({
-                                    module: module, moduleId: moduleId, reactionName: 'hard',
-                                    reactionSelect: Reactions.HARD
-                                }, onClick);
-
-                            /* Management of the reaction zone */
-                            $(zone + moduleId + ' .reactions')
-
-                            /* MOUSE OVER */
-                                .mouseover({moduleId: moduleId}, reactionMouseOver)
-
-                                /* MOUSE OUT */
-                                .mouseout({module: module, moduleId: moduleId}, reactionMouseOut);
                         }
 
                         /* Display difficulty tracks */
