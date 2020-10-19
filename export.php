@@ -103,7 +103,9 @@ try {
 
         require("tabs.php");
 
-        echo html_writer::start_div('export_buttons');
+        echo html_writer::start_div('w-100 text-center');
+
+        echo html_writer::start_div('d-inline-flex');
 
         /* CSV Export */
 
@@ -113,11 +115,9 @@ try {
 
         $label = get_string('exportcsv', 'block_point_view');
 
-        $options = ['class' => 'exportCSVButton'];
+        $options = ['class' => 'exportCSVButton mx-2'];
 
         echo $OUTPUT->single_button($url, $label, 'post', $options);
-
-        echo html_writer::tag('p', '&nbsp;');
 
         /* ODS Export */
 
@@ -127,11 +127,9 @@ try {
 
         $label = get_string('exportods', 'block_point_view');
 
-        $options = ['class' => 'exportODSButton'];
+        $options = ['class' => 'exportODSButton mx-2'];
 
         echo $OUTPUT->single_button($url, $label, 'post', $options);
-
-        echo html_writer::tag('p', '&nbsp;');
 
         /* XLS Export */
 
@@ -141,9 +139,11 @@ try {
 
         $label = get_string('exportxls', 'block_point_view');
 
-        $options = ['class' => 'exportXLSButton'];
+        $options = ['class' => 'exportXLSButton mx-2'];
 
         echo $OUTPUT->single_button($url, $label, 'post', $options);
+
+        echo html_writer::end_div();
 
         echo html_writer::end_div();
 

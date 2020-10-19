@@ -672,8 +672,8 @@ class block_point_view_edit_form extends block_edit_form {
      */
     public function set_data($defaults) {
 
+        $text = '';
         if (!empty($this->block->config) && is_object($this->block->config)) {
-
             $text = $this->block->config->text;
             $draftideditor = file_get_submitted_draft_itemid('config_text');
             if (empty($text)) {

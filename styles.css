@@ -201,14 +201,6 @@
     text-align: center;
 }
 
-/* Center the export buttons */
-.block_point_view .export_buttons {
-    display: inline-flex;
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
 /* CSS For combo box course/category front page */
 #frontpage-category-combo .reaction_box,
 #frontpage-category-combo .difficulty_box {
