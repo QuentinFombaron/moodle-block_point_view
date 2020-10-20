@@ -168,7 +168,7 @@ function block_point_view_manage_types($mform, $types) {
  *
  * @param stdClass $course Course object
  * @param stdClass $bi Block instance record
- * @param stdClass $context Context object
+ * @param context_course|context_system $context Context object
  * @param string $filearea File area
  * @param array $args Extra arguments
  * @param bool $forcedownload Whether or not force download
@@ -176,62 +176,59 @@ function block_point_view_manage_types($mform, $types) {
  *
  * @return bool
  *
- * @throws coding_exception
  * @throws moodle_exception
- * @throws require_login_exception
  */
 function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $CFG, $USER;
 
-    if ($context->contextlevel != CONTEXT_BLOCK) {
-        send_file_not_found();
-    }
-
-    if ($context->get_course_context(false)) {
-        require_course_login($course);
-    } else if ($CFG->forcelogin) {
-        require_login();
-    } else {
-
-        $parentcontext = $context->get_parent_context();
-
-        if ($parentcontext->contextlevel === CONTEXT_COURSECAT) {
-
-            if (!core_course_category::get($parentcontext->instanceid, IGNORE_MISSING)) {
-                send_file_not_found();
-            }
-
-        } else if ($parentcontext->contextlevel === CONTEXT_USER && $parentcontext->instanceid != $USER->id) {
-            send_file_not_found();
-        }
-    }
-
     $fs = get_file_storage();
-
     $filename = array_pop($args);
 
-    $filepath = '/';
-
     if ($filearea === 'content') {
-
-        if (!$file = $fs->get_file($context->id, 'block_point_view', 'content', 0, $filepath, $filename) or $file->is_directory()) {
+        if ($context->contextlevel != CONTEXT_BLOCK) {
             send_file_not_found();
         }
-    }
 
-    if (($filearea === 'point_views_pix') || ($filearea === 'point_views_pix_admin')) {
+        if ($context->get_course_context(false)) {
+            require_course_login($course);
+        } else if ($CFG->forcelogin) {
+            require_login();
+        } else {
+            $parentcontext = $context->get_parent_context();
+            if ($parentcontext->contextlevel === CONTEXT_COURSECAT) {
+                if (!core_course_category::get($parentcontext->instanceid, IGNORE_MISSING)) {
+                    send_file_not_found();
+                }
+            } else if ($parentcontext->contextlevel === CONTEXT_USER && $parentcontext->instanceid != $USER->id) {
+                send_file_not_found();
+            }
+        }
 
-        if (!$file = $fs->get_file(
+        $file = $fs->get_file(
             $context->id,
             'block_point_view',
             $filearea,
             0,
-            $filepath,
-            $filename .
-            '.png') or $file->is_directory()) {
+            '/',
+            $filename
+        );
+        if (!$file || $file->is_directory()) {
             send_file_not_found();
         }
-
+    } else if (($filearea === 'point_views_pix') || ($filearea === 'point_views_pix_admin')) {
+        $file = $fs->get_file(
+            $context->id,
+            'block_point_view',
+            $filearea,
+            0,
+            '/',
+            $filename . '.png'
+        );
+        if (!$file || $file->is_directory()) {
+            send_file_not_found();
+        }
+    } else {
+        send_file_not_found();
     }
 
     manager::write_close();
@@ -243,15 +240,15 @@ function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $
 /**
  * Reaction image
  *
- * @param stdClass $context
+ * @param int $contextid
  * @param string $filearea
  * @param string $react
  * @return string
  */
-function block_point_view_pix_url($context, $filearea, $react) {
+function block_point_view_pix_url($contextid, $filearea, $react) {
 
     return strval(moodle_url::make_pluginfile_url(
-        $context,
+        $contextid,
         'block_point_view',
         $filearea,
         0,

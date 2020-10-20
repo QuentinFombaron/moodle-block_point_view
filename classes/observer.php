@@ -53,7 +53,7 @@ class block_point_view_observer {
             $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
                 'parentcontextid' => intval($homepagecontext->id)), '*');
         }
-        
+
         if (!empty($blockrecord->configdata)) {
             $blockinstance = block_instance('point_view', $blockrecord);
             $blockinstance->config->enable_point_views_checkbox;
