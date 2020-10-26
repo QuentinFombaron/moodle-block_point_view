@@ -4,17 +4,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
         init: function(envconf) {
             /* Wait that the DOM is fully loaded */
             $(function() {
-
-                /* Resize the activity name field to give space to Likes icons */
-                $('.mod-indent-outer').css({'width': '85%'});
-
-                /* Folder friendly */
-                $('.folder .mod-indent-outer').each(function(index, element) {
-                    if (!$(element).find(".activityinstance").length > 0) {
-                        $(element).prepend('<div class="activityinstance" style="width: 0;"><a></a></div>');
-                    }
-                });
-
                 /* ID of the current user */
                 var userId = parseInt(envconf.userid);
 
@@ -766,20 +755,47 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                             .mouseout(function() {
                                 $(this).css({'background': ''});
                             });
+
                         createReactions();
+
+                        $(document).ajaxComplete(function(event, xhr, settings) {
+                            if (settings.data !== undefined) {
+                                var data = JSON.parse(settings.data);
+                                if (data.length > 0 && data[0].methodname !== undefined) {
+                                    var methodname = data[0].methodname;
+                                    if (
+                                        methodname === 'format_tiles_get_single_section_page_html'
+                                        || methodname === 'format_tiles_log_tile_click'
+                                    ) {
+                                        // eslint-disable-next-line no-console
+                                        console.log('REACTION');
+                                        createReactions();
+                                    }
+                                }
+                            }
+                        });
 
                         /**
                          * Create reaction
                          */
                         function createReactions() {
+                            /* Resize the activity name field to give space to Likes icons */
+                            $('.mod-indent-outer').css({'width': '85%'});
+
+                            /* Folder friendly */
+                            $('.folder .mod-indent-outer').each(function(index, element) {
+                                if (!$(element).find(".activityinstance").length > 0) {
+                                    $(element).prepend('<div class="activityinstance" style="width: 0;"><a></a></div>');
+                                }
+                            });
+
                             /* For each selected module, create a reaction zone */
                             moduleSelect.forEach(function(moduleIdParam) {
                                 var moduleId = parseInt(moduleIdParam);
-                                var courseBoxSelector = $('.coursebox[data-courseid="' + moduleId + '"]');
                                 var pointViewsModule = searchModule(moduleId);
 
                                 /* Create the HTML block necessary to each activity */
-                                var htmlBlock = '<div class="block_point_view reactions">' +
+                                var htmlBlock = '<div class="block_point_view block_point_view_container"><div class="reactions">' +
                                     '<!-- EASY ! --><span class="tooltipreaction">' +
                                     '<img src="' + pix.easy + '" alt=" " class="easy"/>' +
                                     '<span class="tooltiptextreaction easy_txt">' + pix.easytxt + '</span></span>' +
@@ -792,33 +808,17 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                     '<img src="' + pix.hard + '" alt=" " class="hard"/>' +
                                     '<span class="tooltiptextreaction hard_txt">' + pix.hardtxt + '</span></span>' +
                                     '<span class="hard_nb">' + pointViewsModule.typethree + '</span></div>' +
-                                    '<!-- GROUP --><div class="block_point_view group">' +
+                                    '<!-- GROUP --><div class="group">' +
                                     '<img src="" alt=" " class="group_img"/>' +
-                                    '<span class="group_nb">' + pointViewsModule.total + '</span></div>';
+                                    '<span class="group_nb">' + pointViewsModule.total + '</span></div></div>';
 
                                 if (
-                                    (document.getElementById('module-' + moduleId) !== null) ||
-                                    (document.querySelectorAll('[data-courseid="' + moduleId + '"]')) !== null) {
-                                    courseBoxSelector.prop('id', 'module-' + moduleId);
-
-                                    /* Export the HTML block */
-                                    if (courseId !== 1) {
-                                        $('#module-' + moduleId + ' .activityinstance').append(htmlBlock);
-                                        manageReact(moduleId, '#module-');
-                                    } else if (courseBoxSelector.find('.reaction_box').length === 0) {
-                                        courseBoxSelector.append("<div class='reaction_box'></div>");
-                                        courseBoxSelector.append("<div class='difficulty_box'></div>");
-                                        $('.coursebox[data-courseid="' + moduleId + '"] .reaction_box').append(htmlBlock);
-                                        manageReact(moduleId, '#module-');
-                                    }
-                                }
-                                if (courseBoxSelector.find('.reaction_box').length === 0) {
-                                    courseBoxSelector.append("<div class='reaction_box'></div>");
-                                    courseBoxSelector.append("<div class='difficulty_box'></div>");
-                                    courseBoxSelector.append(htmlBlock);
-                                    if (courseBoxSelector.find('.reaction_box').length !== 0) {
-                                        manageReact(moduleId, '.course_category_tree #module-');
-                                    }
+                                    (document.getElementById('module-' + moduleId) !== null)
+                                    && document.querySelectorAll('#module-' + moduleId + ' .block_point_view_container')
+                                        .length === 0
+                                ) {
+                                    $('#module-' + moduleId + ' .activityinstance').append(htmlBlock);
+                                    manageReact(moduleId, '#module-');
                                 }
 
                                 /* Initialise reactionVotedArray and CSS */
@@ -959,7 +959,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         /* Display difficulty tracks */
                         difficultylevels.forEach(function(value) {
                             var position = (courseId === 1 ? " .difficulty_box" : " .activityinstance a");
-                            $('.coursebox[data-courseid="' + value.id + '"]').prop('id', 'module-' + value.id);
                             if (value.difficultyLevel !== '0') {
                                 var difficulty;
                                 switch (parseInt(value.difficultyLevel)) {
@@ -984,16 +983,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                 var difficultyBlockEmpty = '<span class="block_point_view track"></span>';
                                 $('#module-' + value.id + position).prepend(difficultyBlockEmpty);
                             }
-                        });
-
-                        $('.notloaded').click(function() {
-                            $.ajax({
-                                complete: function() {
-                                    setTimeout(function() {
-                                        createReactions();
-                                    }, 4000);
-                                }
-                            });
                         });
 
                         /* Dont' hide tooltip when reaction are in the top of course*/
