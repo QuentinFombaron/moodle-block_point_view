@@ -767,8 +767,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                         methodname === 'format_tiles_get_single_section_page_html'
                                         || methodname === 'format_tiles_log_tile_click'
                                     ) {
-                                        // eslint-disable-next-line no-console
-                                        console.log('REACTION');
                                         createReactions();
                                     }
                                 }
