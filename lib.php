@@ -64,7 +64,7 @@ function block_point_view_get_course_data($courseid, $contextid = null) {
 
         foreach ($instances as $index => $cm) {
 
-            if ($module != 'label') {
+            //if ($module != 'label') {
 
                 if (!in_array($module, $types)) {
 
@@ -88,7 +88,7 @@ function block_point_view_get_course_data($courseid, $contextid = null) {
                     'icon'       => $cm->get_icon_url(),
                     'available'  => $cm->available,
                 );
-            }
+            //}
         }
     }
 
@@ -113,52 +113,6 @@ function block_point_view_compare_activities($a, $b) {
     } else {
 
         return $a['position'] - $b['position'];
-
-    }
-}
-
-/**
- * Create a group of buttons to Enable/Disable activities by types
- *
- * @param stdClass $mform
- * @param array $types
- * @throws coding_exception
- */
-function block_point_view_manage_types($mform, $types) {
-
-    foreach ($types as $type) {
-
-        $manage = array();
-
-            $manage[] =& $mform->createElement(
-                'button',
-                'enableall' . $type,
-                get_string('enable_type', 'block_point_view')
-                .' <b>' . get_string($type, 'block_point_view') . '</b>',
-                array('class' => 'manage')
-            );
-
-            $manage[] =& $mform->createElement(
-                'button',
-                'disableall' . $type,
-                get_string('disable_type', 'block_point_view')
-                .' <b>' . get_string($type, 'block_point_view') . '</b>',
-                array('class' => 'manage')
-            );
-
-            $mform->addGroup(
-                $manage,
-                $type.'_group_type',
-                '',
-                array(' '),
-                false
-            );
-
-            $mform->addHelpButton(
-                $type.'_group_type',
-                'howto_type',
-                'block_point_view'
-            );
 
     }
 }

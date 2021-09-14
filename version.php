@@ -27,7 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_point_view';
-$plugin->version   = 2020102700;
+$plugin->version   = 2021090600;
 $plugin->requires  = 2017051502;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v1.5';
+$plugin->release = 'v1.6';

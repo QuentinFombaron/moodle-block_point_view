@@ -47,10 +47,9 @@ class block_point_view_external extends external_api {
         return new external_function_parameters(
             array(
                 'func' => new external_value(PARAM_TEXT, 'function name to call', VALUE_REQUIRED),
-                'userid' => new external_value(PARAM_INT, 'id of user', VALUE_REQUIRED),
                 'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_REQUIRED),
-                'cmid' => new external_value(PARAM_INT, 'id of course module', VALUE_REQUIRED),
-                'vote' => new external_value(PARAM_INT, 'id of vote', VALUE_REQUIRED)
+                'cmid' => new external_value(PARAM_INT, 'id of course module', VALUE_DEFAULT, 0),
+                'vote' => new external_value(PARAM_INT, 'id of vote', VALUE_DEFAULT, 0)
             )
         );
     }
@@ -59,7 +58,6 @@ class block_point_view_external extends external_api {
      * Update the database after added, removed or removed a vote or all votes of course.
      *
      * @param string $func Function name of database update
-     * @param int $userid User ID
      * @param int $courseid Course ID
      * @param int $cmid Course Module ID
      * @param int $vote Vote ID
@@ -67,103 +65,65 @@ class block_point_view_external extends external_api {
      * @throws invalid_parameter_exception
      * @throws dml_exception
      */
-    public static function update_db(string $func, int $userid, int $courseid, int $cmid, int $vote) {
-        global $DB;
-
-        $table = 'block_point_view';
+    public static function update_db(string $func, int $courseid, int $cmid, int $vote) {
+        global $DB, $USER;
 
         $params = self::validate_parameters(self::update_db_parameters(), array(
                 'func' => $func,
-                'userid' => $userid,
                 'courseid' => $courseid,
                 'cmid' => $cmid,
                 'vote' => $vote
             )
         );
 
+        $table = 'block_point_view';
+
+        $coursecontext = context_course::instance($courseid);
+
         switch ($params['func']) {
-
-            /* INSERT a new line in block_point_view table */
-            case 'insert':
-                $dataobject = new stdClass();
-
-                $dataobject->userid = $params['userid'];
-
-                $dataobject->courseid = $params['courseid'];
-
-                $dataobject->cmid = $params['cmid'];
-
-                $dataobject->vote = $params['vote'];
-
-                $DB->insert_record($table, $dataobject, false);
-
-                return 'Add OK';
-
-                break;
-
-            /* REMOVE a line in block_point_view table */
-            case 'remove':
-                $conditions = array(
-                    'userid' => $params['userid'],
-                    'courseid' => $params['courseid'],
-                    'cmid' => $params['cmid'],
-                    'vote' => $params['vote']
-                );
-
-                $DB->delete_records($table, $conditions);
-
-                return 'Remove OK';
-
-                break;
-
-            /* UPDATE a line in block_point_view table */
             case 'update':
 
-                /* Get the good record to have the ID (ask by 'update_record' function)*/
-                $target = $DB->get_record(
-                    $table,
-                    array(
-                        'userid' => $params['userid'],
+                $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                        'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
+                $blockinstance = block_instance('point_view', $blockrecord);
+
+                $canreact = isset($blockinstance->config->enable_point_views_checkbox)
+                        && $blockinstance->config->enable_point_views_checkbox
+                        && isset($blockinstance->config->{'moduleselectm' . $params['cmid']})
+                        && $blockinstance->config->{'moduleselectm' . $params['cmid']}
+                        && get_fast_modinfo($params['courseid'], $USER->id)->cms[$params['cmid']]->uservisible;
+
+                if (!$canreact){
+                    throw new moodle_exception('reactionsunavailable', 'block_point_view');
+                }
+
+                $dbparams = array(
+                        'userid' => $USER->id,
                         'courseid' => $params['courseid'],
                         'cmid' => $params['cmid']
-                    )
                 );
 
-                /* Update the vote */
-                $target->vote = $vote;
-
-                try {
-
-                    /* Overwrite the selected line */
-                    $DB->update_record($table, $target);
-
-                    return 'Update OK';
-
-                } catch (dml_exception $e) {
-
-                    return 'Exception : ' . $e->getMessage() . '\n';
-
+                if ($params['vote'] === 0) {
+                    $DB->delete_records($table, $dbparams);
+                } else {
+                    $currentvote = $DB->get_record($table, $dbparams);
+                    if ($currentvote === false) {
+                        $dbparams['vote'] = $params['vote'];
+                        $DB->insert_record($table, $dbparams);
+                    } else {
+                        $currentvote->vote = $params['vote'];
+                        $DB->update_record($table, $currentvote);
+                    }
                 }
 
                 break;
-
-            /* REMOVE all votes of a course */
             case 'reset':
-                $conditions = array('courseid' => $params['courseid']);
-
-                try {
-
-                    $DB->delete_records($table, $conditions);
-
-                    return 'Reset OK';
-
-                } catch (dml_exception $e) {
-
-                    return 'Exception : ' . $e->getMessage() . '\n';
-
-                }
+                // Reset all reactions of course.
+                require_capability('moodle/site:manageblocks', $coursecontext);
+                $DB->delete_records($table, array('courseid' => $params['courseid']));
                 break;
-
+            default:
+                break;
         }
 
         return '';
@@ -248,7 +208,7 @@ class block_point_view_external extends external_api {
             $result = $DB->get_records_sql($sql, $params);
 
             /* Parameters for the Javascript */
-            $pointviews = (!empty($result)) ? array_values($result) : array();
+            $pointviews = $result;
         }
 
         return $pointviews;
@@ -301,92 +261,14 @@ class block_point_view_external extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function get_pixparam($courseid, $contextid) {
-        global $CFG, $DB;
-
-        self::validate_parameters(self::get_pixparam_parameters(), array(
+        $params = self::validate_parameters(self::get_pixparam_parameters(), array(
                 'courseid' => $courseid,
                 'contextid' => $contextid
             )
         );
 
-        $coursecontext = context_course::instance($courseid);
-        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-        $blockinstance = block_instance('point_view', $blockrecord);
-
-        $pixparam = array(
-            'easy' => $CFG->wwwroot . '/blocks/point_view/pix/easy.png',
-            'easytxt' => (isset($blockinstance->config->pix_text_easy)) ?
-                $blockinstance->config->pix_text_easy
-                : get_string('defaulttexteasy', 'block_point_view' ),
-            'better' => $CFG->wwwroot . '/blocks/point_view/pix/better.png',
-            'bettertxt' => (isset($blockinstance->config->pix_text_better)) ?
-                $blockinstance->config->pix_text_better
-                : get_string('defaulttextbetter', 'block_point_view'),
-            'hard' => $CFG->wwwroot . '/blocks/point_view/pix/hard.png',
-            'hardtxt' => (isset($blockinstance->config->pix_text_hard)) ?
-                $blockinstance->config->pix_text_hard
-                : get_string('defaulttexthard', 'block_point_view'),
-            'group_' => $CFG->wwwroot . '/blocks/point_view/pix/group_.png',
-            'group_E' => $CFG->wwwroot . '/blocks/point_view/pix/group_E.png',
-            'group_B' => $CFG->wwwroot . '/blocks/point_view/pix/group_B.png',
-            'group_H' => $CFG->wwwroot . '/blocks/point_view/pix/group_H.png',
-            'group_EB' => $CFG->wwwroot . '/blocks/point_view/pix/group_EB.png',
-            'group_EH' => $CFG->wwwroot . '/blocks/point_view/pix/group_EH.png',
-            'group_BH' => $CFG->wwwroot . '/blocks/point_view/pix/group_BH.png',
-            'group_EBH' => $CFG->wwwroot . '/blocks/point_view/pix/group_EBH.png',
-        );
-
-        $pixfiles = array(
-            'easy',
-            'better',
-            'hard',
-            'group_',
-            'group_E',
-            'group_B',
-            'group_H',
-            'group_EB',
-            'group_EH',
-            'group_BH',
-            'group_EBH'
-        );
-
-        $fs = get_file_storage();
-
-        if (get_config('block_point_view', 'enable_pix_admin')) {
-
-            foreach ($pixfiles as $file) {
-
-                if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
-
-                    $pixparam[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
-
-                }
-            }
-        } else {
-
-            $fs->delete_area_files(1, 'block_point_view', 'point_views_pix_admin');
-
-        }
-
-        if (isset($blockinstance->config->enable_pix_checkbox) && $blockinstance->config->enable_pix_checkbox) {
-
-            foreach ($pixfiles as $file) {
-
-                if ($fs->file_exists($contextid, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
-
-                    $pixparam[$file] = block_point_view_pix_url($contextid, 'point_views_pix', $file);
-
-                }
-            }
-        } else {
-
-            $fs->delete_area_files($contextid, 'block_point_view', 'point_views_pix');
-
-        }
-
-        return $pixparam;
-
+        require_once(__DIR__ . '/locallib.php');
+        return block_point_view_get_pix($params['courseid'], $params['contextid']);
     }
 
     /**
@@ -443,48 +325,26 @@ class block_point_view_external extends external_api {
 
         $moduleselect = array();
 
-        if ($courseid != 1) {
-            self::validate_parameters(self::get_moduleselect_parameters(), array(
-                'courseid' => $courseid
-            )
-                );
+        self::validate_parameters(self::get_moduleselect_parameters(), array(
+            'courseid' => $courseid
+        ));
 
-            $coursecontext = context_course::instance($courseid);
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-            $blockinstance = block_instance('point_view', $blockrecord);
+        $coursecontext = context_course::instance($courseid);
+        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+            'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
+        $blockinstance = block_instance('point_view', $blockrecord);
 
-            $sqlid = $DB->get_records('course_modules', array('course' => $courseid), null, 'id');
+        $sqlid = $DB->get_records('course_modules', array('course' => $courseid), null, 'id');
 
-            foreach ($sqlid as $row) {
+        foreach ($sqlid as $row) {
 
-                if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
+            if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
 
-                    if ($blockinstance->config->{'moduleselectm' . $row->id} != 0
-                    && $blockinstance->config->enable_point_views_checkbox) {
-                        array_push($moduleselect, $row->id);
+                if ($blockinstance->config->{'moduleselectm' . $row->id} != 0
+                && $blockinstance->config->enable_point_views_checkbox) {
+                    array_push($moduleselect, $row->id);
 
-                    }
                 }
-            }
-        } else {
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => 2), '*', MUST_EXIST);
-            $blockinstance = block_instance('point_view', $blockrecord);
-            $sqlcourses = get_courses();
-
-            foreach ($sqlcourses as $row) {
-                if ($row->id != 1) {
-                    if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
-
-                        if ($blockinstance->config->{'moduleselectm' . $row->id} != 0
-                        && $blockinstance->config->enable_point_views_checkbox) {
-                            array_push($moduleselect, $row->id);
-
-                        }
-                    }
-                }
-
             }
         }
 
@@ -526,63 +386,13 @@ class block_point_view_external extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function get_difficulty_levels($courseid) {
-        global $DB;
-
-        $difficultylevels = array();
-
-        if ($courseid != 1) {
-            self::validate_parameters(self::get_difficulty_levels_parameters(), array(
+        $params = self::validate_parameters(self::get_difficulty_levels_parameters(), array(
                 'courseid' => $courseid
-            )
-                );
+        ));
+        $courseid = $params['courseid'];
 
-            $coursecontext = context_course::instance($courseid);
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-            $blockinstance = block_instance('point_view', $blockrecord);
-
-            $sqlid = $DB->get_records('course_modules', array('course' => $courseid), null, 'id');
-
-            foreach ($sqlid as $row) {
-
-                if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
-
-                    if ($blockinstance->config->enable_difficulties_checkbox) {
-
-                        $difficultylevels[$row->id] = array(
-                            'id' => $row->id,
-                            'difficultyLevel' => $blockinstance->config->{'difficulty_' . $row->id}
-                        );
-
-                    }
-                }
-            }
-        } else {
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => 2), '*', MUST_EXIST);
-            $blockinstance = block_instance('point_view', $blockrecord);
-            $sqlcourses = get_courses();
-
-            foreach ($sqlcourses as $row) {
-                if ($row->id != 1) {
-                    if (isset($blockinstance->config->{'moduleselectm' . $row->id})) {
-
-                        if ($blockinstance->config->enable_difficulties_checkbox) {
-
-                            $difficultylevels[$row->id] = array(
-                                'id' => $row->id,
-                                'difficultyLevel' => $blockinstance->config->{'difficulty_' . $row->id}
-                            );
-
-                        }
-                    }
-                }
-
-            }
-        }
-
-        return $difficultylevels;
-
+        require_once(__DIR__ . '/locallib.php');
+        return block_point_view_get_difficulty_levels($courseid);
     }
 
     /**
@@ -603,144 +413,22 @@ class block_point_view_external extends external_api {
 
     /* --------------------------------------------------------------------------------------------------------- */
 
-    /**
-     * All necessary parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_section_range_parameters() {
+    public static function delete_custom_pix_parameters() {
         return new external_function_parameters(
-            array(
-                'sectionid' => new external_value(PARAM_INT, 'Max section ID', VALUE_REQUIRED),
-            )
+                array(
+                        'contextid' => new external_value(PARAM_INT, 'id of context', VALUE_REQUIRED),
+                        'draftitemid' => new external_value(PARAM_INT, 'id of draft file area', VALUE_REQUIRED)
+                )
         );
     }
 
-    /**
-     * Get section ids range
-     *
-     * @param int $sectionid Max section ID
-     * @return array Section IDs
-     * @throws invalid_parameter_exception
-     */
-    public static function get_section_range($sectionid) {
-        self::validate_parameters(self::get_section_range_parameters(), array(
-                'sectionid' => $sectionid
-            )
-        );
-
-        return range(2, $sectionid);
-
-    }
-
-    /**
-     * Return section ids array
-     *
-     * @return external_description
-     */
-    public static function get_section_range_returns() {
-        return new external_multiple_structure(
-            new external_value(PARAM_INT, 'Section ID')
-        );
-    }
-
-    /* --------------------------------------------------------------------------------------------------------- */
-
-    /**
-     * All necessary parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_course_data_parameters() {
-        return new external_function_parameters(
-            array(
-                'courseid' => new external_value(PARAM_INT, 'Course ID', VALUE_REQUIRED),
-                'contextid' => new external_value(PARAM_INT, 'Context ID', VALUE_REQUIRED)
-            )
-        );
-    }
-
-    /**
-     * Get course data
-     *
-     * @param int $courseid Course ID
-     * @param int $contextid Context ID
-     * @return array Types and course IDs
-     * @throws coding_exception
-     * @throws invalid_parameter_exception
-     * @throws moodle_exception
-     */
-    public static function get_course_data($courseid, $contextid) {
-        self::validate_parameters(self::get_course_data_parameters(), array(
-            'courseid' => $courseid,
-            'contextid' => $contextid
-        )
-            );
-        if ($courseid !== 1) {
-
-            $coursedata = block_point_view_get_course_data($courseid, $contextid);
-
-            return array('types' => $coursedata['types'], 'ids' => $coursedata['ids']);
-        } else {
-            $courses = get_courses();
-            $ids = array();
-            $types = array();
-            foreach ($courses as $course) {
-                array_push($ids, intval($course->id));
-                array_push($types, $course->category);
-            }
-            return array('types' => $types, 'ids' => $ids);
-        }
-
-    }
-
-    /**
-     * Return types and course IDs array
-     *
-     * @return external_description
-     */
-    public static function get_course_data_returns() {
-        return new external_single_structure(
-            array(
-                'types' => new external_multiple_structure(
-                    new external_value(PARAM_TEXT, 'Course type', VALUE_REQUIRED)
-                ),
-                'ids' => new external_multiple_structure(
-                    new external_value(PARAM_TEXT, 'Course ID', VALUE_REQUIRED)
-                ),
-            )
-        );
-    }
-
-    /* --------------------------------------------------------------------------------------------------------- */
-
-    /**
-     * All necessary parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_track_colors_parameters() {
-        return new external_function_parameters(
-            array()
-        );
-    }
-
-    /**
-     * Get tracks color from general configuration
-     *
-     * @return array
-     * @throws dml_exception
-     */
-    public static function get_track_colors() {
-        $trackcolor = array(
-            'greentrack' => get_config('block_point_view', 'green_track_color_admin'),
-            'bluetrack' => get_config('block_point_view', 'blue_track_color_admin'),
-            'redtrack' => get_config('block_point_view', 'red_track_color_admin'),
-            'blacktrack' => get_config('block_point_view', 'black_track_color_admin'),
-        );
-
-        return $trackcolor;
-
+    public static function delete_custom_pix($contextid, $draftitemid) {
+        global $USER;
+        // TODO check capability
+        $fs = get_file_storage();
+        $success = $fs->delete_area_files($contextid, 'block_point_view', 'point_views_pix');
+        $success = $success && $fs->delete_area_files(context_user::instance($USER->id)->id, 'user', 'draft', $draftitemid);
+        return array('success' => $success);
     }
 
     /**
@@ -748,60 +436,46 @@ class block_point_view_external extends external_api {
      *
      * @return external_description
      */
-    public static function get_track_colors_returns() {
+    public static function delete_custom_pix_returns() {
         return new external_single_structure(
-            array(
-                'greentrack' => new external_value(PARAM_TEXT, 'Green track color', VALUE_REQUIRED),
-                'bluetrack' => new external_value(PARAM_TEXT, 'Blue track color', VALUE_REQUIRED),
-                'redtrack' => new external_value(PARAM_TEXT, 'Red track color', VALUE_REQUIRED),
-                'blacktrack' => new external_value(PARAM_TEXT, 'Black track color', VALUE_REQUIRED),
-            )
+                array(
+                        'success' => new external_value(PARAM_BOOL, 'Whether operation was successful', VALUE_REQUIRED),
+                )
         );
     }
 
-    /**
-     * Get enrol list
-     *
-     * @param string $userid
-     * @return array
-     */
-    public static function get_enrol_list($userid) {
+    /* --------------------------------------------------------------------------------------------------------- */
 
-        $courses = get_courses();
-        $ids = array();
-        foreach ($courses as $course) {
-            $context = context_course::instance(intval($course->id));
-            if (is_enrolled($context, $userid)) {
-                array_push($ids, intval($course->id));
-            }
-        }
-        return array('ids' => $ids);
-    }
-    /**
-     * All necessary parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_enrol_list_parameters() {
+    public static function get_modules_with_reactions_parameters() {
         return new external_function_parameters(
-            array(
-                'userid' => new external_value(PARAM_INT, 'id of user', VALUE_REQUIRED)
-            )
-            );
+                array(
+                        'userid' => new external_value(PARAM_INT, 'id of user', VALUE_REQUIRED),
+                        'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_REQUIRED),
+                )
+                );
     }
 
-    /**
-     * Return section ids array
-     *
-     * @return external_description
-     */
-    public static function get_enrol_list_returns() {
-        return new external_single_structure(
-            array(
-                'ids' => new external_multiple_structure(
-                    new external_value(PARAM_TEXT, 'Course ID', VALUE_REQUIRED)
-                    ),
-            )
-        );
+    public static function get_modules_with_reactions($userid, $courseid) {
+        $params = self::validate_parameters(self::get_database_parameters(), array(
+                'userid' => $userid,
+                'courseid' => $courseid,
+        ));
+
+        require_once(__DIR__ . '/locallib.php');
+        return block_point_view_get_modules_with_reactions($params['userid'], $params['courseid']);
+    }
+
+    public static function get_modules_with_reactions_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'cmid' => new external_value(PARAM_INT, 'CMID'),
+                                'totaleasy' => new external_value(PARAM_INT, 'Total \'easy\' votes'),
+                                'totalbetter' => new external_value(PARAM_INT, 'Total \'better\' votes'),
+                                'totalhard' => new external_value(PARAM_INT, 'Total \'hard\' votes'),
+                                'uservote' => new external_value(PARAM_INT, 'User vote')
+                        )
+                        )
+                );
     }
 }

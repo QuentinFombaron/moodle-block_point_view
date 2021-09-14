@@ -25,7 +25,9 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+global $CFG, $DB, $PAGE, $OUTPUT;
 require_once($CFG->dirroot . '/lib/csvlib.class.php');
+require_once(__DIR__ . '/locallib.php');
 
 try {
     require_login();
@@ -54,103 +56,37 @@ try {
 
         $contextid = required_param('contextid', PARAM_INT);
 
-        $enablepix = required_param('enablepix', PARAM_INT);
-
-        $tab = optional_param('tab', 'export', PARAM_ALPHA);
-
-        $format = optional_param('format', null, PARAM_ALPHA);
-
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
-        $block = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-
-        $config = unserialize(base64_decode($block->configdata));
-
-        $blockcontext = CONTEXT_BLOCK::instance($id);
-
         $PAGE->set_course($course);
-
-        $PAGE->set_url(
-            '/blocks/point_view/export.php',
-            array(
-                'instanceid' => $id,
-                'contextid' => $contextid,
-                'courseid' => $courseid,
-                'enablepix' => $enablepix,
-                'sesskey' => sesskey()
-            )
-        );
-
         $PAGE->set_context($context);
 
-        $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/point_view/styles.css'));
+        block_point_view_check_instance($id, $context, format_string($course->fullname));
 
-        $title = get_string('menu', 'block_point_view');
-
-        $PAGE->set_title($title);
-
-        $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
-
-        $PAGE->navbar->add($title);
-
-        $PAGE->set_pagelayout('report');
-
-        echo $OUTPUT->header();
-
-        echo $OUTPUT->heading($title, 2);
-
-        echo $OUTPUT->container_start('block_point_view');
-
-        require("tabs.php");
+        block_point_view_print_header_with_tabs('export', $id, $contextid, $courseid);
 
         echo html_writer::start_div('w-100 text-center');
 
         echo html_writer::start_div('d-inline-flex');
 
-        /* CSV Export */
+        $formats = array('csv', 'ods', 'xls');
+        $params = array('contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id);
 
-        $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'csv'];
+        foreach ($formats as $format) {
+            $params['format'] = $format;
 
-        $url = new moodle_url('/blocks/point_view/download.php', $parameters);
+            $url = new moodle_url('/blocks/point_view/download.php', $params);
 
-        $label = get_string('exportcsv', 'block_point_view');
+            $label = get_string('export' . $format, 'block_point_view');
 
-        $options = ['class' => 'exportCSVButton mx-2'];
-
-        echo $OUTPUT->single_button($url, $label, 'post', $options);
-
-        /* ODS Export */
-
-        $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'ods'];
-
-        $url = new moodle_url('/blocks/point_view/download.php', $parameters);
-
-        $label = get_string('exportods', 'block_point_view');
-
-        $options = ['class' => 'exportODSButton mx-2'];
-
-        echo $OUTPUT->single_button($url, $label, 'post', $options);
-
-        /* XLS Export */
-
-        $parameters = ['contextid' => $contextid, 'courseid' => $courseid, 'instanceid' => $id, 'format' => 'xls'];
-
-        $url = new moodle_url('/blocks/point_view/download.php', $parameters);
-
-        $label = get_string('exportxls', 'block_point_view');
-
-        $options = ['class' => 'exportXLSButton mx-2'];
-
-        echo $OUTPUT->single_button($url, $label, 'post', $options);
+            echo $OUTPUT->single_button($url, $label, 'post', array('class' => 'mx-2'));
+        }
 
         echo html_writer::end_div();
 
         echo html_writer::end_div();
 
-        echo $OUTPUT->container_end();
-
-        echo $OUTPUT->footer();
-
+        block_point_view_print_footer_of_tabs();
     }
 
 } catch (coding_exception $e) {

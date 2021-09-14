@@ -72,15 +72,6 @@ $functions = array(
         'ajax' => true,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
-    'block_point_view_get_section_range' => array(
-        'classname'   => 'block_point_view_external',
-        'methodname'  => 'get_section_range',
-        'classpath'   => 'blocks/point_view/externallib.php',
-        'description' => 'Get section ID range',
-        'type'        => 'read',
-        'ajax' => true,
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
-    ),
     'block_point_view_get_course_data' => array(
         'classname'   => 'block_point_view_external',
         'methodname'  => 'get_course_data',
@@ -90,20 +81,20 @@ $functions = array(
         'ajax' => true,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
-    'block_point_view_get_track_colors' => array(
+    'block_point_view_delete_custom_pix' => array(
         'classname'   => 'block_point_view_external',
-        'methodname'  => 'get_track_colors',
+        'methodname'  => 'delete_custom_pix',
         'classpath'   => 'blocks/point_view/externallib.php',
-        'description' => 'Get Track Color',
-        'type'        => 'read',
+        'description' => 'delete custom emoji for this block instance',
+        'type'        => 'write',
         'ajax' => true,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
-    'block_point_view_get_enrol_list' => array(
+    'block_point_view_get_modules_with_reactions' => array(
         'classname'   => 'block_point_view_external',
-        'methodname'  => 'get_enrol_list',
+        'methodname'  => 'get_modules_with_reactions',
         'classpath'   => 'blocks/point_view/externallib.php',
-        'description' => 'ids list of courses enrolled by user',
+        'description' => 'list of modules with rection enabled and current reactions',
         'type'        => 'read',
         'ajax' => true,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
@@ -118,10 +109,9 @@ $services = array(
             'block_point_view_get_pixparam',
             'block_point_view_get_moduleselect',
             'block_point_view_get_difficulty_levels',
-            'block_point_view_get_section_range',
             'block_point_view_get_course_data',
-            'block_point_view_get_track_colors',
-            'block_point_view_get_enrol_list'
+            'block_point_view_delete_custom_pix',
+            'block_point_view_get_modules_with_reactions'
         ),
         'requiredcapability' => '',
         'restrictedusers' => 0,

@@ -25,6 +25,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
@@ -56,529 +57,337 @@ class block_point_view_edit_form extends block_edit_form {
     /**
      * Configuration page
      *
-     * @param object $mform
+     * @param MoodleQuickForm $mform
      */
     protected function specific_definition($mform) {
 
         global $CFG, $PAGE, $COURSE, $OUTPUT;
 
-        try {
-            if (get_config('block_point_view', 'enable_point_views_admin')) {
+        if (get_config('block_point_view', 'enable_point_views_admin')) {
 
-                $mform->addElement(
-                    'header',
-                    'config_header',
-                    get_string('blocksettings', 'block')
-                    );
+            // Add block_point_view class to form element for styling,
+            // as it is not done for the body element on block edition page.
+            $mform->updateAttributes(array('class' => $mform->getAttribute('class') . ' block_point_view'));
 
-                /* Block content */
+            $mform->addElement('header', 'config_header', get_string('blocksettings', 'block'));
 
-                $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $this->block->context);
-                $mform->addElement(
-                    'editor',
-                    'config_text',
-                    get_string('contentinputlabel', 'block_point_view'),
-                    null,
-                    $editoroptions
+            // Block content.
+
+            $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $this->block->context);
+            $mform->addElement(
+                'editor',
+                'config_text',
+                get_string('contentinputlabel', 'block_point_view'),
+                null,
+                $editoroptions
+            );
+            $mform->setType('config_text', PARAM_RAW);
+
+            $mform->addHelpButton('config_text', 'howto_text', 'block_point_view');
+
+            // Reaction activation checkbox.
+            $this->add_checkbox_with_help($mform, 'config_enable_point_views_checkbox', 'enablepoint_views', 'howto_enable_point_views_checkbox');
+
+            // Difficulties activation checkbox
+            $this->add_checkbox_with_help($mform, 'config_enable_difficulties_checkbox', 'enabledifficulties', 'howto_enable_difficulties_group');
+
+            // ----------------------------------------------------------------------------------------------------- //
+
+            $mform->addElement('header', 'activities', get_string('config_header_activities', 'block_point_view'));
+
+            $coursedata = block_point_view_get_course_data($COURSE->id);
+            $activities = $coursedata['activities'];
+
+            if (empty($activities)) {
+                $this->add_warning_message($mform, get_string('noactivity', 'block_point_view'));
+            }
+
+            /* Enable/Disable by types */
+            foreach ($coursedata['types'] as $type) {
+                $this->add_enable_disable_buttons($mform, '',
+                        'enableall' . $type, get_string('enable_type', 'block_point_view', get_string('modulenameplural', $type)),
+                        'disableall' . $type, get_string('disable_type', 'block_point_view', get_string('modulenameplural', $type)),
+                        'howto_type',
+                        'data-type="' . $type . '"',
+                        array('class' => 'reactions'));
+            }
+
+            $oldsection = '';
+            $sectionid = 0;
+            /* Enable/Disable by activity or section */
+            foreach ($activities as $activity) {
+
+                if ($activity['section'] != $oldsection) {
+
+                    $sectionid++;
+                    $sectionname = get_section_name($COURSE, $activity['section']);
+
+                    $this->add_enable_disable_buttons($mform, '<h4>' . $sectionname . '</h4>',
+                            'enableallsec' . $sectionid, get_string('enableall', 'block_point_view', $sectionname),
+                            'disableallsec' . $sectionid, get_string('disableall', 'block_point_view', $sectionname),
+                            'howto_manage_checkbox',
+                            'data-section="sec' . $sectionid . '"',
+                            array('class' => 'section-header'));
+
+                    $oldsection = $activity['section'];
+                }
+
+                $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], array('class' => 'iconlarge activityicon'));
+
+                $this->add_activity_config($mform, $activity['id'], $sectionid, $activity['type'], $icon . format_string($activity['name']));
+            }
+            // ----------------------------------------------------------------------------------------------------- //
+
+            // Emojis images configuration.
+
+            $this->add_emoji_selection($mform);
+
+            // ----------------------------------------------------------------------------------------------------- //
+
+            // Reaction reinitialisation.
+            $mform->addElement(
+                'header',
+                'config_reset',
+                get_string('config_header_reset', 'block_point_view')
                 );
-                $mform->setType('config_text', PARAM_RAW);
 
-                $mform->addHelpButton(
-                    'config_text',
-                    'howto_text',
-                    'block_point_view'
+            $mform->addElement(
+                    'static',
+                    'config_reaction_reset_button',
+                    '<button id="reset_reactions" class="btn btn-outline-warning" type="button">' .
+                        get_string('resetreactions', 'block_point_view', format_string($COURSE->fullname)) .
+                    '</button>'
                     );
 
-                /* Reaction activation checkbox */
-                $enablepointviews = array();
+            $envconf = array(
+                'courseid' => $COURSE->id,
+                'contextid' => $this->block->context->id
+            );
 
-                $enablepointviews[] =& $mform->createElement(
-                    'advcheckbox',
-                    'config_enable_point_views_checkbox',
+            $trackcolors =  array(
                     '',
-                    null,
-                    array(),
-                    array(0, 1)
-                    );
+                    get_config('block_point_view', 'green_track_color_admin'),
+                    get_config('block_point_view', 'blue_track_color_admin'),
+                    get_config('block_point_view', 'red_track_color_admin'),
+                    get_config('block_point_view', 'black_track_color_admin')
+            );
 
-                $mform->addGroup(
-                    $enablepointviews,
-                    'config_enable_point_views_group',
-                    get_string('enablepoint_views', 'block_point_view'),
-                    array(' '),
-                    false
-                    );
+            // AMD Call.
+            $params = array($envconf, $trackcolors);
 
-                $mform->addHelpButton(
-                    'config_enable_point_views_group',
-                    'howto_enable_point_views_checkbox',
-                    'block_point_view'
-                    );
+            $PAGE->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
+            $PAGE->requires->string_for_js('resetreactionsconfirmation', 'block_point_view', format_string($COURSE->fullname));
+            $PAGE->requires->strings_for_js(array('deleteemojiconfirmation', 'reactionsresetsuccessfully'), 'block_point_view');
+            $PAGE->requires->strings_for_js(array('ok', 'info'), 'moodle');
 
-                /* Difficulties activation checkbox */
-                $enabledifficulties = array();
+        } else {
+            $this->add_warning_message($mform, get_string('blockdisabled', 'block_point_view'));
+        }
+    }
 
-                $enabledifficulties[] =& $mform->createElement(
-                    'advcheckbox',
-                    'config_enable_difficulties_checkbox',
-                    '',
-                    null,
-                    array(),
-                    array(0, 1)
-                    );
+    /**
+     *
+     * @param MoodleQuickForm $mform
+     * @param string $elementname
+     * @param string $str
+     * @param string $helpstr
+     */
+    private function add_checkbox_with_help(&$mform, $elementname, $str, $helpstr = '') {
+        if (empty($helpstr)) {
+            $helpstr = $str;
+        }
 
-                $mform->addGroup(
-                    $enabledifficulties,
-                    'config_enable_difficulties_group',
-                    get_string('enabledifficulties', 'block_point_view'),
-                    array(' '),
-                    false
-                    );
+        $group = array();
 
-                $mform->addHelpButton(
-                    'config_enable_difficulties_group',
-                    'howto_enable_difficulties_group',
-                    'block_point_view'
-                    );
+        $group[] =& $mform->createElement( 'advcheckbox', $elementname );
 
-                /* ----------------------------------------------------------------------------------------------------- */
+        $mform->addGroup( $group, $elementname . '_group', get_string($str, 'block_point_view'), '', false );
 
-                $coursedata = block_point_view_get_course_data($COURSE->id);
+        $mform->addHelpButton( $elementname . '_group', $helpstr, 'block_point_view' );
+    }
 
-                $activities = $coursedata['activities'];
+    /**
+     *
+     * @param MoodleQuickForm $mform
+     */
+    private function add_enable_disable_buttons(&$mform, $grouplabel, $enablename, $enablelabel, $disablename, $disablelabel, $helpstr, $dataattr = '', $attributes = array()) {
+        global $OUTPUT;
 
-                $mform->addElement(
-                    'header',
-                    'activities',
-                    HTML_WRITER::link("#", get_string('config_header_activities', 'block_point_view'))
-                    );
+        $templatecontext = new stdClass();
+        $templatecontext->helpbutton = $OUTPUT->help_icon($helpstr, 'block_point_view');
+        $templatecontext->enablename = $enablename;
+        $templatecontext->enablelabel = $enablelabel;
+        $templatecontext->disablename = $disablename;
+        $templatecontext->disablelabel = $disablelabel;
+        $templatecontext->dataattr = $dataattr;
+        $element = &$mform->addElement('static', '', $grouplabel,
+                $OUTPUT->render_from_template('block_point_view/enabledisable', $templatecontext));
+        if (!empty($attributes)) {
+            $element->setAttributes($attributes);
+        }
+    }
 
-                $sectionid = 1;
+    /**
+     *
+     * @param MoodleQuickForm $mform
+     * @param int $id
+     * @param int $sectionid
+     * @param string $label
+     */
+    private function add_activity_config(&$mform, $id, $sectionid, $type, $label) {
+        $group = array();
 
-                /* Shortcuts */
-                $mform->addElement(
-                    'button',
-                    'go_to_save',
-                    get_string('go_to_save', 'block_point_view')
-                    );
+        $group[] =& $mform->createElement( 'advcheckbox', 'config_moduleselectm' . $id, '', null,
+                array(
+                        'class' => 'reactions enablemodulereactions cbsec' . $sectionid . ' cb' . $type,
+                        'data-section' => 'sec' . $sectionid,
+                        'data-type' => $type
+                ),
+                array(0, $id)
+        );
 
-                $mform->addElement(
-                    'button',
-                    'close_field',
-                    get_string('close_field', 'block_point_view')
-                    );
+        $group[] =& $mform->createElement( 'html', '<span id="track_' . $id . '" class="block_point_view track selecttrack difficultytracks"></span>' );
 
-                /* IF there is no activities or IF you are in courses view and there is no courses */
-                if (empty($activities) AND empty(get_courses())) {
-
-                    $warningstring = get_string('no_activities_config_message', 'block_point_view');
-
-                    $activitieswarning = HTML_WRITER::tag(
-                        'div',
-                        $warningstring, ['class' => 'warning']
-                        );
-
-                    $mform->addElement('static', '', '', $activitieswarning);
-
-                } else {
-
-                    $oldsection = "";
-
-                    $mform->addElement('html', '<br>');
-
-                    $difficulties = array(
+        $group[] =& $mform->createElement( 'select', 'config_difficulty_' . $id, '',
+                array(
                         get_string('nonetrack', 'block_point_view'),
                         get_string('greentrack', 'block_point_view'),
                         get_string('bluetrack', 'block_point_view'),
                         get_string('redtrack', 'block_point_view'),
                         get_string('blacktrack', 'block_point_view')
-                    );
-                    if (empty($activities) || ($COURSE->id == 1)) {
-                        /* Only for courses */
-                        foreach (get_courses() as $course) {
-                            $temp = array ('id' => $course->id,
-                                'fullname' => $course->fullname,
-                                'category' => $course->category);
-                            if ($temp['id'] != 1) { /* Need to be modified to display */
-                                $attributes = ['class' => 'iconlarge activityicon'];
-
-                                $icon = $OUTPUT->pix_icon('i/course', 'course', 'core', $attributes);
-
-                                $activityoption = array();
-
-                                $activityoption[] =& $mform->createElement(
-                                    'advcheckbox',
-                                    'config_moduleselectm' . $temp['id'],
-                                    '',
-                                    null,
-                                    array('group' => $sectionid, 'class' => $temp['category'] . ' check_section_' . $sectionid),
-                                    array(0, $temp['id'])
-                                    );
-
-                                $activityoption[] =& $mform->createElement(
-                                    'select',
-                                    'config_difficulty_' . $temp['id'],
-                                    '',
-                                    $difficulties,
-                                    array('class' => 'selectDifficulty')
-                                    );
-
-                                $mform->addGroup(
-                                    $activityoption,
-                                    'config_activity_' . $temp['id'],
-                                    $icon . format_string($temp['fullname']),
-                                    array(' '),
-                                    false
-                                    );
-
-                            }
-                        }
-
-                    } else {
-                        /* Enable/Disable by types */
-                        block_point_view_manage_types($mform, $coursedata['types']);
-                        /* Enable/Disable by activity or section */
-                        foreach ($activities as $index => $activity) {
-
-                            if ($oldsection != $activity['section']) {
-
-                                $oldsection = $activity['section'];
-
-                                $sectionid++;
-
-                                $sectionname = get_section_name($COURSE, $oldsection);
-
-                                $enabledisable = array();
-
-                                $enabledisable[] =& $mform->createElement(
-                                    'html',
-                                    '<br>'
-                                    );
-
-                                $enabledisable[] =& $mform->createElement(
-                                    'button',
-                                    'enable_' . $sectionid,
-                                    get_string('enableall', 'block_point_view', $sectionname)
-                                    );
-
-                                $enabledisable[] =& $mform->createElement(
-                                    'button',
-                                    'disable_' . $sectionid,
-                                    get_string('disableall', 'block_point_view', $sectionname)
-                                    );
-
-                                $mform->addGroup(
-                                    $enabledisable,
-                                    'manage_checkbox_' . $sectionid,
-                                    '<br><h4>' . (string)$sectionname . '</h4>',
-                                    array(' '),
-                                    false
-                                    );
-
-                                $mform->addHelpButton(
-                                    'manage_checkbox_' . $sectionid,
-                                    'howto_manage_checkbox',
-                                    'block_point_view'
-                                    );
-
-                            }
-
-                            $attributes = ['class' => 'iconlarge activityicon'];
-
-                            $icon = $OUTPUT->pix_icon('icon', $activity['modulename'], $activity['type'], $attributes);
-
-                            $activityoption = array();
-
-                            $activityoption[] =& $mform->createElement(
-                                'advcheckbox',
-                                'config_moduleselectm' . $activity['id'],
-                                '',
-                                null,
-                                array('group' => $sectionid, 'class' => $activity['type'] . ' check_section_' . $sectionid),
-                                array(0, $activity['id'])
-                                );
-
-                            $activityoption[] = &$mform->createElement(
-                                'select',
-                                'config_difficulty_' . $activity['id'],
-                                '',
-                                $difficulties,
-                                array('class' => 'selectDifficulty')
-                                );
-
-                            $mform->addGroup(
-                                $activityoption,
-                                'config_activity_' . $activity['id'],
-                                $icon . format_string($activity['name']),
-                                array(' '),
-                                false
-                                );
-
-                        }
-                    }
-
-                    /* ----------------------------------------------------------------------------------------------------- */
-
-                    /* Emojis images configuration */
-                    $mform->addElement(
-                        'header',
-                        'config_images',
-                        HTML_WRITER::link("#", get_string('config_header_images', 'block_point_view'))
-                        );
-
-                    $fs = get_file_storage();
-
-                    $pixfiles = array('easy', 'better',  'hard');
-
-                    $easyimg = $betterimg = $hardimg = null;
-
-                    $pixpreview = array();
-
-                    foreach ($pixfiles as $file) {
-
-                        if ($fs->file_exists(
-                            $this->block->context->id,
-                            'block_point_view',
-                            'point_views_pix',
-                            0,
-                            '/',
-                            $file.'.png')
-                            ) {
-
-                                ${$file.'img'} = block_point_view_pix_url($this->block->context->id, 'point_views_pix', $file);
-
-                        } else if ($fs->file_exists(
-                                1,
-                                'block_point_view',
-                                'point_views_pix_admin',
-                                0, '/',
-                                $file.'.png')
-                                ) {
-
-                                    ${$file.'img'} = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
-
-                        } else {
-
-                                    ${$file.'img'} = $CFG->wwwroot . '/blocks/point_view/pix/'.$file.'.png';
-
-                        }
-
-                    }
-
-                    $pixpreview[] =& $mform->createElement(
-                        'static',
-                        'config_current_pix',
-                        '',
-                        '<img src="' . $easyimg . '" style="width: 30px"/>
-                        <img src="' . $betterimg . '" style="width: 30px"/>
-                        <img src="' . $hardimg . '" style="width: 30px"/>
-                        &nbsp;&nbsp;'
-                        );
-
-                    $pixpreview[] =& $mform->createElement(
-                        'button',
-                        'config_reset_pix',
-                        get_string('pixreset', 'block_point_view')
-                        );
-
-                    $pixpreview[] =& $mform->createElement(
-                        'static',
-                        'config_reset_pix_text',
-                        '',
-                        get_string('pixresettext', 'block_point_view')
-                        );
-
-                    $mform->addGroup(
-                        $pixpreview,
-                        'config_pix_preview_group',
-                        get_string('pixcurrently', 'block_point_view'),
-                        array(' '),
-                        false
-                        );
-
-                    $mform->addHelpButton(
-                        'config_pix_preview_group',
-                        'howto_pix_preview_group',
-                        'block_point_view'
-                        );
-
-                    $mform->disabledIf(
-                        'config_reset_pix',
-                        'config_enable_pix_checkbox',
-                        'notchecked'
-                        );
-
-                    $enableperso = array();
-
-                    $enableperso[] =& $mform->createElement(
-                        'advcheckbox',
-                        'config_enable_pix_checkbox',
-                        '',
-                        null,
-                        array(),
-                        array(0, 1)
-                        );
-
-                    $mform->addGroup(
-                        $enableperso,
-                        'config_enable_pix',
-                        get_string('enablecustompix', 'block_point_view'),
-                        array(' '),
-                        false
-                        );
-
-                    $mform->addHelpButton(
-                        'config_enable_pix',
-                        'howto_enable_pix',
-                        'block_point_view'
-                        );
-
-                    $mform->addElement(
-                        'filemanager',
-                        'config_point_views_pix',
-                        get_string('point_viewpix', 'block_point_view'),
-                        null,
-                        array('subdirs' => 0, 'maxfiles' => 11, 'accepted_types' => '.png')
-                        );
-
-                    $mform->disabledIf(
-                        'config_point_views_pix',
-                        'config_enable_pix_checkbox',
-                        'notchecked'
-                        );
-
-                    $mform->addElement(
-                        'static',
-                        '',
-                        '',
-                        get_string('point_viewpixdesc', 'block_point_view')
-                        );
-
-                    foreach ($pixfiles as $file) {
-
-                        ${$file.'text'} = array();
-
-                        ${$file.'text'}[] =& $mform->createElement('text',
-                            'config_pix_text_'.$file,
-                            get_string('text'.$file, 'block_point_view')
-                            );
-
-                        $mform->setDefault('config_pix_text_'.$file, get_string('defaulttext'.$file, 'block_point_view'));
-
-                        $mform->setType('config_pix_text_'.$file, PARAM_RAW);
-
-                        $mform->addGroup(
-                            ${$file.'text'},
-                            'config_'.$file.'_text_group',
-                                html_writer::empty_tag(
-                            'img',
-                                    array(
-                                        'src' => ${$file.'img'},
-                                        'style' => 'width:30px'
-                                    )
-                                ) . get_string('emojidesc', 'block_point_view'),
-                            array(' '),
-                            false
-                        );
-
-                        $mform->addHelpButton(
-                            'config_'.$file.'_text_group',
-                            'howto_pix_text_group',
-                            'block_point_view'
-                            );
-
-                    }
-
-                    /* ----------------------------------------------------------------------------------------------------- */
-
-                    /* Reaction reinitialisation */
-                    $mform->addElement(
-                        'header',
-                        'config_reset',
-                        HTML_WRITER::link("#", get_string('config_header_reset', 'block_point_view'))
-                        );
-
-                    $reinit = array();
-
-                    $reinit[] =& $mform->createElement(
-                        'button',
-                        'config_reaction_reset_button',
-                        get_string('reactionreset', 'block_point_view', $COURSE->fullname)
-                        );
-
-                    $mform->addGroup(
-                        $reinit,
-                        'config_reaction_reset',
-                        '',
-                        array(' '),
-                        false
-                        );
-
-                    $mform->addHelpButton(
-                        'config_reaction_reset',
-                        'howto_reaction_reset',
-                        'block_point_view'
-                        );
-
-                    $reinitconfirm = array();
-
-                    $reinitconfirm[] =& $mform->createElement(
-                        'button',
-                        'config_reset_yes',
-                        get_string('yes', 'block_point_view')
-                        );
-
-                    $reinitconfirm[] =& $mform->createElement(
-                        'button',
-                        'config_reset_no',
-                        get_string('no', 'block_point_view')
-                        );
-
-                    $reinitconfirm[] =& $mform->createElement(
-                        'static',
-                        'config_reset_pix_text',
-                        '',
-                        get_string('pixresettext', 'block_point_view')
-                        );
-
-                    $mform->addGroup($reinitconfirm,
-                        'config_reset_confirm',
-                        get_string('confirmation', 'block_point_view', $COURSE->fullname),
-                        array(' '),
-                        false
-                        );
+                ),
+                array('class' => 'difficultytracks moduletrackselect', 'data-id' => $id)
+        );
+
+        $mform->addGroup( $group, 'config_activity_' . $id, $label, '', false );
+
+    }
+
+    /**
+     *
+     * @param MoodleQuickForm $mform
+     * @param string $message
+     */
+    private function add_warning_message(&$mform, $message) {
+        $warning = html_writer::tag( 'div', $message, ['class' => 'warning'] );
+        $mform->addElement('static', '', '', $warning);
+    }
+
+    /**
+     *
+     * @param MoodleQuickForm $mform
+     */
+    private function add_emoji_selection(&$mform) {
+        global $CFG;
+
+        $mform->addElement('header', 'config_images', get_string('config_header_images', 'block_point_view'));
+
+        $fs = get_file_storage();
+
+        $pixfiles = array('easy', 'better', 'hard');
+
+        $adminpixenabled = get_config('block_point_view', 'enable_pix_admin');
+        $custompixexist = false;
+
+        $pix = array('default' => array(), 'admin' => array(), 'custom' => array());
+        foreach ($pixfiles as $file) {
+            $defaultsrc = $CFG->wwwroot . '/blocks/point_view/pix/' . $file . '.png';
+            $pix['default'][$file] = '<img src="' . $defaultsrc . '" class="pix-preview"/>';
+
+            if ($adminpixenabled) {
+                if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
+                    $adminsrc = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
+                } else {
+                    $adminsrc = $defaultsrc;
                 }
-
-                $envconf = array(
-                    'courseid' => $COURSE->id,
-                    'contextid' => $this->block->context->id
-                );
-
-                /* AMD Call */
-                $params = array($sectionid, $envconf);
-
-                $PAGE->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
-
-            } else {
-
-                $mform->addElement(
-                    'static',
-                    '',
-                    '',
-                    get_string('blockdisabled', 'block_point_view')
-                    );
-
+                $pix['admin'][$file] = '<img src="' . $adminsrc . '" class="pix-preview"/>';
             }
 
-        } catch (coding_exception $e) {
+            if ($fs->file_exists($this->block->context->id, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
+                $customsrc = block_point_view_pix_url($this->block->context->id, 'point_views_pix', $file);
+                $custompixexist = true;
+            } else {
+                $customsrc = isset($adminsrc) ? $adminsrc : $defaultsrc;
+            }
+            $pix['custom'][$file] = '<img src="' . $customsrc . '" class="pix-preview"/>';
+        }
 
-            echo 'Exception [coding_exception] (blocks/point_view/edit_form.php -> specific_definition()) : ',
-            $e->getMessage(), "\n";
+        $pixselect = array();
+        $pixselect[] = &$mform->createElement('radio', 'config_pixselect', '', 'Default: ' . implode('', $pix['default']), 'default');
+        if ($adminpixenabled) {
+            $pixselect[] = &$mform->createElement('radio', 'config_pixselect', '', 'Site default: ' . implode('', $pix['admin']), 'admin');
+        }
 
-        } catch (moodle_exception $e) {
+        if ($custompixexist) {
+            $custompixdisplay = '<span class="custom-pix-preview">' . implode('', $pix['custom']) . '</span>';
+            $deletecustom = '<button id="delete_custom_pix" class="btn btn-outline-warning" type="button">' .
+                                'Delete custom emoji' .
+                            '</button>';
+        } else {
+            $custompixdisplay = '';
+            $deletecustom = '';
+        }
+        $pixselect[] = &$mform->createElement('radio', 'config_pixselect', '', 'Custom: ' . $custompixdisplay, 'custom');
 
-            echo 'Exception [moodle_exception] (blocks/point_view/edit_form.php -> specific_definition()) : ',
-            $e->getMessage(), "\n";
+        $pixselect[] = &$mform->createElement('html', $deletecustom);
+
+        $group = $mform->addGroup($pixselect, 'config_pixselectgroup', 'Emoji to use', '', false);
+        $group->setAttributes(array('class' => 'pixselectgroup'));
+
+        if ($adminpixenabled) {
+            $mform->setDefault('config_pixselect', 'admin');
+        } else {
+            $mform->setDefault('config_pixselect', 'default');
+        }
+
+        // TODO Manage upgrade to new version (courses with custom emoji should be correctly set to "custom").
+        // TODO Remove 'enable_pix_checkbox' completely during upgrade (update 'pixselect' accordingly).
+
+        $mform->addHelpButton(
+                'config_pixselectgroup',
+                'howto_pix_preview_group',
+                'block_point_view'
+                );
+
+        $mform->addElement(
+                'filemanager',
+                'config_point_views_pix',
+                get_string('point_viewpix', 'block_point_view'),
+                null,
+                array('subdirs' => 0, 'maxfiles' => 11, 'accepted_types' => '.png')
+                );
+
+        $mform->disabledIf(
+                'config_point_views_pix',
+                'config_pixselect',
+                'neq',
+                'custom'
+                );
+
+        $mform->addElement(
+                'static',
+                'custompixnote',
+                '',
+                get_string('point_viewpixdesc', 'block_point_view')
+                );
+
+        foreach ($pixfiles as $file) {
+
+            $mform->addElement('text',
+                    'config_pix_text_'.$file,
+                    '<img src="' . $CFG->wwwroot . '/blocks/point_view/pix/' . $file . '.png' . '" class="pix-preview"/>' .
+                    get_string('emojidesc', 'block_point_view')
+                    );
+
+            $mform->setDefault('config_pix_text_'.$file, get_string('defaulttext'.$file, 'block_point_view'));
+
+            $mform->setType('config_pix_text_'.$file, PARAM_RAW);
+
+            $mform->addHelpButton(
+                    'config_pix_text_' . $file,
+                    'howto_pix_text_group',
+                    'block_point_view'
+                    );
 
         }
     }
@@ -596,7 +405,7 @@ class block_point_view_edit_form extends block_edit_form {
 
         $errors = array();
 
-        if ($data['config_enable_pix_checkbox']) {
+        if (isset($data['config_pixselect']) && $data['config_pixselect'] == 'custom') {
 
             $fs = get_file_storage();
 
@@ -616,21 +425,17 @@ class block_point_view_edit_form extends block_edit_form {
                 'group_EBH'
             );
 
-            try {
+            $draftfiles = $fs->get_area_files(
+                $usercontext->id,
+                'user',
+                'draft',
+                $data['config_point_views_pix'],
+                'filename',
+                false
+                );
 
-                $draftfiles = $fs->get_area_files(
-                    $usercontext->id,
-                    'user',
-                    'draft',
-                    $data['config_point_views_pix'],
-                    'filename',
-                    false
-                    );
-
-            } catch (coding_exception $e) {
-
-                echo '';
-
+            if (empty($draftfiles)) {
+                $errors['config_point_views_pix'] = 'Please provide at least one file.';
             }
 
             foreach ($draftfiles as $file) {
@@ -640,24 +445,14 @@ class block_point_view_edit_form extends block_edit_form {
                 if (!in_array($pathinfo['filename'], $expected, true)) {
 
                     if (!isset($errors['config_point_views_pix'])) {
-
                         $errors['config_point_views_pix'] = '';
-
                     }
 
-                    try {
-
-                        $errors['config_point_views_pix'] .= get_string(
-                            'errorfilemanager',
-                            'block_point_view',
-                            $pathinfo['filename']
-                            ) . '<br />';
-
-                    } catch (coding_exception $e) {
-
-                        echo '';
-
-                    }
+                    $errors['config_point_views_pix'] .= get_string(
+                        'errorfilemanager',
+                        'block_point_view',
+                        $pathinfo['filename']
+                        ) . '<br />';
                 }
             }
         }

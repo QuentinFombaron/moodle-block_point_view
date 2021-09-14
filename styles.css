@@ -1,12 +1,12 @@
 /* Tooltip container */
-.block_point_view .tooltipreaction {
+.block_point_view.reactions-container .withtooltip {
     position: relative;
     display: inline-block;
     pointer-events: none;
 }
 
 /* Tooltip text */
-.block_point_view .tooltipreaction .tooltiptextreaction {
+.block_point_view.reactions-container .withtooltip .tooltiptext {
     visibility: hidden;
     display: table;
     width: max-content;
@@ -14,138 +14,152 @@
     color: #fff;
     text-align: center;
     font-weight: bold;
-    padding: 5px 10px;
+    padding: 3px 10px;
     border-radius: 20px;
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 1;
-    bottom: 28px;
-    left: 80px;
-    margin-left: -60px;
+    z-index: 2;
+    bottom: 30px;
+    left: 10px;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
 
     /* Fade in tooltip */
     opacity: 0;
     transition: opacity 0.3s;
 }
 
+.block_point_view.reactions-container .withtooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
 /* Show the tooltip text when you mouse over the tooltip container */
-.block_point_view .tooltipreaction:hover .tooltiptextreaction {
+.block_point_view.reactions-container .withtooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
 }
 
 /* Source for tooltip : https://www.w3schools.com/css/css_tooltip.asp */
 
-.block_point_view .group_img {
+
+/**********************/
+/* Reactions position */
+.block_point_view.reactions-container {
+	z-index: 1;
+	position: relative;
+}
+
+.block_point_view.reactions-container ~ .mod-indent-outer,
+.block_point_view.reactions-container ~ div .mod-indent-outer {
+    max-width: 80%;
+}
+
+.block_point_view.reactions-container .reactions {
     position: absolute;
-    height: 20px;
+    right: -18px;
     top: 0;
-    left: 0;
+    user-select: none;
 }
 
-.block_point_view .group_nb {
+.block_point_view.reactions-container .group {
     position: absolute;
-    left: 47px;
+    right: 50px;
+    top: 0;
 }
 
-.block_point_view_container {
-    position: absolute;
-    left: 80%;
-    top: 20%;
-    z-index: 1;
+/**********************/
+
+.block_point_view.reactions-container .reactionnb {
+    margin-left: 7px;
+    margin-right: 12px;
+    vertical-align: sub;
 }
 
-.block_point_view .easy {
-    height: 0;
-    position: absolute;
-    top: -7.5px;
-    left: -10px;
-    pointer-events: none;
+.block_point_view.reactions-container .reactionnb:not(.shown) {
+    visibility: hidden;
 }
 
-.block_point_view .easy_nb {
-    display: none;
+.block_point_view.reactions-container .reaction {
+	height: 20px;
+	width: 20px;
+}
+
+.block_point_view.reactions-container .reaction img {
     position: absolute;
-    top: 3px;
+    top: 15px;
     left: 10px;
+	height: 0;
+    cursor: pointer;
 }
 
-.block_point_view .better {
-    height: 0;
-    position: absolute;
-    top: -7.5px;
-    left: 35px;
-    pointer-events: none;
+.block_point_view.reactions-container .reaction img.novote:not(:hover) {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
-.block_point_view .better_nb {
-    display: none;
-    position: absolute;
-    top: 3px;
-    left: 55px;
+.block_point_view.reactions-container .group_img {
+	height: 20px;
+    position: relative;
+    cursor: pointer;
 }
 
-.block_point_view .hard {
-    height: 0;
-    position: absolute;
-    top: -7.5px;
-    left: 80px;
-    pointer-events: none;
-}
-
-.block_point_view .hard_nb {
-    display: none;
-    position: absolute;
-    top: 3px;
-    left: 100px;
-}
-
-/* "Save changes" button in configuration */
-#id_go_to_save {
-    position: fixed;
-    top: 390px;
-    right: 100px;
-    z-index: 9999;
-}
-
-/* "Close field" button in configuration */
-#id_close_field {
-    position: fixed;
-    top: 430px;
-    right: 100px;
-    z-index: 9999;
-}
-
-/* Green dot to inform that user has voted */
-.block_point_view .voted {
-    width: 15px;
-    height: 15px;
-    top: 3px;
-    border-radius: 50%;
-    font-size: 13px;
-    color: white;
-    line-height: 15px;
+.block_point_view.reactions-container .group_nb {
+    width: 1.1em;
+    height: 1.1em;
+    display: inline-block;
     text-align: center;
+    vertical-align: sub;
+}
+
+.block_point_view.reactions-container .group_nb.voted {
+    border-radius: 50%;
+    color: white;
     background: #66ad89;
+    line-height: 1em;
 }
 
-/* Select list of difficulty in the configuration */
-
-/*
-.selectDifficulty {
-    margin-left: 30px;
+.block_point_view.reactions-container .group_nb.novote {
+    visibility: hidden;
 }
-/
+
+.block_point_view.reactions-container .group_nb span {
+    position: relative;
+    display: inline-block;
+}
+
+.block_point_view.reactions-container .nbselected {
+    font-weight: bold;
+    color: #5585B6;
+}
 
 /* Difficulty tracks */
 .block_point_view.track {
-    height: 25px;
+    height: 1.6em;
     width: 10px;
-    margin-right: 5px;
     border-radius: 10%;
-    position: relative;
-    top: 5px;
+    position: absolute;
+    margin-left: -15px;
+}
+
+.path-course-view .activity .block_point_view.track {
+    padding: 0;
+}
+
+.path-course-view .activity .block_point_view.track,
+.path-course-view .activity .block_point_view.track + * {
+    display: inline-block;
+}
+
+.block_point_view.selecttrack {
+    height: 2.4em;
 }
 
 /* Menu button in block content */
@@ -156,9 +170,16 @@
     margin-right: auto;
 }
 
+.block_point_view #menu_point_view_img:hover {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+}
+
 /* Emojis of overview table */
 .block_point_view .overview_img {
     width: 30px;
+    vertical-align: bottom;
+    margin-right: .2em;
 }
 
 /** Colums of the overview table **/
@@ -174,48 +195,50 @@
     -ms-user-select: none;
     user-select: none;
 }
-.block_point_view .c0,
+
 .block_point_view .c5,
 .block_point_view .c6 {
-    width: 5%;
     text-align: center;
 }
 
-.block_point_view .c1 {
-    width: 25%;
+.block_point_view .reactions-col,
+.block_point_view .c6 {
+    cursor: pointer;
 }
 
-.block_point_view .c2,
-.block_point_view .c3,
-.block_point_view .c4 {
-    width: 20%;
+.block_point_view .cell.novote {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
-.block_point_view .header {
-    text-align: center;
+.block_point_view .pix-preview {
+    margin: .2em 0;
+    width: 30px;
 }
 
-/* CSS For combo box course/category front page */
-#frontpage-category-combo .reaction_box,
-#frontpage-category-combo .difficulty_box {
-    top: 0;
+.block_point_view .section-header {
+    padding-top: 1em;
 }
 
-.reaction_box {
-    position: relative;
-    left: 72%;
-    top: -30px;
-    width: 10%;
+.block_point_view .enable-disable button {
+    margin-right: .3em;
 }
 
-.difficulty_box {
-    position: relative;
-    top: -37px;
-    width: 10px;
-    height: 0;
+.block_point_view .pixselectgroup .felement {
+    display: grid;
+    justify-content: start;
 }
 
-.coursebox a {
-    position: relative;
-    left: 10px;
+.block_point_view .pixselectgroup .felement>* {
+    justify-content: start;
+}
+
+.block_point_view .pixselectgroup label:nth-of-type(2),
+.block_point_view .pixselectgroup label:nth-of-type(2)~#delete_custom_pix {
+    grid-row: 2;
+}
+
+.block_point_view .pixselectgroup label:nth-of-type(3),
+.block_point_view .pixselectgroup label:nth-of-type(3)~#delete_custom_pix {
+    grid-row: 3;
 }
