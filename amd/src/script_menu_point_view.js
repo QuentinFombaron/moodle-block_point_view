@@ -5,7 +5,6 @@ define(['jquery'], function($) {
             $('.row_module').each(function() {
                 var $detailsrow = $(this).next('.row_module_details');
 
-                $detailsrow.hide();
                 $(this).find('.c6')
                 .click(function() {
                     $detailsrow.toggle();

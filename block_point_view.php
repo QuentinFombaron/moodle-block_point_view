@@ -80,20 +80,17 @@ class block_point_view extends block_base {
         if (get_config('block_point_view', 'enable_point_views_admin')) {
 
             if ($this->content !== null) {
-
                 return $this->content;
-
             }
 
             $this->content = new stdClass();
 
-            if (has_capability('block/point_view:view', $this->context)) {
+            if (has_capability('block/point_view:viewcontent', $this->context)) {
 
                 $filteropt = new stdClass;
                 if ($this->content_is_trusted()) {
                     $filteropt->noclean = true;
                 }
-                $this->content = new stdClass;
                 $this->content->footer = '';
                 if (isset($this->config->text)) {
                     $this->config->text = file_rewrite_pluginfile_urls(
@@ -112,23 +109,25 @@ class block_point_view extends block_base {
                 } else {
                     $this->content->text = '<span>'.get_string('defaulttextcontent', 'block_point_view').'</span>';
                 }
-
-                $parameters = [
-                    'instanceid' => $this->instance->id,
-                    'contextid' => $this->context->id,
-                    'courseid' => $COURSE->id,
-                    'sesskey' => sesskey()
-                ];
-
-                $url = new moodle_url('/blocks/point_view/menu.php', $parameters);
-
-                $this->content->text .= html_writer::link(
-                    $url,
-                    '<img src="' . $CFG->wwwroot .
-                    '/blocks/point_view/pix/overview.png" id="menu_point_view_img" class="block_point_view"/>'
-                );
-
                 unset($filteropt);
+
+                if (has_capability('block/point_view:access_overview', $this->context)) {
+                    $parameters = [
+                        'instanceid' => $this->instance->id,
+                        'contextid' => $this->context->id,
+                        'courseid' => $COURSE->id
+                    ];
+
+                    $url = new moodle_url('/blocks/point_view/overview.php', $parameters);
+                    $title = get_string('reactionsdetails', 'block_point_view');
+                    $pix = $CFG->wwwroot . '/blocks/point_view/pix/overview.png';
+
+                    $this->content->text .= html_writer::link(
+                        $url,
+                            '<img src="' . $pix . '" class="block_point_view overview-link" alt="' . $title . '"/>',
+                            array('title' => $title)
+                    );
+                }
 
             } else {
                 $this->content->text = '';
@@ -136,23 +135,13 @@ class block_point_view extends block_base {
 
             if (!$this->page->user_is_editing()) {
 
-                $trackcolors =  array(
-                        '',
-                        get_config('block_point_view', 'green_track_color_admin'),
-                        get_config('block_point_view', 'blue_track_color_admin'),
-                        get_config('block_point_view', 'red_track_color_admin'),
-                        get_config('block_point_view', 'black_track_color_admin')
-                );
-
-                $paramsamd = array($COURSE->id);
-
                 require_once(__DIR__ . '/locallib.php');
 
                 $blockdata = new stdClass();
-                $blockdata->trackcolors = $trackcolors;
-                $blockdata->moduleswithreactions = block_point_view_get_modules_with_reactions($USER->id, $COURSE->id);
-                $blockdata->difficultylevels = block_point_view_get_difficulty_levels($COURSE->id);
-                $blockdata->pix = block_point_view_get_pix($COURSE->id, $this->context->id);
+                $blockdata->trackcolors = block_point_view_get_track_colors();
+                $blockdata->moduleswithreactions = block_point_view_get_modules_with_reactions($this, $USER->id, $COURSE->id);
+                $blockdata->difficultylevels = block_point_view_get_difficulty_levels($this, $COURSE->id);
+                $blockdata->pix = block_point_view_get_pix($this);
                 global $OUTPUT;
                 $templatecontext = new stdClass();
                 $templatecontext->reactions = array();
@@ -165,15 +154,22 @@ class block_point_view extends block_base {
                 }
                 $blockdata->reactionstemplate = $OUTPUT->render_from_template('block_point_view/reactions', $templatecontext);
 
-                $this->content->footer = '<span class="block_point_view_data" data-blockdata="' . htmlspecialchars(json_encode($blockdata)) . '"></span>';
+                $this->content->footer = html_writer::span(
+                        '',
+                        'block_point_view_data',
+                        array(
+                                'data-blockdata' => json_encode($blockdata),
+                                'style' => 'display:none;'
+                        )
+                );
 
                 $this->page->requires->string_for_js('totalreactions', 'block_point_view');
-                $this->page->requires->js_call_amd('block_point_view/script_point_view', 'init', $paramsamd);
+                $this->page->requires->js_call_amd('block_point_view/script_point_view', 'init', array($COURSE->id));
             }
         } else if (!get_config(
                 'block_point_view',
                 'enable_point_views_admin')
-            && has_capability('block/point_view:view', $this->context)) {
+            && has_capability('block/point_view:viewcontent', $this->context)) {
 
             $this->content->text = get_string('blockdisabled', 'block_point_view');
 
@@ -243,6 +239,11 @@ class block_point_view extends block_base {
 
         parent::instance_config_save($config, $nolongerused);
 
+    }
+
+    public function instance_config_commit($nolongerused = false) {
+        // Do not touch any files if this is a commit from somewhere else.
+        parent::instance_config_save($this->config);
     }
 
     /**

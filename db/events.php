@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Add event handlers for the lesson
+ * Add event handlers
  *
  * @package    block_point_view
  * @copyright  2020 Jayson Haulkory
@@ -26,17 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $observers = array(
-
     array(
         'eventname' => '\core\event\course_module_created',
         'callback' => 'block_point_view_observer::store',
         'internal' => false,
-    ),
-
-
-    array(
-        'eventname' => '\core\event\course_created',
-        'callback' => 'block_point_view_observer::store',
-        'internal' => false,
-    ),
+    )
 );

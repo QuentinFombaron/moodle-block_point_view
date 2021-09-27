@@ -82,12 +82,10 @@ class provider implements
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid) : contextlist {
-        $sql = 'SELECT ctx.id
+        $sql = 'SELECT DISTINCT ctx.id
                 FROM {block_point_view} bpv
-                JOIN {user} u
-                    ON bpv.userid = u.id
                 JOIN {context} ctx
-                    ON ctx.instanceid = u.id
+                    ON ctx.instanceid = bpv.userid
                         AND ctx.contextlevel = :contextlevel
                 WHERE bpv.userid = :userid';
 
@@ -127,7 +125,7 @@ class provider implements
     /**
      * Delete all data for all users in the specified context.
      *
-     * @param   context $context The specific context to delete data for.
+     * @param \context $context The specific context to delete data for.
      * @throws \dml_exception
      */
     public static function delete_data_for_all_users_in_context(\context $context) {

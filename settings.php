@@ -34,22 +34,22 @@ if ($ADMIN->fulltree) {
 
         $settings->add(new admin_setting_configcheckbox(
             'block_point_view/enable_point_views_admin',
-            get_string('enablepoint_views', 'block_point_view'),
+            new lang_string('enablepoint_views', 'block_point_view'),
             '',
             DEFAULT_POINT_VIEW_ENABLE_REACTIONS
         ));
 
         $settings->add(new admin_setting_configcheckbox(
             'block_point_view/enable_pix_admin',
-            get_string('enablecustompix', 'block_point_view'),
+            new lang_string('enablecustompix', 'block_point_view'),
             '',
             DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX
         ));
 
         $settings->add(new admin_setting_configstoredfile(
             'block_point_view/point_views_pix_admin',
-            new lang_string('point_viewpix', 'block_point_view'),
-            new lang_string('point_viewpixdesc', 'block_point_view'),
+            new lang_string('customemoji', 'block_point_view'),
+            new lang_string('customemoji_help', 'block_point_view'),
             'point_views_pix_admin',
             0,
             ['subdirs' => 0, 'maxfiles' => 11, 'accepted_types' => '.png']

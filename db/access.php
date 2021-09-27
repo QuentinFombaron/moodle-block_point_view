@@ -27,11 +27,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'block/point_view:view' => array(
-        'riskbitmask' => RISK_PERSONAL,
+    'block/point_view:viewcontent' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
+            'guest' => CAP_ALLOW,
+            'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
@@ -39,7 +40,7 @@ $capabilities = array(
         )
     ),
 
-    'block/point_view:access_menu' => array(
+    'block/point_view:access_overview' => array(
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,

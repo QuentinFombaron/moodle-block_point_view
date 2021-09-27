@@ -17,7 +17,6 @@
 /**
  * Block version
  *
- *
  * @package    block_point_view
  * @copyright  2020 Quentin Fombaron
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
@@ -27,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_point_view';
-$plugin->version   = 2021090600;
+$plugin->version   = 2021092307;
 $plugin->requires  = 2017051502;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = 'v1.6';

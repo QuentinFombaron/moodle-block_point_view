@@ -1,9 +1,9 @@
 // Include JQuery
 define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
-    
+
     function callOnModulesListLoad(call) {
         call();
-        
+
         $(document).ajaxComplete(function(event, xhr, settings) {
             if (typeof(settings.data) !== 'undefined') {
                 var data = JSON.parse(settings.data);
@@ -15,7 +15,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
             }
         });
     }
-    
+
     function setUpDifficultyTracks(difficultyLevels, trackColors) {
         difficultyLevels.forEach(function(module) {
             var $track = $('<div class="block_point_view track"></div>')
@@ -31,22 +31,22 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
             }
             // If there is indentation, move the track after it.
             $container.find('.mod-indent').after($track);
-            
+
         });
     }
-    
+
     return {
         init: function(courseId) {
 
             // Wait that the DOM is fully loaded
             $(function() {
-                
+
                 var blockData = $('.block.block_point_view .block_point_view_data').data('blockdata');
 
                 callOnModulesListLoad(function() {
                     setUpDifficultyTracks(blockData.difficultylevels, blockData.trackcolors);
                 });
-                
+
                 // Enumeration of the possible reactions
                 var Reactions = {
                         none: 0,
@@ -57,7 +57,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                 //  Array of Reaction of the user for the activity
                 var reactionVotedArray = {};
-                
+
                 /**
                  * Get a jQuery object in reaction zone for given module ID.
                  * @param {int} moduleId
@@ -88,7 +88,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     // Modify the image source of the reaction group.
                     $get(moduleId, '.group_img').attr('src', blockData.pix[groupImg]);
                 }
-                
+
                 function updateGroupNb(moduleId, nb) {
                     var $groupNbWrapper = $get(moduleId, '.group_nb');
                     var $groupNb = $groupNbWrapper.find('span');
@@ -102,7 +102,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         'right': Math.max(0.25 * (digits - 2), 0) + 'em',
                         'transform': 'scaleX(' + (1.0 + 0.03*digits*digits - 0.35 * digits + 0.34) + ')'
                     });
-                    
+
                     $groupNbWrapper
                     .toggleClass('novote', nb === 0)
                     .toggleClass('voted', reactionVotedArray[moduleId] !== Reactions.none);
@@ -122,7 +122,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                 // createReactions()
                 callOnModulesListLoad(function() {
                     var htmlBlock = blockData.reactionstemplate;
-                    
+
                     // For each selected module, create a reaction zone.
                     blockData.moduleswithreactions.forEach(function(module) {
                         var moduleId = parseInt(module.cmid);
@@ -130,12 +130,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                         // Initialise reactionVotedArray.
                         reactionVotedArray[moduleId] = uservote;
-                        
+
                         if ($('#module-' + moduleId).length === 1 && $get(moduleId).length === 0) {
                             var $htmlBlock = $(htmlBlock);
-                            
+
                             $('#module-' + moduleId).prepend($htmlBlock);
-                            
+
                             $htmlBlock.find('.reaction img').each(function() {
                                 $(this).toggleClass('novote', parseInt(module['total' + $(this).data('reactionname')]) === 0);
                             });
@@ -145,12 +145,13 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                 .toggleClass('nbselected', uservote === Reactions[$(this).data('reactionname')]);
                             });
 
-                            updateGroupNb(moduleId, parseInt(module.totaleasy) + parseInt(module.totalbetter) + parseInt(module.totalhard));
+                            var total = parseInt(module.totaleasy) + parseInt(module.totalbetter) + parseInt(module.totalhard);
+                            updateGroupNb(moduleId, total);
                             manageReact(moduleId);
                         }
                     });
                 });
-                
+
                 function getReactionImageSizeForRatio(ratio) {
                     return {
                         top: 15 - (10 * ratio),
@@ -158,20 +159,20 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         height: 20 * ratio
                     };
                 }
-                
+
                 function getGroupImageSizeForRatio(ratio) {
                     return {
                         left: -10 + (10 * ratio),
                         height: 20 * ratio
                     };
                 }
-                
+
                 function showReactions(moduleId) {
                     $get(moduleId, '.group_img')
                     .css({'pointer-events': 'none'})
                     .animate(getGroupImageSizeForRatio(0), 300)
                     .hide(0);
-                    
+
                     $get(moduleId, '.group_nb').delay(50).hide(300);
 
                     $('#module-' + moduleId + ' .actions').delay(200).hide(300);
@@ -179,12 +180,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     // Enable the pointer events for each reactions images
                     ['easy', 'better', 'hard'].forEach(function(reaction, index) {
                         var delay = 50 + 150 * index; // easy: 50, better: 200, hard: 350
-                        
+
                         // Reactions images modifications to black and white if no reaction has been made
                         $get(moduleId, '.reaction img[data-reactionname="' + reaction + '"]')
                         .delay(delay).animate(getReactionImageSizeForRatio(1), 300)
                         .css({'pointer-events': 'auto'});
-                        
+
                         $get(moduleId, '.reactionnb[data-reactionname="' + reaction + '"]')
                         .delay(delay+300)
                         .queue(function(next) {
@@ -193,14 +194,14 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         });
                     });
                 }
-                
+
                 function hideReactions(moduleId) {
                     ['hard', 'better', 'easy'].forEach(function(reaction, index) {
                         var delay = 50 + 250 * index; // hard: 50, better: 300, easy: 550
                         $get(moduleId, '.reaction img[data-reactionname="' + reaction + '"]')
                         .css({'pointer-events': 'none'})
                         .delay(delay).animate(getReactionImageSizeForRatio(0), 500);
-                        
+
                         $get(moduleId, '.reactionnb[data-reactionname="' + reaction + '"]')
                         .delay(delay)
                         .queue(function(next) {
@@ -222,7 +223,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
                     $('#module-' + moduleId + ' .actions').delay(600).show(300);
                 }
-                
+
                 function updateVoteNb(moduleId, reactionName, diff, selected) {
                     var $reactionNb = $get(moduleId, '.reactionnb[data-reactionname="' + reactionName + '"]');
                     var nbReaction = parseInt($reactionNb.text()) + diff;
@@ -230,19 +231,20 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     .text(nbReaction)
                     .toggleClass('nbselected', selected);
 
-                    $get(moduleId, '.reaction img[data-reactionname="' + reactionName + '"]').toggleClass('novote', nbReaction === 0);
-                    
+                    $get(moduleId, '.reaction img[data-reactionname="' + reactionName + '"]')
+                    .toggleClass('novote', nbReaction === 0);
+
                     updateGroupNb(moduleId, parseInt($get(moduleId, '.group_nb').find('span').text()) + diff);
                 }
-                
+
                 function manageReactionChange(moduleId, reactionName) {
-                 
+
                     var reactionSelect = Reactions[reactionName];
 
                     var previousReaction = reactionVotedArray[moduleId];
-                    
+
                     var newVote = (reactionSelect === previousReaction) ? Reactions.none : reactionSelect;
-                    
+
                     return ajax.call([
                         {
                             methodname: 'block_point_view_update_db',
@@ -268,27 +270,27 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     })
                     .fail(notification.exception);
                 }
-                
+
                 function manageReact(moduleId) {
                     updateGroupImg(moduleId);
-                        
+
                     var reactionsVisible = false;
                     var groupTimeout = null;
                     var reactionsTimeout = null;
-                    
+
                     var triggerHideReactions = function() {
                         reactionsTimeout = null;
                         reactionsVisible = false;
                         hideReactions(moduleId);
-                    }
-                    
+                    };
+
                     var triggerShowReactions = function() {
                         groupTimeout = null;
                         reactionsVisible = true;
                         showReactions(moduleId);
                         clearTimeout(reactionsTimeout);
                         reactionsTimeout = setTimeout(triggerHideReactions, 2000);
-                    }
+                    };
 
                     // Group img click.
                     $get(moduleId, '.group_img')
@@ -303,7 +305,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         }
                     })
                     .click(triggerShowReactions);
-                    
+
                     var reactionsLock = false;
                     // Reaction img management
                     $get(moduleId, '.reaction img')
@@ -324,7 +326,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                             });
                         }
                     });
-                    
+
                     // Mouse out.
                     $get(moduleId, '.reactions')
                     .mouseout(function() {

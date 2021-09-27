@@ -41,34 +41,26 @@ class block_point_view_observer {
      * @throws dml_exception
      */
     public static function store(\core\event\base $event) {
-        global $DB, $CFG, $COURSE;
+        global $DB;
 
-        if (intval($COURSE->id) !== intval(1)) {
-            $coursecontext = context_course::instance($event->courseid);
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*');
-        } else {
-            $homepagecontext = $DB->get_record("context", array('contextlevel' => intval(50),
-                'instanceid' => intval(1)), 'id', MUST_EXIST);
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => intval($homepagecontext->id)), '*');
-        }
+        $coursecontext = context_course::instance($event->courseid);
+        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => $coursecontext->id), '*');
 
         if (!empty($blockrecord->configdata)) {
             $blockinstance = block_instance('point_view', $blockrecord);
-            $blockinstance->config->enable_point_views_checkbox;
 
-            $enablepointviewscheckbox = (isset($blockinstance->config->enable_point_views_checkbox)) ?
-            $blockinstance->config->enable_point_views_checkbox :
-            0;
+            $enablefornewmodules = isset($blockinstance->config->enable_point_views)
+                                    && $blockinstance->config->enable_point_views
+                                    && (!isset($blockinstance->config->enable_point_views_new_modules)
+                                            || $blockinstance->config->enable_point_views_new_modules);
 
-            if ($enablepointviewscheckbox) {
+            if ($enablefornewmodules) {
                 try {
                     $moduleselectm = "moduleselectm" . $event->objectid;
                     $blockinstance->config->$moduleselectm = $event->objectid;
 
-                    $DB->update_record("block_instances", array('id' => $blockrecord->id,
-                        'configdata' => base64_encode(serialize($blockinstance->config))));
+                    $blockinstance->instance_config_commit();
                 } catch (dml_exception $e) {
 
                     return 'Exception : ' . $e->getMessage() . '\n';

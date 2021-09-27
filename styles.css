@@ -11,7 +11,7 @@
     display: table;
     width: max-content;
     background-color: #555;
-    color: #fff;
+    color: white;
     text-align: center;
     font-weight: bold;
     padding: 3px 10px;
@@ -53,8 +53,8 @@
 /**********************/
 /* Reactions position */
 .block_point_view.reactions-container {
-	z-index: 1;
-	position: relative;
+    z-index: 1;
+    position: relative;
 }
 
 .block_point_view.reactions-container ~ .mod-indent-outer,
@@ -88,15 +88,15 @@
 }
 
 .block_point_view.reactions-container .reaction {
-	height: 20px;
-	width: 20px;
+    height: 20px;
+    width: 20px;
 }
 
 .block_point_view.reactions-container .reaction img {
     position: absolute;
     top: 15px;
     left: 10px;
-	height: 0;
+    height: 0;
     cursor: pointer;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .block_point_view.reactions-container .group_img {
-	height: 20px;
+    height: 20px;
     position: relative;
     cursor: pointer;
 }
@@ -145,12 +145,13 @@
     height: 1.6em;
     width: 10px;
     border-radius: 10%;
-    position: absolute;
-    margin-left: -15px;
+    margin-right: 5px;
 }
 
 .path-course-view .activity .block_point_view.track {
     padding: 0;
+    position: absolute;
+    margin-left: -15px;
 }
 
 .path-course-view .activity .block_point_view.track,
@@ -160,17 +161,19 @@
 
 .block_point_view.selecttrack {
     height: 2.4em;
+    position: relative;
 }
 
 /* Menu button in block content */
-.block_point_view #menu_point_view_img {
-    width: 40px;
+.block_point_view.overview-link {
     display: block;
+    max-height: 40px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
 }
 
-.block_point_view #menu_point_view_img:hover {
+.block_point_view.overview-link:hover {
     -webkit-filter: invert(100%);
     filter: invert(100%);
 }

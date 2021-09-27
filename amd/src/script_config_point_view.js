@@ -1,24 +1,24 @@
 define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
     return {
         init: function(envconf, trackcolors) {
-            
-            var $enableReactions = $('#id_config_enable_point_views_checkbox');
-            var $enableDifficultyTracks = $('#id_config_enable_difficulties_checkbox');
-            
+
+            var $enableReactions = $('#id_config_enable_point_views');
+            var $enableDifficultyTracks = $('#id_config_enable_difficultytracks');
+
             function updateElementsVisibility() {
-                var reactionsEnabled = $enableReactions.is(':checked');
-                var difficultyTracksEnabled = $enableDifficultyTracks.is(':checked');
+                var reactionsEnabled = $enableReactions.val() > 0;
+                var difficultyTracksEnabled = $enableDifficultyTracks.val() > 0;
 
-                $('#id_activities').toggle(reactionsEnabled || difficultyTracksEnabled);
+                $('#id_activities_header').toggle(reactionsEnabled || difficultyTracksEnabled);
 
-                $('.reactions, #id_config_images').toggle(reactionsEnabled);
+                $('.reactions, #id_images_header').toggle(reactionsEnabled);
                 $('.difficultytracks').toggle(difficultyTracksEnabled);
             }
-            
+
             updateElementsVisibility();
 
-            $enableReactions.click(updateElementsVisibility);
-            $enableDifficultyTracks.click(updateElementsVisibility);
+            $enableReactions.change(updateElementsVisibility);
+            $enableDifficultyTracks.change(updateElementsVisibility);
 
             function updateGlobalButtonsFor(sectionOrType) {
                 var $checkboxes = $('.cb' + sectionOrType + ':checkbox');
@@ -32,12 +32,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                 updateGlobalButtonsFor($(this).data('type')); // Update Enable/Disable buttons state for module type.
                 updateGlobalButtonsFor($(this).data('section'));  // Update Enable/Disable buttons state for section.
             });
-            
+
             $('.enable-disable button').each(function() {
                 var sectionOrType = $(this).data('type') || $(this).data('section');
-                
+
                 updateGlobalButtonsFor(sectionOrType); // Update Enable/Disable buttons state on page load.
-                
+
                 $(this).click(function() {
                     $('.cb' + sectionOrType + ':checkbox')
                     .prop('checked', $(this).data('enable')) // Update all corresponding checkboxes.
@@ -51,7 +51,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     'background-color': trackcolors[$(this).val()] // Change track color.
                 });
             }).change(); // Update track colors once on page load.
-            
 
             function buttonWithAjaxCall($button, message, ajaxmethod, ajaxargs, callback) {
                 $button.click(function(e) {
@@ -70,13 +69,14 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     });
                 });
             }
-            
+
             buttonWithAjaxCall(
                     $('#delete_custom_pix'),
                     'deleteemojiconfirmation',
                     'delete_custom_pix',
                     {
                         contextid: envconf.contextid,
+                        courseid: envconf.courseid,
                         draftitemid: $('input[name="config_point_views_pix"]').val()
                     },
                     function() {
@@ -86,7 +86,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         document.querySelector('#fitem_id_config_point_views_pix .fp-path-folder-name').click();
                     }
             );
-            
+
             buttonWithAjaxCall(
                     $('#reset_reactions'),
                     'resetreactionsconfirmation',
@@ -101,6 +101,16 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                                 M.util.get_string('ok', 'moodle'));
                     }
             );
+
+            $('[name=config_pixselect]').change(function() {
+                var newsource = $(this).val();
+                $('img.currentpix').each(function() {
+                    var $img = $('img[data-source="' + newsource + '"][data-reaction="' + $(this).data('reaction') + '"]');
+                    if ($img.length == 1 && $img.attr('src') > '') {
+                        $(this).attr('src', $img.attr('src'));
+                    }
+                });
+            });
         }
     };
 });

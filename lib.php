@@ -35,90 +35,7 @@ const DEFAULT_POINT_VIEW_ENABLE_REACTIONS = 1;
 const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
 
 /**
- * Returns the activities in current course
  *
- * @param int $courseid ID of the course
- * @param null $contextid
- * @return array Activities with completion settings in the course
- * @throws coding_exception
- * @throws moodle_exception
- */
-function block_point_view_get_course_data($courseid, $contextid = null) {
-    global $PAGE;
-
-    $PAGE->set_context($contextid);
-
-    $modinfo = get_fast_modinfo($courseid, -1);
-
-    $sections = $modinfo->get_sections();
-
-    $activities = array();
-
-    $types = array();
-
-    $ids = array();
-
-    foreach ($modinfo->instances as $module => $instances) {
-
-        $modulename = get_string('pluginname', $module);
-
-        foreach ($instances as $index => $cm) {
-
-            //if ($module != 'label') {
-
-                if (!in_array($module, $types)) {
-
-                    array_push($types, $module);
-
-                }
-
-                array_push($ids, $cm->id);
-
-                $activities[] = array(
-                    'type'       => $module,
-                    'modulename' => $modulename,
-                    'id'         => $cm->id,
-                    'instance'   => $cm->instance,
-                    'name'       => $cm->name,
-                    'expected'   => $cm->completionexpected,
-                    'section'    => $cm->sectionnum,
-                    'position'   => array_search($cm->id, $sections[$cm->sectionnum]),
-                    'url'        => method_exists($cm->url, 'out') ? $cm->url->out() : '',
-                    'context'    => $cm->context,
-                    'icon'       => $cm->get_icon_url(),
-                    'available'  => $cm->available,
-                );
-            //}
-        }
-    }
-
-    usort($activities, 'block_point_view_compare_activities');
-
-    return array('activities' => $activities, 'types' => $types, 'ids' => $ids);
-}
-
-/**
- * Used to compare two activities/resources based on order on course page
- *
- * @param array $a array of event information
- * @param array $b array of event information
- * @return mixed <0, 0 or >0 depending on order of activities/resources on course page
- */
-function block_point_view_compare_activities($a, $b) {
-
-    if ($a['section'] != $b['section']) {
-
-        return $a['section'] - $b['section'];
-
-    } else {
-
-        return $a['position'] - $b['position'];
-
-    }
-}
-
-/**
- * Form for editing HTML block instances.
  *
  * @param stdClass $course Course object
  * @param stdClass $bi Block instance record
@@ -189,50 +106,6 @@ function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $
     send_stored_file($file, null, 0, true, $options);
 
     return true;
-}
-
-/**
- * Reaction image
- *
- * @param int $contextid
- * @param string $filearea
- * @param string $react
- * @return string
- */
-function block_point_view_pix_url($contextid, $filearea, $react) {
-
-    return strval(moodle_url::make_pluginfile_url(
-        $contextid,
-        'block_point_view',
-        $filearea,
-        0,
-        '/',
-        $react)
-    );
-
-}
-
-/**
- * User data string for the overview table
- *
- * @param stdClass $output
- * @param stdClass $data
- * @param stdClass $users
- * @param stdClass $course
- * @return string
- */
-function tostring($output, $data, $users, $course) {
-
-    $string = '';
-
-    foreach ($data as $item) {
-
-        $string .= $output->user_picture($users[$item], array('course' => $course->id)) .
-            $users[$item]->firstname . ' ' . $users[$item]->lastname . '<br />';
-
-    }
-
-    return $string;
 }
 
 /**

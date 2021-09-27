@@ -17,48 +17,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-function block_point_view_print_header_with_tabs($currenttab, $instanceid, $contextid, $courseid) {
-    global $PAGE, $CFG, $OUTPUT;
-
-    $parameters = array (
-            'instanceid' => $instanceid,
-            'contextid'  => $contextid,
-            'courseid'   => $courseid,
-            'sesskey'    => sesskey(),
-    );
-
-    $tabs = array (
-            'overview' => new moodle_url("{$CFG->wwwroot}/blocks/point_view/menu.php", $parameters),
-            'export' => new moodle_url("{$CFG->wwwroot}/blocks/point_view/export.php", $parameters),
-    );
-
-    $PAGE->set_url($tabs[$currenttab]);
-
-    $title = get_string('menu', 'block_point_view');
-    $PAGE->set_title($title);
-    $PAGE->set_heading(get_string('pluginname', 'block_point_view'));
-    $PAGE->navbar->add($title);
-    $PAGE->set_pagelayout('report');
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($title, 2);
-    echo $OUTPUT->container_start('block_point_view');
-
-    $tabtree = array();
-    foreach ($tabs as $tab => $url) {
-        $tabtree[] = new tabobject( $tab, $url, get_string($tab . '_title_tab', 'block_point_view') );
-    }
-
-    echo $OUTPUT->tabtree($tabtree, $currenttab);
-}
-
-function block_point_view_print_footer_of_tabs() {
-    global $OUTPUT;
-
-    echo $OUTPUT->container_end();
-    echo $OUTPUT->footer();
-}
-
 function block_point_view_check_instance($instanceorid, $context, $errorcontext = '', $errorurl = '') {
     global $DB;
     if (is_object($instanceorid)) {
@@ -73,13 +31,34 @@ function block_point_view_check_instance($instanceorid, $context, $errorcontext 
 }
 
 /**
+ * Reaction image
+ *
+ * @param int $contextid
+ * @param string $filearea
+ * @param string $react
+ * @return string
+ */
+function block_point_view_pix_url($contextid, $filearea, $react) {
+
+    return strval(moodle_url::make_pluginfile_url(
+            $contextid,
+            'block_point_view',
+            $filearea,
+            0,
+            '/',
+            $react)
+            );
+
+}
+
+/**
  *
  * @param block_point_view $blockinstance
  * @param int $contextid
  * @param array|null $subset Requested subset of pix. If none specified, all will be returned.
  * @return string[]
  */
-function block_point_view_get_current_pix($blockinstance, $contextid, $subset = null) {
+function block_point_view_get_current_pix($blockinstance, $subset = null) {
     global $CFG;
 
     if ($subset !== null) {
@@ -104,16 +83,15 @@ function block_point_view_get_current_pix($blockinstance, $contextid, $subset = 
 
     $fs = get_file_storage();
 
-    require_once(__DIR__ . '/lib.php');
-
+    $blockcontextid = $blockinstance->context->id;
     foreach ($pixfiles as $file) {
         if (isset($blockinstance->config->pixselect) && $blockinstance->config->pixselect == 'custom'
-                && $fs->file_exists($contextid, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
-            $pix[$file] = block_point_view_pix_url($contextid, 'point_views_pix', $file);
+                && $fs->file_exists($blockcontextid, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
+            $pix[$file] = block_point_view_pix_url($blockcontextid, 'point_views_pix', $file);
         } else if ((!isset($blockinstance->config->pixselect) || $blockinstance->config->pixselect == 'admin')
                 && get_config('block_point_view', 'enable_pix_admin')
                 && $fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
-            $pix[$file] = block_point_view_pix_url(1, 'point_views_pix', $file);
+            $pix[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
         } else {
             $pix[$file] = $CFG->wwwroot . '/blocks/point_view/pix/' . $file . '.png';
         }
@@ -122,35 +100,34 @@ function block_point_view_get_current_pix($blockinstance, $contextid, $subset = 
     return $pix;
 }
 
-function block_point_view_get_difficulty_levels($courseid) {
-    global $DB;
-
-    // Load the correct block instance.
-    $coursecontext = context_course::instance($courseid);
-    $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-    $blockinstance = block_instance('point_view', $blockrecord);
+/**
+ *
+ * @param block_point_view $blockinstance
+ * @param int $courseid
+ * @return array
+ */
+function block_point_view_get_difficulty_levels($blockinstance, $courseid) {
 
     // If difficulty tracks are disabled, do not put any track.
-    if (!isset($blockinstance->config->enable_difficulties_checkbox)
-           || !$blockinstance->config->enable_difficulties_checkbox) {
+    if (!isset($blockinstance->config->enable_difficultytracks)
+            || !$blockinstance->config->enable_difficultytracks) {
         return array();
     }
 
-    $modules = get_fast_modinfo($courseid, -1)->cms;
+    $cms = get_fast_modinfo($courseid, -1)->cms;
 
     $difficultylevels = array();
 
     // Loop through modules/courses.
-    foreach ($modules as $module) {
-        if (isset($blockinstance->config->{'difficulty_' . $module->id})) {
-            $difficulty = $blockinstance->config->{'difficulty_' . $module->id};
+    foreach ($cms as $cm) {
+        if (isset($blockinstance->config->{'difficulty_' . $cm->id})) {
+            $difficulty = $blockinstance->config->{'difficulty_' . $cm->id};
         } else {
             $difficulty = 0;
         }
 
         $difficultylevels[] = array(
-                'id' => $module->id,
+                'id' => $cm->id,
                 'difficultyLevel' => $difficulty
         );
     }
@@ -158,16 +135,11 @@ function block_point_view_get_difficulty_levels($courseid) {
     return $difficultylevels;
 }
 
-function block_point_view_get_modules_with_reactions($userid, $courseid) {
+function block_point_view_get_modules_with_reactions($blockinstance, $userid, $courseid) {
     global $DB;
 
-    $coursecontext = context_course::instance($courseid);
-    $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-    $blockinstance = block_instance('point_view', $blockrecord);
-
-    if (!isset($blockinstance->config->enable_point_views_checkbox)
-            || !$blockinstance->config->enable_point_views_checkbox) {
+    if (!isset($blockinstance->config->enable_point_views)
+            || !$blockinstance->config->enable_point_views) {
         return array();
     }
 
@@ -187,41 +159,55 @@ function block_point_view_get_modules_with_reactions($userid, $courseid) {
 
     list($insql, $inparams) = $DB->get_in_or_equal($moduleswithreactions, SQL_PARAMS_NAMED);
 
-    $sql = 'SELECT cm.id as cmid,
-        COALESCE(tableeasy.totaleasy, 0) as totaleasy,
-        COALESCE(tablebetter.totalbetter, 0) as totalbetter,
-        COALESCE(tablehard.totalhard, 0) as totalhard,
-        COALESCE(tableuser.vote, 0) as uservote
-        FROM {course_modules} cm
-        LEFT JOIN (SELECT cmid, COUNT(vote) as totaleasy FROM {block_point_view}
-                WHERE vote = 1 GROUP BY cmid) as tableeasy ON tableeasy.cmid = cm.id
-        LEFT JOIN (SELECT cmid, COUNT(vote) as totalbetter FROM {block_point_view}
-                WHERE vote = 2 GROUP BY cmid) as tablebetter ON tablebetter.cmid = cm.id
-        LEFT JOIN (SELECT cmid, COUNT(vote) as totalhard FROM {block_point_view}
-                WHERE vote = 3 GROUP BY cmid) as tablehard ON tablehard.cmid = cm.id
-        LEFT JOIN (SELECT cmid, vote FROM {block_point_view}
-                WHERE userid = :userid) AS tableuser ON tableuser.cmid = cm.id
-        WHERE cm.id ' . $insql . '
-        AND cm.course = :courseid
-        GROUP BY cm.id';
-
-    // TODO optimize this loading time.
-    // Maybe add some indexes to the table.
-
     $params = array_merge($inparams, array('userid' => $userid, 'courseid' => $courseid));
 
-    return array_values($DB->get_records_sql($sql, $params)); // Takes < 0.1s on small DB.
+    if (isset($blockinstance->config->show_other_users_reactions)
+            && !$blockinstance->config->show_other_users_reactions
+            && !has_capability('block/point_view:access_overview', $blockinstance->context)) {
+
+        $sql = 'SELECT cm.id as cmid, COALESCE(bpv.vote, 0) as uservote
+            FROM {course_modules} cm
+            LEFT JOIN (SELECT cmid, vote FROM {block_point_view} WHERE userid = :userid) bpv ON bpv.cmid = cm.id
+            WHERE cm.course = :courseid AND cm.id ' . $insql . '
+            GROUP BY cm.id';
+
+        $result = array_values($DB->get_records_sql($sql, $params));
+        foreach ($result as &$cmrow) {
+            $cmrow->totaleasy = $cmrow->uservote == 1 ? 1 : 0;
+            $cmrow->totalbetter = $cmrow->uservote == 2 ? 1 : 0;
+            $cmrow->totalhard = $cmrow->uservote == 3 ? 1 : 0;
+        }
+        return $result;
+    } else {
+        $sql = 'SELECT cm.id as cmid,
+            COALESCE(tableeasy.totaleasy, 0) as totaleasy,
+            COALESCE(tablebetter.totalbetter, 0) as totalbetter,
+            COALESCE(tablehard.totalhard, 0) as totalhard,
+            COALESCE(tableuser.vote, 0) as uservote
+            FROM {course_modules} cm
+            LEFT JOIN (SELECT cmid, COUNT(vote) as totaleasy FROM {block_point_view}
+                    WHERE vote = 1 GROUP BY cmid) as tableeasy ON tableeasy.cmid = cm.id
+            LEFT JOIN (SELECT cmid, COUNT(vote) as totalbetter FROM {block_point_view}
+                    WHERE vote = 2 GROUP BY cmid) as tablebetter ON tablebetter.cmid = cm.id
+            LEFT JOIN (SELECT cmid, COUNT(vote) as totalhard FROM {block_point_view}
+                    WHERE vote = 3 GROUP BY cmid) as tablehard ON tablehard.cmid = cm.id
+            LEFT JOIN (SELECT cmid, vote FROM {block_point_view}
+                    WHERE userid = :userid) AS tableuser ON tableuser.cmid = cm.id
+            WHERE cm.id ' . $insql . '
+            AND cm.course = :courseid
+            GROUP BY cm.id';
+
+        // TODO optimize this loading time.
+        // Maybe add some indexes to the table.
+
+        $params = array_merge($inparams, array('userid' => $userid, 'courseid' => $courseid));
+
+        return array_values($DB->get_records_sql($sql, $params)); // Takes < 0.1s on small DB.
+    }
 }
 
-function block_point_view_get_pix($courseid, $contextid) {
-    global $DB;
-
-    $coursecontext = context_course::instance($courseid);
-    $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*', MUST_EXIST);
-    $blockinstance = block_instance('point_view', $blockrecord);
-
-    $pixparam = block_point_view_get_current_pix($blockinstance, $contextid);
+function block_point_view_get_pix($blockinstance) {
+    $pixparam = block_point_view_get_current_pix($blockinstance);
 
     $pixparam['easytxt'] = format_string((isset($blockinstance->config->pix_text_easy)) ?
     $blockinstance->config->pix_text_easy
@@ -236,4 +222,35 @@ function block_point_view_get_pix($courseid, $contextid) {
     : get_string('defaulttexthard', 'block_point_view' ));
 
     return $pixparam;
+}
+
+function block_point_view_get_track_colors() {
+    return array(
+            '',
+            get_config('block_point_view', 'green_track_color_admin'),
+            get_config('block_point_view', 'blue_track_color_admin'),
+            get_config('block_point_view', 'red_track_color_admin'),
+            get_config('block_point_view', 'black_track_color_admin')
+    );
+}
+
+
+/**
+ * User data string for the overview table
+ *
+ * @param array $userids
+ * @param stdClass $users
+ * @return string
+ */
+function block_point_view_format_users($userids, $users) {
+    global $OUTPUT;
+    $string = '';
+
+    foreach ($userids as $userid) {
+        $user = $users[$userid];
+        $string .= $OUTPUT->user_picture($user) . fullname( $user ) . '<br>';
+
+    }
+
+    return $string;
 }
