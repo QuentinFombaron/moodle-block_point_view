@@ -337,9 +337,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         clearTimeout(reactionsTimeout);
                     });
                 }
-
-                /* Dont' hide tooltip when reaction are in the top of course*/
-                $('#region-main > .card').css({'overflow-x': 'unset'});
             });
         }
     };

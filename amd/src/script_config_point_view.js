@@ -80,7 +80,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                         draftitemid: $('input[name="config_point_views_pix"]').val()
                     },
                     function() {
-                        $('.custom-pix-preview, #delete_custom_pix').remove(); // Remove emoji preview and button.
+                        $('.pix-preview[data-source="custom"], #delete_custom_pix').remove(); // Remove emoji preview and button.
                         // For an unknown reason, the following instruction with jQuery does not work
                         // (or at least does not trigger the expected listener).
                         document.querySelector('#fitem_id_config_point_views_pix .fp-path-folder-name').click();

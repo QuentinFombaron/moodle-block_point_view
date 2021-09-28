@@ -26,7 +26,7 @@
 
 $string['pluginname'] = 'Point of view';
 
-$string['adminpix'] = 'Site default: {$a}';
+$string['adminpix'] = 'Site default:';
 $string['blacktrack'] = 'Black track';
 $string['bluetrack'] = 'Blue track';
 $string['blockdisabled'] = '<h3 style="color: red">The block is disabled</h3>';
@@ -34,10 +34,10 @@ $string['contentinputlabel'] = 'Block Content';
 $string['contentinputlabel_help'] = 'This field allows to modify the text visible in the block.';
 $string['customemoji'] = 'Custom emoji';
 $string['customemoji_help'] = 'Custom emoji to use for reactions can be defined here.<h5 class="text-danger">Important :</h5> Name the files <b><code>[emoji_name].png</code></b> for the emoji pictures, for instance: <code>easy.png</code>, <code>better.png</code> and <code>hard.png</code>. Also need groups of emojis <b><code>group_[emojis_initials].png</code></b>, for instance: <code>group_EB.png</code> for the group of Easy and Better reactions. Don\'t forget the file <b><code>group_.png</code></b>  for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected : <code>easy.png</code>, <code>better.png</code>, <code>hard.png</code>, <code>group_.png</code>, <code>group_E.png</code>, <code>group_B.png</code>, <code>group_H.png</code>, <code>group_EB.png</code>, <code>group_EH.png</code>, <code>group_BH.png</code> and <code>group_EBH.png</code>';
-$string['custompix'] = 'Custom: {$a}';
+$string['custompix'] = 'Custom:';
 $string['header_activities'] = 'Configuration of Reaction and Difficulty tracks';
 $string['header_images'] = 'Emojis configuration';
-$string['defaultpix'] = 'Default: {$a}';
+$string['defaultpix'] = 'Default:';
 $string['defaulttextbetter'] = 'I\'m getting better!';
 $string['defaulttextcontent'] = 'This plugin gives the possibility to react and to give difficulties levels to activities.<br/><br/>This plugin is developed by <a href="mailto:q.fombaron@outlook.fr?subject=%22Point%20of%20view%22%20Moodle%20plugin%20-%20Feedback">Quentin Fombaron</a>.<br /><br />You can edit or delete this text in the block configuration menu.<br /><br />';
 $string['defaulttexteasy'] = 'Easy!';

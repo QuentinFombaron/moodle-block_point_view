@@ -16,7 +16,7 @@
 
 function xmldb_block_point_view_upgrade($oldversion, $block) {
     global $DB, $OUTPUT;
-    $v1_6 = 2021092307; // Block v1.6.
+    $v1_6 = 2021092308; // Block v1.6.
     if ($oldversion < $v1_6) {
         echo $OUTPUT->notification('Some capabilities have changed
             (block/point_view:view -> block/point_view:viewcontent,
@@ -39,14 +39,14 @@ function xmldb_block_point_view_upgrade($oldversion, $block) {
                     unset($config->enable_difficulties_checkbox);
                 }
 
-                if (!isset($config->config_pixselect)) {
+                if (!isset($config->pixselect)) {
                     $custompix = isset($config->enable_pix_checkbox) && $config->enable_pix_checkbox;
                     if ($custompix) {
-                        $config->config_pixselect = 'custom';
+                        $config->pixselect = 'custom';
                     } else if (get_config('block_point_view', 'enable_pix_admin')) {
-                        $config->config_pixselect = 'admin';
+                        $config->pixselect = 'admin';
                     } else {
-                        $config->config_pixselect = 'default';
+                        $config->pixselect = 'default';
                     }
                 }
                 unset($config->enable_pix_checkbox);

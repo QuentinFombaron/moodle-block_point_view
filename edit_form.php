@@ -98,6 +98,9 @@ class block_point_view_edit_form extends block_edit_form {
             // Difficulties activation.
             $mform->addElement('selectyesno', 'config_enable_difficultytracks', get_string('enabledifficulties', 'block_point_view'));
 
+            // TODO rename elements above to remove "checkbox" mention.
+            // TODO Also rename them in every existing block instance during upgrade.
+
             // ----------------------------------------------------------------------------------------------------- //
 
             $mform->addElement('header', 'activities_header', get_string('header_activities', 'block_point_view'));
@@ -317,24 +320,24 @@ class block_point_view_edit_form extends block_edit_form {
             }
         }
 
+        if (!$custompixexist) {
+            $pix['custom'] = array();
+        }
+
         $pixselect = array();
-        $pixselect[] = &$mform->createElement('radio', 'config_pixselect', '', get_string('defaultpix', 'block_point_view', implode('', $pix['default'])), 'default');
+        $pixselect[] = $this->create_emoji_radioselect($mform, 'default', $pix);
+        $pixselect[] = &$mform->createElement('html', '<span class="flex-fill"></span>');
         if ($adminpixenabled) {
-            $pixselect[] = &$mform->createElement('radio', 'config_pixselect', '', get_string('adminpix', 'block_point_view', implode('', $pix['admin'])), 'admin');
+            $pixselect[] = $this->create_emoji_radioselect($mform, 'admin', $pix);
+            $pixselect[] = &$mform->createElement('html', '<span class="flex-fill"></span>');
         }
-
+        $pixselect[] = $this->create_emoji_radioselect($mform, 'custom', $pix);
         if ($custompixexist) {
-            $custompixdisplay = '<span class="custom-pix-preview">' . implode('', $pix['custom']) . '</span>';
-            $deletecustom = '<button id="delete_custom_pix" class="btn btn-outline-warning" type="button">' .
-                                get_string('delete_custom_pix', 'block_point_view') .
-                            '</button>';
-        } else {
-            $custompixdisplay = '';
-            $deletecustom = '';
+            $pixselect[] = &$mform->createElement('html',
+                    '<button id="delete_custom_pix" class="btn btn-outline-warning" type="button">' .
+                        get_string('delete_custom_pix', 'block_point_view') .
+                    '</button>');
         }
-        $pixselect[] = &$mform->createElement('radio', 'config_pixselect', '', get_string('custompix', 'block_point_view', $custompixdisplay), 'custom');
-
-        $pixselect[] = &$mform->createElement('html', $deletecustom);
 
         $group = $mform->addGroup($pixselect, 'pixselectgroup', get_string('emojitouse', 'block_point_view'), '', false);
         $group->setAttributes(array('class' => 'pixselectgroup'));
@@ -378,6 +381,11 @@ class block_point_view_edit_form extends block_edit_form {
             $mform->addHelpButton($elementname, 'emojidesc', 'block_point_view');
 
         }
+    }
+
+    private function create_emoji_radioselect($mform, $value, $pix) {
+        return $mform->createElement('radio', 'config_pixselect', '',
+                '<span class="pixlabel">' . get_string($value . 'pix', 'block_point_view') . '</span>' . implode('', $pix[$value]), $value);
     }
 
     /**

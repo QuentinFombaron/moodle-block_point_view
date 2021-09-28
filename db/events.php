@@ -31,4 +31,5 @@ $observers = array(
         'callback' => 'block_point_view_observer::store',
         'internal' => false,
     )
+    // TODO on module delete - remove data from config, and reactions from db
 );
