@@ -233,7 +233,7 @@
 }
 
 .block_point_view .pixselectgroup .flex-fill {
-    flex-basis: 100%;
+    width: 100%;
 }
 
 .block_point_view .pixselectgroup #delete_custom_pix {

@@ -98,9 +98,6 @@ class block_point_view_edit_form extends block_edit_form {
             // Difficulties activation.
             $mform->addElement('selectyesno', 'config_enable_difficultytracks', get_string('enabledifficulties', 'block_point_view'));
 
-            // TODO rename elements above to remove "checkbox" mention.
-            // TODO Also rename them in every existing block instance during upgrade.
-
             // ----------------------------------------------------------------------------------------------------- //
 
             $mform->addElement('header', 'activities_header', get_string('header_activities', 'block_point_view'));
@@ -128,12 +125,12 @@ class block_point_view_edit_form extends block_edit_form {
             $oldsection = '';
             $sectionid = 0;
             /* Enable/Disable by activity or section */
-            foreach ($cms as $activity) {
+            foreach ($cms as $cm) {
 
-                if ($activity->sectionnum != $oldsection) {
+                if ($cm->sectionnum != $oldsection) {
 
                     $sectionid++;
-                    $sectionname = get_section_name($COURSE, $activity->sectionnum);
+                    $sectionname = get_section_name($COURSE, $cm->sectionnum);
 
                     $this->add_enable_disable_buttons($mform, '<h4>' . $sectionname . '</h4>',
                             'sec' . $sectionid,
@@ -143,12 +140,12 @@ class block_point_view_edit_form extends block_edit_form {
                             'data-section="sec' . $sectionid . '"',
                             array('class' => 'section-header'));
 
-                    $oldsection = $activity->sectionnum;
+                    $oldsection = $cm->sectionnum;
                 }
 
-                $icon = $OUTPUT->pix_icon('icon', $activity->get_module_type_name(), $activity->modname, array('class' => 'iconlarge activityicon'));
+                $icon = $OUTPUT->pix_icon('icon', $cm->get_module_type_name(), $cm->modname, array('class' => 'iconlarge activityicon'));
 
-                $this->add_activity_config($mform, $activity->id, $sectionid, $activity->modname, $icon . $activity->get_formatted_name());
+                $this->add_activity_config($mform, $cm->id, $sectionid, $cm->modname, $icon . $cm->get_formatted_name());
             }
             // ----------------------------------------------------------------------------------------------------- //
 

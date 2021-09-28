@@ -36,11 +36,9 @@ class block_point_view_observer {
     /**
      * Reactions automatically activated when a new activity is created (only if reactions are enabled).
      *
-     * @param \core\event\base $event
-     * @return string
-     * @throws dml_exception
+     * @param \core\event\course_module_created $event
      */
-    public static function store(\core\event\base $event) {
+    public static function store(\core\event\course_module_created $event) {
         global $DB;
 
         $coursecontext = context_course::instance($event->courseid);
@@ -56,18 +54,32 @@ class block_point_view_observer {
                                             || $blockinstance->config->enable_point_views_new_modules);
 
             if ($enablefornewmodules) {
-                try {
-                    $moduleselectm = "moduleselectm" . $event->objectid;
-                    $blockinstance->config->$moduleselectm = $event->objectid;
-
-                    $blockinstance->instance_config_commit();
-                } catch (dml_exception $e) {
-
-                    return 'Exception : ' . $e->getMessage() . '\n';
-
-                }
+                $blockinstance->config->{'moduleselectm' . $event->objectid} = $event->objectid;
+                $blockinstance->instance_config_commit();
             }
         }
 
+    }
+
+    /**
+     * Course module deleted - delete config data and database entries for votes for this module.
+     *
+     * @param \core\event\course_module_deleted $event
+     */
+    public static function remove(\core\event\course_module_deleted $event) {
+        global $DB;
+
+        $coursecontext = context_course::instance($event->courseid);
+        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => $coursecontext->id), '*');
+
+        if (!empty($blockrecord->configdata)) {
+            $blockinstance = block_instance('point_view', $blockrecord);
+            unset($blockinstance->config->{'moduleselectm' . $event->objectid});
+            unset($blockinstance->config->{'difficulty_' . $event->objectid});
+            $blockinstance->instance_config_commit();
+        }
+
+        $DB->delete_records('block_point_view', array('courseid' => $event->courseid, 'cmid' => $event->objectid));
     }
 }

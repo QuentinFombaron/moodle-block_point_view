@@ -29,7 +29,11 @@ $observers = array(
     array(
         'eventname' => '\core\event\course_module_created',
         'callback' => 'block_point_view_observer::store',
-        'internal' => false,
+        'internal' => false
+    ),
+    array(
+        'eventname' => '\core\event\course_module_deleted',
+        'callback' => 'block_point_view_observer::remove',
+        'internal' => false
     )
-    // TODO on module delete - remove data from config, and reactions from db
 );
