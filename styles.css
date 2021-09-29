@@ -227,13 +227,14 @@
     margin-right: .3em;
 }
 
-.block_point_view .pixselectgroup .pixlabel {
-	width: 5em;
-    min-width: max-content;
+.block_point_view .pixselectgroup {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, auto);
 }
 
-.block_point_view .pixselectgroup .flex-fill {
-    width: 100%;
+.block_point_view .pixselectgroup>* {
+    justify-content: start;
 }
 
 .block_point_view .pixselectgroup #delete_custom_pix {

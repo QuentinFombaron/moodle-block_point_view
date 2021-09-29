@@ -286,10 +286,10 @@ class block_point_view_edit_form extends block_edit_form {
         $adminpixenabled = get_config('block_point_view', 'enable_pix_admin');
         $custompixexist = false;
 
-        $pixsrc = array('default' => array(), 'admin' => array(), 'custom' => array());
+        $pix = array('default' => array(), 'admin' => array(), 'custom' => array());
         foreach ($pixfiles as $file) {
             $defaultsrc = $CFG->wwwroot . '/blocks/point_view/pix/' . $file . '.png';
-            $pixsrc['default'][$file] = $defaultsrc;
+            $pix['default'][$file] = $defaultsrc;
 
             if ($adminpixenabled) {
                 if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
@@ -297,7 +297,7 @@ class block_point_view_edit_form extends block_edit_form {
                 } else {
                     $adminsrc = $defaultsrc;
                 }
-                $pixsrc['admin'][$file] = $adminsrc;
+                $pix['admin'][$file] = $adminsrc;
             }
 
             if ($fs->file_exists($this->block->context->id, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
@@ -306,38 +306,28 @@ class block_point_view_edit_form extends block_edit_form {
             } else {
                 $customsrc = isset($adminsrc) ? $adminsrc : $defaultsrc;
             }
-            $pixsrc['custom'][$file] = $customsrc;
+            $pix['custom'][$file] = $customsrc;
         }
 
-        $pix = array();
-        foreach ($pixsrc as $source => $srcs) {
-            $pix[$source] = array();
-            foreach ($srcs as $file => $src) {
-                $pix[$source][$file] = '<img src="' . $src . '" class="pix-preview" data-reaction="' . $file . '" data-source="' . $source . '"/>';
-            }
-        }
-
-        if (!$custompixexist) {
+        if ($custompixexist) {
+            $deletecustombutton = '<button id="delete_custom_pix" class="btn btn-outline-warning" type="button">' .
+                                    get_string('delete_custom_pix', 'block_point_view') .
+                                  '</button>';
+        } else {
             $pix['custom'] = array();
+            $deletecustombutton = null;
         }
 
         $pixselect = array();
-        $pixselect[] = $this->create_emoji_radioselect($mform, 'default', $pix);
-        $pixselect[] = &$mform->createElement('html', '<span class="flex-fill"></span>');
+        $pixselect[] = &$mform->createElement('html', '<div class="pixselectgroup">');
+        $this->create_emoji_radioselect($mform, $pixselect, 'default', $pix);
         if ($adminpixenabled) {
-            $pixselect[] = $this->create_emoji_radioselect($mform, 'admin', $pix);
-            $pixselect[] = &$mform->createElement('html', '<span class="flex-fill"></span>');
+            $this->create_emoji_radioselect($mform, $pixselect, 'admin', $pix);
         }
-        $pixselect[] = $this->create_emoji_radioselect($mform, 'custom', $pix);
-        if ($custompixexist) {
-            $pixselect[] = &$mform->createElement('html',
-                    '<button id="delete_custom_pix" class="btn btn-outline-warning" type="button">' .
-                        get_string('delete_custom_pix', 'block_point_view') .
-                    '</button>');
-        }
+        $this->create_emoji_radioselect($mform, $pixselect, 'custom', $pix, $deletecustombutton);
+        $pixselect[] = &$mform->createElement('html', '</div>');
 
-        $group = $mform->addGroup($pixselect, 'pixselectgroup', get_string('emojitouse', 'block_point_view'), '', false);
-        $group->setAttributes(array('class' => 'pixselectgroup'));
+        $mform->addGroup($pixselect, 'pixselectgroup', get_string('emojitouse', 'block_point_view'), '', false);
 
         if ($adminpixenabled) {
             $mform->setDefault('config_pixselect', 'admin');
@@ -380,9 +370,25 @@ class block_point_view_edit_form extends block_edit_form {
         }
     }
 
-    private function create_emoji_radioselect($mform, $value, $pix) {
-        return $mform->createElement('radio', 'config_pixselect', '',
-                '<span class="pixlabel">' . get_string($value . 'pix', 'block_point_view') . '</span>' . implode('', $pix[$value]), $value);
+    /**
+     *
+     * @param MoodleQuickForm $mform
+     * @param Html_Common[] $group
+     * @param string $value
+     * @param string[][] $pix
+     * @param string|null $additionalhtml
+     */
+    private function create_emoji_radioselect($mform, &$group, $value, $pix, $additionalhtml = null) {
+        $group[] = $mform->createElement('radio', 'config_pixselect', '', get_string($value . 'pix', 'block_point_view'), $value, array('class' => 'pr-2 m-r-0 w-100'));
+        $html = '<label for="id_config_pixselect_' . $value . '" class="d-inline-block">';
+        foreach ($pix[$value] as $file => $src) {
+            $html .= '<img src="' . $src . '" class="pix-preview" data-reaction="' . $file . '" data-source="' . $value . '"/>';
+        }
+        $html .= '</label>';
+        if ($additionalhtml !== null) {
+            $html = '<span>' . $html . $additionalhtml . '</span>';
+        }
+        $group[] = $mform->createElement('html', $html);
     }
 
     /**
