@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Point of View block
- *
+ * Strings for component 'block_point_view', language 'en'
  *
  * @package    block_point_view
  * @copyright  2020 Quentin Fombaron
@@ -29,11 +28,11 @@ $string['pluginname'] = 'Point of view';
 $string['adminpix'] = 'Site default:';
 $string['blacktrack'] = 'Black track';
 $string['bluetrack'] = 'Blue track';
-$string['blockdisabled'] = '<h3 style="color: red">The block is disabled</h3>';
+$string['blockdisabled'] = '<h3 class="text-danger">The block is disabled</h3>';
 $string['contentinputlabel'] = 'Block Content';
 $string['contentinputlabel_help'] = 'This field allows to modify the text visible in the block.';
 $string['customemoji'] = 'Custom emoji';
-$string['customemoji_help'] = 'Custom emoji to use for reactions can be defined here.<h5 class="text-danger">Important :</h5> Name the files <b><code>[emoji_name].png</code></b> for the emoji pictures, for instance: <code>easy.png</code>, <code>better.png</code> and <code>hard.png</code>. Also need groups of emojis <b><code>group_[emojis_initials].png</code></b>, for instance: <code>group_EB.png</code> for the group of Easy and Better reactions. Don\'t forget the file <b><code>group_.png</code></b>  for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected : <code>easy.png</code>, <code>better.png</code>, <code>hard.png</code>, <code>group_.png</code>, <code>group_E.png</code>, <code>group_B.png</code>, <code>group_H.png</code>, <code>group_EB.png</code>, <code>group_EH.png</code>, <code>group_BH.png</code> and <code>group_EBH.png</code>';
+$string['customemoji_help'] = 'Custom emoji to use for reactions can be defined here.<h5 class="text-danger">Important:</h5>Name the files <b><code>[emoji_name].png</code></b> for the emoji pictures: <code>easy.png</code>, <code>better.png</code> and <code>hard.png</code>. Also need groups of emojis <b><code>group_[emojis_initials].png</code></b>, for instance: <code>group_EB.png</code> for the group of Easy and Better reactions. Don\'t forget the file <b><code>group_.png</code></b> for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected: <code>easy.png</code>, <code>better.png</code>, <code>hard.png</code>, <code>group_.png</code>, <code>group_E.png</code>, <code>group_B.png</code>, <code>group_H.png</code>, <code>group_EB.png</code>, <code>group_EH.png</code>, <code>group_BH.png</code> and <code>group_EBH.png</code>';
 $string['custompix'] = 'Custom:';
 $string['header_activities'] = 'Configuration of Reaction and Difficulty tracks';
 $string['header_images'] = 'Emojis configuration';
@@ -50,7 +49,7 @@ $string['disable_type'] = 'Disable all <b>{$a}</b>';
 $string['emojidesc'] = 'Emoji description';
 $string['emojidesc_help'] = 'Custom text to be displayed on top of the reaction';
 $string['emojitouse'] = 'Emoji to use';
-$string['emojitouse_help'] = 'Choose emoji to be used as reactions in this course. You can add your own, custom emoji by selecting "Custom".';
+$string['emojitouse_help'] = 'Choose emoji to be used as reactions in this course.<br>You can add your own, custom emoji by selecting "Custom".';
 $string['enableall'] = 'Enable all in <b>{$a}</b>';
 $string['enablecustompix'] = 'Use custom Reaction emojis';
 $string['enabledifficulties'] = 'Enable <b>Difficulty tracks</b>';
@@ -62,7 +61,7 @@ $string['enable_disable_section_help'] = 'Enable or disable reactions for all ac
 $string['enable_disable_type'] = 'Enable/Disable all of this type';
 $string['enable_disable_type_help'] = 'Enable or disable reactions for all activity modules of this type in course.';
 $string['enable_type'] = 'Enable all <b>{$a}</b>';
-$string['errorfilemanager'] = '<b>ERROR</b> : The name of <b>{$a}.png</b> is not as indicated below';
+$string['errorfilemanager'] = '<b>ERROR</b>: The name of <b>{$a}.png</b> is not conform.';
 $string['greentrack'] = 'Green track';
 $string['module'] = 'Module';
 $string['noactivity'] = 'No activity';
@@ -89,4 +88,4 @@ $string['privacy:metadata:block_point_view'] = 'The Point of View block stores t
 $string['privacy:metadata:activity_votes_database:courseid'] = 'Course ID';
 $string['privacy:metadata:activity_votes_database:cmid'] = 'Course activity ID';
 $string['privacy:metadata:activity_votes_database:userid'] = 'User ID';
-$string['privacy:metadata:activity_votes_database:vote'] = 'Vote : 1 (Easy !), 2 (I\'m getting better !), 3 (So hard...)';
+$string['privacy:metadata:activity_votes_database:vote'] = 'Vote: 1 (Easy!), 2 (I\'m getting better!), 3 (So hard...)';
