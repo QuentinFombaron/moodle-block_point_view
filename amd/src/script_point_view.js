@@ -8,7 +8,8 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
             if (typeof(settings.data) !== 'undefined') {
                 var data = JSON.parse(settings.data);
                 if (data.length > 0 && typeof(data[0].methodname) !== 'undefined') {
-                    if (data[0].methodname === 'format_tiles_get_single_section_page_html') {
+                    if (data[0].methodname == 'format_tiles_get_single_section_page_html' // Tile load.
+                        || data[0].methodname == 'format_tiles_log_tile_click') { // Tile load, cached.
                         call();
                     }
                 }
@@ -18,9 +19,16 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
     function setUpDifficultyTracks(difficultyLevels, trackColors) {
         difficultyLevels.forEach(function(module) {
-            var $track = $('<div class="block_point_view track"></div>')
-            .css({
-                'background-color': trackColors[parseInt(module.difficultyLevel)]
+            var difficultyLevel = parseInt(module.difficultyLevel);
+            var title = '';
+            if (difficultyLevel > 0) {
+                var track = ['greentrack', 'bluetrack', 'redtrack', 'blacktrack'][difficultyLevel - 1];
+                title = M.util.get_string(track, 'block_point_view');
+            }
+            var $track = $('<div>', {
+                'class': 'block_point_view track',
+                'title': title,
+                'style': 'background-color: ' + trackColors[difficultyLevel] + ';'
             });
             // Decide where to put the track.
             var $container = $('#module-' + module.id + ' .mod-indent-outer');

@@ -98,6 +98,8 @@
     left: 10px;
     height: 0;
     cursor: pointer;
+    width: auto;
+    max-width: unset;
 }
 
 .block_point_view.reactions-container .reaction img.novote:not(:hover) {
@@ -154,14 +156,8 @@
     margin-left: -15px;
 }
 
-.path-course-view .activity .block_point_view.track,
-.path-course-view .activity .block_point_view.track + * {
-    display: inline-block;
-}
-
 .block_point_view.selecttrack {
-    height: 2.4em;
-    position: relative;
+    height: 90%;
 }
 
 /* Menu button in block content */
@@ -239,4 +235,45 @@
 
 .block_point_view .pixselectgroup #delete_custom_pix {
     margin-left: 1em;
+}
+
+/* Some adjustments for Adaptable theme */
+.theme_adaptable.path-course-view .activity .block_point_view.track {
+    height: 2em;
+}
+
+.theme_adaptable.path-course-view:not(.format-tiles) .activity .block_point_view.track,
+.theme_adaptable:not(.format-tiles) .block_point_view.reactions-container {
+    top: .5em;
+}
+
+.theme_adaptable:not(.format-tiles) .block_point_view.reactions-container {
+    right: 25px;
+}
+
+/* Some adjustments for More/Clean themes */
+.block_point_view .pixselectgroup + #fgroup_id_pixselectgroup fieldset > span {
+	display: block;
+    line-height: 35px;
+}
+
+.block_point_view .fcontainer > .pixselectgroup {
+    position: relative;
+    grid-template-columns: repeat(1,auto);
+    top: 5px;
+}
+
+.block_point_view .fcontainer > .pixselectgroup > * {
+    position:absolute;
+    left: 400px;
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.block_point_view .fcontainer > .pixselectgroup > :nth-child(2) {
+    top: 40px;
+}
+
+.block_point_view .fcontainer > .pixselectgroup > :nth-child(3) {
+    top: 80px;
 }

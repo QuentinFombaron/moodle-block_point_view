@@ -163,7 +163,7 @@ class block_point_view extends block_base {
                         )
                 );
 
-                $this->page->requires->string_for_js('totalreactions', 'block_point_view');
+                $this->page->requires->strings_for_js(array('totalreactions', 'greentrack', 'bluetrack', 'redtrack', 'blacktrack'), 'block_point_view');
                 $this->page->requires->js_call_amd('block_point_view/script_point_view', 'init', array($COURSE->id));
             }
         } else if (!get_config(

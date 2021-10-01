@@ -111,7 +111,7 @@ class block_point_view_edit_form extends block_edit_form {
                 $this->add_warning_message($mform, get_string('noactivity', 'block_point_view'));
             }
 
-            /* Enable/Disable by types */
+            // Enable/Disable by activity module type.
             foreach ($modtypes as $type) {
                 $this->add_enable_disable_buttons($mform, '',
                         $type,
@@ -124,7 +124,7 @@ class block_point_view_edit_form extends block_edit_form {
 
             $oldsection = '';
             $sectionid = 0;
-            /* Enable/Disable by activity or section */
+            // Enable/Disable by activity or section.
             foreach ($cms as $cm) {
 
                 if ($cm->sectionnum != $oldsection) {
@@ -149,29 +149,23 @@ class block_point_view_edit_form extends block_edit_form {
             }
             // ----------------------------------------------------------------------------------------------------- //
 
-            // Emojis images configuration.
+            // Emoji configuration.
 
             $this->add_emoji_selection($mform);
 
             // ----------------------------------------------------------------------------------------------------- //
 
             // Reaction reinitialisation.
-            $mform->addElement(
-                'header',
-                'reset_header',
-                get_string('resetreactions', 'block_point_view')
-                );
+            $mform->addElement('header', 'reset_header', get_string('resetreactions', 'block_point_view'));
 
-            $mform->addElement(
-                    'static',
-                    'config_reaction_reset_button',
-                    '<button id="reset_reactions" class="btn btn-outline-warning" type="button">' .
-                        get_string('resetcoursereactions', 'block_point_view', format_string($COURSE->fullname)) .
-                    '</button>'
-                    );
+            $mform->addElement('static', 'reaction_reset_button',
+                    $this->get_action_button('reset_reactions', 'resetcoursereactions', format_string($COURSE->fullname)));
 
-            $mform->addHelpButton('config_reaction_reset_button', 'resetreactions', 'block_point_view');
+            $mform->addHelpButton('reaction_reset_button', 'resetreactions', 'block_point_view');
 
+            // ----------------------------------------------------------------------------------------------------- //
+
+            // AMD Call.
             $envconf = array(
                 'courseid' => $COURSE->id,
                 'contextid' => $this->block->context->id
@@ -179,7 +173,6 @@ class block_point_view_edit_form extends block_edit_form {
 
             $trackcolors = block_point_view_get_track_colors();
 
-            // AMD Call.
             $params = array($envconf, $trackcolors);
 
             global $PAGE;
@@ -310,9 +303,7 @@ class block_point_view_edit_form extends block_edit_form {
         }
 
         if ($custompixexist) {
-            $deletecustombutton = '<button id="delete_custom_pix" class="btn btn-outline-warning" type="button">' .
-                                    get_string('delete_custom_pix', 'block_point_view') .
-                                  '</button>';
+            $deletecustombutton = $this->get_action_button('delete_custom_pix', 'delete_custom_pix');
         } else {
             $pix['custom'] = array();
             $deletecustombutton = null;
@@ -376,19 +367,33 @@ class block_point_view_edit_form extends block_edit_form {
      * @param Html_Common[] $group
      * @param string $value
      * @param string[][] $pix
-     * @param string|null $additionalhtml
+     * @param string|null $additionallegend
      */
-    private function create_emoji_radioselect($mform, &$group, $value, $pix, $additionalhtml = null) {
+    private function create_emoji_radioselect($mform, &$group, $value, $pix, $additionallegend = null) {
         $group[] = $mform->createElement('radio', 'config_pixselect', '', get_string($value . 'pix', 'block_point_view'), $value, array('class' => 'pr-2 m-r-0 w-100'));
-        $html = '<label for="id_config_pixselect_' . $value . '" class="d-inline-block">';
+
+        $legend = '<label for="id_config_pixselect_' . $value . '" class="d-inline-block">';
         foreach ($pix[$value] as $file => $src) {
-            $html .= '<img src="' . $src . '" class="pix-preview" data-reaction="' . $file . '" data-source="' . $value . '"/>';
+            $legend .= '<img src="' . $src . '" class="pix-preview" data-reaction="' . $file . '" data-source="' . $value . '"/>';
         }
-        $html .= '</label>';
-        if ($additionalhtml !== null) {
-            $html = '<span>' . $html . $additionalhtml . '</span>';
+        $legend .= '</label>';
+        if ($additionallegend !== null) {
+            $legend = '<span>' . $legend . $additionallegend . '</span>';
         }
-        $group[] = $mform->createElement('html', $html);
+        $group[] = $mform->createElement('html', $legend);
+    }
+
+    /**
+     *
+     * @param string $id
+     * @param string $str
+     * @param string|null $a
+     * @return string
+     */
+    private function get_action_button($id, $str, $a = null) {
+        return '<button id="' . $id . '" class="btn btn-outline-warning" type="button">' .
+                   get_string($str, 'block_point_view', $a) .
+               '</button>';
     }
 
     /**
