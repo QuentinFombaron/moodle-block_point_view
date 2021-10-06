@@ -121,8 +121,9 @@ foreach ($cms as $cm) {
             if ($isdownloading) {
                 $votecells[] = $nvotes;
             } else {
+                $text = block_point_view_get_reaction_text($block, $difficulty);
                 $votecell = new html_table_cell(
-                        '<img src="' . $pixparam[$difficulty] . '" class="overview_img"/>' .
+                        '<img src="' . $pixparam[$difficulty] . '" class="overview_img" alt="' . $text . '" title="' . $text . '"/>' .
                         '<span class="votePercent">' .
                         round(100 * $nvotes / intval($result[$cm->id]->total)) . '%' .
                         '</span>' .

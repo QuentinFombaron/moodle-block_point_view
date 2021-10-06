@@ -30,7 +30,7 @@ $string['blacktrack'] = 'Piste noire';
 $string['bluetrack'] = 'Piste bleue';
 $string['blockdisabled'] = '<h3 class="text-danger">Le block est désactivé</h3>';
 $string['contentinputlabel'] = 'Contenu du bloc';
-$string['contentinputlabel_help'] = 'Ce champ permet de modifier le texte visible dans le bloc.';
+$string['contentinputlabel_help'] = 'Ce champ permet de modifier le texte visible dans le bloc. S\'il est vide, le bloc sera invisible pour les étudiants.';
 $string['customemoji'] = 'Emoji personnalisés';
 $string['customemoji_help'] = 'Des emoji personnalisés à utiliser comme réactions peuvent être définis ici.<h5 class="text-danger">Important :</h5>Nommer les fichiers <b><code>[nom_emoji].png</code></b> pour les emoji : <code>easy.png</code>, <code>better.png</code> et <code>hard.png</code>. Les groupes d\'emoji sont aussi nécessaires : <b><code>group_[initiales_des_emoji].png</code></b>, par exemple : <code>group_EB.png</code> pour le groupe des réactions Easy et Better. Ne pas oublier le fichier <b><code>group_.png</code></b> pour l\'image de \'Aucun vote\'. La taille recommandée des images est de 200x200 pour les emoji et 400x200 pour les groupes.<br/><br/> 11 fichiers attendus : <code>easy.png</code>, <code>better.png</code>, <code>hard.png</code>, <code>group_.png</code>, <code>group_E.png</code>, <code>group_B.png</code>, <code>group_H.png</code>, <code>group_EB.png</code>, <code>group_EH.png</code>, <code>group_BH.png</code> et <code>group_EBH.png</code>';
 $string['custompix'] = 'Personnalisé :';
@@ -82,7 +82,6 @@ $string['totalreactions'] = 'Réactions totales : {$a}';
 $string['point_view:access_overview'] = 'Voir le détail des réactions';
 $string['point_view:addinstance'] = 'Ajouter une instance du bloc Point de Vue';
 $string['point_view:myaddinstance'] = 'Ajouter une instance du bloc Point de Vue sur le tableau de bord';
-$string['point_view:viewcontent'] = 'Voir le contenu du bloc';
 
 $string['privacy:metadata:block_point_view'] = 'Point de Vue stocke le vote des utilisateurs sur chaque activité.';
 $string['privacy:metadata:activity_votes_database:courseid'] = 'ID du Cours';

@@ -33,8 +33,7 @@ $functions = array(
         'classpath'   => 'blocks/point_view/externallib.php',
         'description' => 'Update Database due to a vote.',
         'type'        => 'write',
-        'ajax' => true,
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        'ajax'        => true
     ),
     'block_point_view_delete_custom_pix' => array(
         'classname'   => 'block_point_view_external',
@@ -42,19 +41,6 @@ $functions = array(
         'classpath'   => 'blocks/point_view/externallib.php',
         'description' => 'delete custom emoji for this block instance',
         'type'        => 'write',
-        'ajax' => true,
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
-    )
-);
-
-$services = array(
-        'Point of View Service' => array(
-        'functions' => array(
-            'block_point_view_update_db',
-            'block_point_view_delete_custom_pix'
-        ),
-        'requiredcapability' => '',
-        'restrictedusers' => 0,
-        'enabled' => 1,
+        'ajax'        => true
     )
 );

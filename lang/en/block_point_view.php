@@ -30,7 +30,7 @@ $string['blacktrack'] = 'Black track';
 $string['bluetrack'] = 'Blue track';
 $string['blockdisabled'] = '<h3 class="text-danger">The block is disabled</h3>';
 $string['contentinputlabel'] = 'Block Content';
-$string['contentinputlabel_help'] = 'This field allows to modify the text visible in the block.';
+$string['contentinputlabel_help'] = 'This field allows to modify the text visible in the block. If left empty, the block will be invisible to students.';
 $string['customemoji'] = 'Custom emoji';
 $string['customemoji_help'] = 'Custom emoji to use for reactions can be defined here.<h5 class="text-danger">Important:</h5>Name the files <b><code>[emoji_name].png</code></b> for the emoji pictures: <code>easy.png</code>, <code>better.png</code> and <code>hard.png</code>. Also need groups of emojis <b><code>group_[emojis_initials].png</code></b>, for instance: <code>group_EB.png</code> for the group of Easy and Better reactions. Don\'t forget the file <b><code>group_.png</code></b> for the none vote image. The recommended image size is 200x200 for emojis and 400x200 for groups.<br/><br/> 11 files expected: <code>easy.png</code>, <code>better.png</code>, <code>hard.png</code>, <code>group_.png</code>, <code>group_E.png</code>, <code>group_B.png</code>, <code>group_H.png</code>, <code>group_EB.png</code>, <code>group_EH.png</code>, <code>group_BH.png</code> and <code>group_EBH.png</code>';
 $string['custompix'] = 'Custom:';
@@ -82,7 +82,6 @@ $string['totalreactions'] = 'Total reactions: {$a}';
 $string['point_view:access_overview'] = 'View reactions details';
 $string['point_view:addinstance'] = 'Add a Point of View block instance';
 $string['point_view:myaddinstance'] = 'Add a Point of View block instance on dashboard';
-$string['point_view:viewcontent'] = 'View block content';
 
 $string['privacy:metadata:block_point_view'] = 'The Point of View block stores the user\'s votes on each activity.';
 $string['privacy:metadata:activity_votes_database:courseid'] = 'Course ID';

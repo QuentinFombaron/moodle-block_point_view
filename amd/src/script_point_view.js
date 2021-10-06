@@ -48,7 +48,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
             // Wait that the DOM is fully loaded
             $(function() {
 
-                var blockData = $('.block.block_point_view .block_point_view_data').data('blockdata');
+                var blockData = $('.block_point_view[data-blockdata]').data('blockdata');
 
                 callOnModulesListLoad(function() {
                     setUpDifficultyTracks(blockData.difficultylevels, blockData.trackcolors);

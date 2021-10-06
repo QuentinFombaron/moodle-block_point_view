@@ -103,6 +103,18 @@ function block_point_view_get_current_pix($blockinstance, $subset = null) {
 /**
  *
  * @param block_point_view $blockinstance
+ * @param string $reaction
+ * @return string
+ */
+function block_point_view_get_reaction_text($blockinstance, $reaction) {
+    return format_string((isset($blockinstance->config->{'pix_text_' . $reaction})) ?
+            $blockinstance->config->{'pix_text_' . $reaction}
+            : get_string('defaulttext' . $reaction, 'block_point_view'));
+}
+
+/**
+ *
+ * @param block_point_view $blockinstance
  * @param int $courseid
  * @return array
  */
@@ -204,24 +216,6 @@ function block_point_view_get_modules_with_reactions($blockinstance, $userid, $c
 
         return array_values($DB->get_records_sql($sql, $params)); // Takes < 0.1s on small DB.
     }
-}
-
-function block_point_view_get_pix($blockinstance) {
-    $pixparam = block_point_view_get_current_pix($blockinstance);
-
-    $pixparam['easytxt'] = format_string((isset($blockinstance->config->pix_text_easy)) ?
-    $blockinstance->config->pix_text_easy
-    : get_string('defaulttexteasy', 'block_point_view' ));
-
-    $pixparam['bettertxt'] = format_string((isset($blockinstance->config->pix_text_better)) ?
-    $blockinstance->config->pix_text_better
-    : get_string('defaulttextbetter', 'block_point_view' ));
-
-    $pixparam['hardtxt'] = format_string((isset($blockinstance->config->pix_text_hard)) ?
-    $blockinstance->config->pix_text_hard
-    : get_string('defaulttexthard', 'block_point_view' ));
-
-    return $pixparam;
 }
 
 function block_point_view_get_track_colors() {

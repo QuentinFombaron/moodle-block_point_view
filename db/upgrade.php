@@ -19,7 +19,7 @@ function xmldb_block_point_view_upgrade($oldversion, $block) {
     $v1_6 = 2021092308; // Block v1.6.
     if ($oldversion < $v1_6) {
         echo $OUTPUT->notification('Some capabilities have changed
-            (block/point_view:view -> block/point_view:viewcontent,
+            (block/point_view:view -> X,
             block/point_view:access_menu -> block/point_view:access_overview),
             please check permissions on administration tab.', \core\output\notification::NOTIFY_INFO);
 

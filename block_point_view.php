@@ -75,7 +75,7 @@ class block_point_view extends block_base {
      * @throws moodle_exception
      */
     public function get_content() {
-        global $USER, $CFG, $COURSE;
+        global $CFG, $COURSE;
 
         if (get_config('block_point_view', 'enable_point_views_admin')) {
 
@@ -85,91 +85,52 @@ class block_point_view extends block_base {
 
             $this->content = new stdClass();
 
-            if (has_capability('block/point_view:viewcontent', $this->context)) {
-
+            $this->content->footer = '';
+            if (isset($this->config->text)) {
+                $this->config->text = file_rewrite_pluginfile_urls(
+                    $this->config->text,
+                    'pluginfile.php',
+                    $this->context->id,
+                    'block_point_view',
+                    'content',
+                    null
+                );
+                $format = FORMAT_HTML;
+                if (isset($this->config->format)) {
+                    $format = $this->config->format;
+                }
                 $filteropt = new stdClass;
                 if ($this->content_is_trusted()) {
                     $filteropt->noclean = true;
                 }
-                $this->content->footer = '';
-                if (isset($this->config->text)) {
-                    $this->config->text = file_rewrite_pluginfile_urls(
-                        $this->config->text,
-                        'pluginfile.php',
-                        $this->context->id,
-                        'block_point_view',
-                        'content',
-                        null
-                    );
-                    $format = FORMAT_HTML;
-                    if (isset($this->config->format)) {
-                        $format = $this->config->format;
-                    }
-                    $this->content->text = format_text($this->config->text, $format, $filteropt);
-                } else {
-                    $this->content->text = '<span>'.get_string('defaulttextcontent', 'block_point_view').'</span>';
-                }
+                $this->content->text = format_text($this->config->text, $format, $filteropt);
                 unset($filteropt);
-
-                if (has_capability('block/point_view:access_overview', $this->context)) {
-                    $parameters = [
-                        'instanceid' => $this->instance->id,
-                        'contextid' => $this->context->id,
-                        'courseid' => $COURSE->id
-                    ];
-
-                    $url = new moodle_url('/blocks/point_view/overview.php', $parameters);
-                    $title = get_string('reactionsdetails', 'block_point_view');
-                    $pix = $CFG->wwwroot . '/blocks/point_view/pix/overview.png';
-
-                    $this->content->text .= html_writer::link(
-                        $url,
-                            '<img src="' . $pix . '" class="block_point_view overview-link" alt="' . $title . '"/>',
-                            array('title' => $title)
-                    );
-                }
-
             } else {
-                $this->content->text = '';
+                $this->content->text = '<span>'.get_string('defaulttextcontent', 'block_point_view').'</span>';
             }
 
-            if (!$this->page->user_is_editing()) {
+            if (has_capability('block/point_view:access_overview', $this->context)) {
+                $parameters = [
+                    'instanceid' => $this->instance->id,
+                    'contextid' => $this->context->id,
+                    'courseid' => $COURSE->id
+                ];
 
-                require_once(__DIR__ . '/locallib.php');
+                $url = new moodle_url('/blocks/point_view/overview.php', $parameters);
+                $title = get_string('reactionsdetails', 'block_point_view');
+                $pix = $CFG->wwwroot . '/blocks/point_view/pix/overview.png';
 
-                $blockdata = new stdClass();
-                $blockdata->trackcolors = block_point_view_get_track_colors();
-                $blockdata->moduleswithreactions = block_point_view_get_modules_with_reactions($this, $USER->id, $COURSE->id);
-                $blockdata->difficultylevels = block_point_view_get_difficulty_levels($this, $COURSE->id);
-                $blockdata->pix = block_point_view_get_pix($this);
-                global $OUTPUT;
-                $templatecontext = new stdClass();
-                $templatecontext->reactions = array();
-                foreach (array('easy', 'better', 'hard') as $reactionname) {
-                    $reaction = new stdClass();
-                    $reaction->name = $reactionname;
-                    $reaction->pix = $blockdata->pix[$reactionname];
-                    $reaction->text = $blockdata->pix[$reactionname . 'txt'];
-                    $templatecontext->reactions[] = $reaction;
-                }
-                $blockdata->reactionstemplate = $OUTPUT->render_from_template('block_point_view/reactions', $templatecontext);
-
-                $this->content->footer = html_writer::span(
-                        '',
-                        'block_point_view_data',
-                        array(
-                                'data-blockdata' => json_encode($blockdata),
-                                'style' => 'display:none;'
-                        )
+                $this->content->text .= html_writer::link(
+                    $url,
+                        '<img src="' . $pix . '" class="block_point_view overview-link" alt="' . $title . '"/>',
+                        array('title' => $title)
                 );
-
-                $this->page->requires->strings_for_js(array('totalreactions', 'greentrack', 'bluetrack', 'redtrack', 'blacktrack'), 'block_point_view');
-                $this->page->requires->js_call_amd('block_point_view/script_point_view', 'init', array($COURSE->id));
             }
+
         } else if (!get_config(
                 'block_point_view',
                 'enable_point_views_admin')
-            && has_capability('block/point_view:viewcontent', $this->context)) {
+            && has_capability('block/point_view:addinstance', $this->context)) {
 
             $this->content->text = get_string('blockdisabled', 'block_point_view');
 
@@ -200,6 +161,45 @@ class block_point_view extends block_base {
         }
 
         return true;
+    }
+
+    public function get_required_javascript() {
+        parent::get_required_javascript();
+
+        global $USER, $COURSE;
+        if (get_config('block_point_view', 'enable_point_views_admin') && !$this->page->user_is_editing()) {
+
+            require_once(__DIR__ . '/locallib.php');
+
+            $blockdata = new stdClass();
+            $blockdata->trackcolors = block_point_view_get_track_colors();
+            $blockdata->moduleswithreactions = block_point_view_get_modules_with_reactions($this, $USER->id, $COURSE->id);
+            $blockdata->difficultylevels = block_point_view_get_difficulty_levels($this, $COURSE->id);
+            $blockdata->pix = block_point_view_get_current_pix($this);
+
+            global $OUTPUT;
+            $templatecontext = new stdClass();
+            $templatecontext->reactions = array();
+            foreach (array('easy', 'better', 'hard') as $reactionname) {
+                $reaction = new stdClass();
+                $reaction->name = $reactionname;
+                $reaction->pix = $blockdata->pix[$reactionname];
+                $reaction->text = block_point_view_get_reaction_text($this, $reactionname);
+                $templatecontext->reactions[] = $reaction;
+            }
+            $blockdata->reactionstemplate = $OUTPUT->render_from_template('block_point_view/reactions', $templatecontext);
+
+            // Create and place a node containing data for the javascript.
+            $datanode = html_writer::span('', 'block_point_view', array(
+                    'data-blockdata' => json_encode($blockdata), 'style' => 'display:none;'
+            ));
+            $this->page->requires->js_init_code('document.getElementsByClassName("block-region")[0]
+                                                 .insertAdjacentHTML("beforeend", "' . addslashes_js($datanode) . '");');
+
+            $strings = array('totalreactions', 'greentrack', 'bluetrack', 'redtrack', 'blacktrack');
+            $this->page->requires->strings_for_js($strings, 'block_point_view');
+            $this->page->requires->js_call_amd('block_point_view/script_point_view', 'init', array($COURSE->id));
+        }
     }
 
     /**
