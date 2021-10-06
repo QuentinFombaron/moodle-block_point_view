@@ -1,4 +1,3 @@
-// Include JQuery
 define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
 
     function callOnModulesListLoad(call) {
@@ -181,7 +180,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
                     .animate(getGroupImageSizeForRatio(0), 300)
                     .hide(0);
 
-                    $get(moduleId, '.group_nb').delay(50).hide(300);
+                    $get(moduleId, '.group_nb').delay(200).hide(300);
 
                     $('#module-' + moduleId + ' .actions').delay(200).hide(300);
 
