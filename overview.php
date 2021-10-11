@@ -17,16 +17,14 @@
 /**
  * File call to overview the votes in the table
  *
- *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../config.php');
 global $CFG, $DB, $PAGE, $OUTPUT;
-require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 require_once(__DIR__ . '/locallib.php');
 
 require_login();
@@ -89,8 +87,6 @@ $users = $DB->get_records('user', null, '', user_picture::fields());
 
 $sqldata = $DB->get_records('block_point_view', ['courseid' => $courseid], '', 'id,cmid,userid,vote');
 
-
-
 $usersdisplay = array();
 
 $tabledata = array();
@@ -111,7 +107,8 @@ foreach ($cms as $cm) {
         $modulename = $cm->get_formatted_name();
 
         if (!$isdownloading) {
-            $icon = $OUTPUT->pix_icon('icon', $cm->get_module_type_name(), $cm->modname, array('class' => 'iconlarge activityicon'));
+            $icon = $OUTPUT->pix_icon('icon', $cm->get_module_type_name(), $cm->modname,
+                    array('class' => 'iconlarge activityicon'));
             $modulename = $icon . $modulename;
         }
 
@@ -123,7 +120,12 @@ foreach ($cms as $cm) {
             } else {
                 $text = block_point_view_get_reaction_text($block, $difficulty);
                 $votecell = new html_table_cell(
-                        '<img src="' . $pixparam[$difficulty] . '" class="overview_img" alt="' . $text . '" title="' . $text . '"/>' .
+                        html_writer::empty_tag('img', array(
+                                'src' => $pixparam[$difficulty],
+                                'class' => 'overview_img',
+                                'alt' => $text,
+                                'title' => $text
+                        )) .
                         '<span class="votePercent">' .
                         round(100 * $nvotes / intval($result[$cm->id]->total)) . '%' .
                         '</span>' .
@@ -160,6 +162,7 @@ foreach ($cms as $cm) {
         );
 
         if ($isdownloading) {
+            // Set a slighlty different layout for table download.
             $vote = array ('easy', 'better', 'hard');
             foreach (array_slice($details, 2, 3) as $uservote => $usernames) {
                 foreach ($usernames as $username) {

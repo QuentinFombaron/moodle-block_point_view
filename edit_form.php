@@ -15,34 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Point of View block
- *
+ * Point of View block configuration form definition.
  *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__ . '/../../config.php');
-global $CFG;
-require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->dirroot . '/blocks/point_view/lib.php');
-require_once(__DIR__ . '/locallib.php');
+defined('MOODLE_INTERNAL') || die;
 
-try {
-    require_login();
-    confirm_sesskey();
-} catch (coding_exception $e) {
-    echo 'Exception [coding_exception] (blocks/point_view/edit_form.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (require_login_exception $e) {
-    echo 'Exception [require_login_exception] (blocks/point_view/edit_form.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-} catch (moodle_exception $e) {
-    echo 'Exception [moodle_exception] (blocks/point_view/edit_form.php -> require_login()) : ',
-    $e->getMessage(), "\n";
-}
+require_once(__DIR__ . '/locallib.php');
 
 /**
  * block_point_view_edit_form Class
@@ -62,7 +45,7 @@ class block_point_view_edit_form extends block_edit_form {
      */
     protected function specific_definition($mform) {
 
-        global $CFG, $COURSE, $OUTPUT;
+        global $COURSE, $OUTPUT;
 
         if (get_config('block_point_view', 'enable_point_views_admin')) {
 
@@ -87,7 +70,8 @@ class block_point_view_edit_form extends block_edit_form {
             $mform->addHelpButton('config_text', 'contentinputlabel', 'block_point_view');
 
             // Reaction activation.
-            $mform->addElement('selectyesno', 'config_enable_point_views', get_string('enablepoint_views', 'block_point_view'));
+            $mform->addElement('selectyesno', 'config_enable_point_views',
+                    get_string('enablepoint_views', 'block_point_view'));
 
             $this->add_checkbox_with_help($mform, 'config_enable_point_views_new_modules', 'enableforfuturemodules', 1);
             $mform->disabledIf('config_enable_point_views_new_modules', 'config_enable_point_views', 'eq', 0);
@@ -95,13 +79,13 @@ class block_point_view_edit_form extends block_edit_form {
             $this->add_checkbox_with_help($mform, 'config_show_other_users_reactions', 'showotherreactions', 1);
             $mform->disabledIf('config_show_other_users_reactions', 'config_enable_point_views', 'eq', 0);
 
-            // Difficulties activation.
-            $mform->addElement('selectyesno', 'config_enable_difficultytracks', get_string('enabledifficulties', 'block_point_view'));
+            // Difficulty tracks activation.
+            $mform->addElement('selectyesno', 'config_enable_difficultytracks',
+                    get_string('enabledifficulties', 'block_point_view'));
 
-            // ----------------------------------------------------------------------------------------------------- //
+            // Reactions and difficulty tracks configuration by activity.
 
             $mform->addElement('header', 'activities_header', get_string('header_activities', 'block_point_view'));
-
 
             $modinfo = get_fast_modinfo($COURSE->id, -1);
             $cms = $modinfo->cms;
@@ -115,8 +99,8 @@ class block_point_view_edit_form extends block_edit_form {
             foreach ($modtypes as $type) {
                 $this->add_enable_disable_buttons($mform, '',
                         $type,
-                        get_string('modulenameplural', $type),
                         'enable_type', 'disable_type',
+                        get_string('modulenameplural', $type),
                         'enable_disable_type',
                         'data-type="' . $type . '"',
                         array('class' => 'reactions'));
@@ -134,8 +118,8 @@ class block_point_view_edit_form extends block_edit_form {
 
                     $this->add_enable_disable_buttons($mform, '<h4>' . $sectionname . '</h4>',
                             'sec' . $sectionid,
-                            $sectionname,
                             'enableall', 'disableall',
+                            $sectionname,
                             'enable_disable_section',
                             'data-section="sec' . $sectionid . '"',
                             array('class' => 'section-header'));
@@ -143,17 +127,15 @@ class block_point_view_edit_form extends block_edit_form {
                     $oldsection = $cm->sectionnum;
                 }
 
-                $icon = $OUTPUT->pix_icon('icon', $cm->get_module_type_name(), $cm->modname, array('class' => 'iconlarge activityicon'));
+                $icon = $OUTPUT->pix_icon('icon', $cm->get_module_type_name(), $cm->modname,
+                        array('class' => 'iconlarge activityicon'));
 
                 $this->add_activity_config($mform, $cm->id, $sectionid, $cm->modname, $icon . $cm->get_formatted_name());
             }
-            // ----------------------------------------------------------------------------------------------------- //
 
             // Emoji configuration.
 
             $this->add_emoji_selection($mform);
-
-            // ----------------------------------------------------------------------------------------------------- //
 
             // Reaction reinitialisation.
             $mform->addElement('header', 'reset_header', get_string('resetreactions', 'block_point_view'));
@@ -163,23 +145,9 @@ class block_point_view_edit_form extends block_edit_form {
 
             $mform->addHelpButton('reaction_reset_button', 'resetreactions', 'block_point_view');
 
-            // ----------------------------------------------------------------------------------------------------- //
-
-            // AMD Call.
-            $envconf = array(
-                'courseid' => $COURSE->id,
-                'contextid' => $this->block->context->id
-            );
-
-            $trackcolors = block_point_view_get_track_colors();
-
-            $params = array($envconf, $trackcolors);
-
-            global $PAGE;
-            $PAGE->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
-            $PAGE->requires->string_for_js('resetreactionsconfirmation', 'block_point_view', format_string($COURSE->fullname));
-            $PAGE->requires->strings_for_js(array('deleteemojiconfirmation', 'reactionsresetsuccessfully'), 'block_point_view');
-            $PAGE->requires->strings_for_js(array('ok', 'info'), 'moodle');
+            // Call javascript from a static function in locallib, because Moodle linter won't let us call global $PAGE from here
+            // (and $this->page actually contains the course page, not the edit form page).
+            block_point_view_require_edit_form_javascript($this->block->context->id);
 
         } else {
             $this->add_warning_message($mform, get_string('blockdisabled', 'block_point_view'));
@@ -187,28 +155,43 @@ class block_point_view_edit_form extends block_edit_form {
     }
 
     /**
+     * Helper function to add an advcheckbox element with a help button to a form.
      *
      * @param MoodleQuickForm $mform
+     * @param string $name Checkbox element name.
+     * @param string $str String identifier for label and help button (in block_point_view component).
+     * @param mixed $default Default value for the checkbox.
      */
-    private function add_checkbox_with_help(&$mform, $name, $str, $default = 0) {
+    protected function add_checkbox_with_help(&$mform, $name, $str, $default = 0) {
         $mform->addElement('advcheckbox', $name, get_string($str, 'block_point_view'));
         $mform->addHelpButton($name, $str, 'block_point_view');
         $mform->setDefault($name, $default);
     }
 
     /**
+     * Helper function to add two buttons (enable/disable) to a form.
      *
      * @param MoodleQuickForm $mform
+     * @param string $grouplabel The label to put before the two buttons.
+     * @param string $name The name of the buttons (their "id" will be "enableall<$name>" and "disableall<$name>").
+     * @param string $enablestr String identifier for enable button label (in block_point_view component).
+     * @param string $disablestr String identifier for disable button label (in block_point_view component).
+     * @param string $a Additional data to pass to get_string for enable and disable button labels.
+     * @param string $helpstr String identifier for help button (in block_point_view component).
+     * @param string $dataattr Data attributes for both buttons.
+     * @param array $attributes Attributes to be added to the form element containing both buttons.
      */
-    private function add_enable_disable_buttons(&$mform, $grouplabel, $name, $label, $enablestr, $disablestr, $helpstr, $dataattr = '', $attributes = array()) {
+    protected function add_enable_disable_buttons(&$mform, $grouplabel, $name,
+            $enablestr, $disablestr, $a, $helpstr, $dataattr = '', $attributes = array()) {
+
         global $OUTPUT;
 
         $templatecontext = new stdClass();
         $templatecontext->helpbutton = $OUTPUT->help_icon($helpstr, 'block_point_view');
         $templatecontext->enablename = 'enableall' . $name;
-        $templatecontext->enablelabel = get_string($enablestr, 'block_point_view', $label);
+        $templatecontext->enablelabel = get_string($enablestr, 'block_point_view', $a);
         $templatecontext->disablename = 'disableall' . $name;
-        $templatecontext->disablelabel = get_string($disablestr, 'block_point_view', $label);
+        $templatecontext->disablelabel = get_string($disablestr, 'block_point_view', $a);
         $templatecontext->dataattr = $dataattr;
         $element = &$mform->addElement('static', '', $grouplabel,
                 $OUTPUT->render_from_template('block_point_view/enabledisable', $templatecontext));
@@ -218,27 +201,34 @@ class block_point_view_edit_form extends block_edit_form {
     }
 
     /**
+     * Helper function to create settings for one course module in the form (reactions checkbox and difficulty track select).
      *
      * @param MoodleQuickForm $mform
-     * @param int $id
-     * @param int $sectionid
-     * @param string $label
+     * @param int $cmid Course module id.
+     * @param int $sectionid Section id this module belongs to.
+     * @param string $type Course module type name.
+     * @param string $label Label for form elements (likely, course module name and icon).
      */
-    private function add_activity_config(&$mform, $id, $sectionid, $type, $label) {
+    protected function add_activity_config(&$mform, $cmid, $sectionid, $type, $label) {
         $group = array();
 
-        $group[] =& $mform->createElement( 'advcheckbox', 'config_moduleselectm' . $id, get_string('reactions', 'block_point_view'), null,
+        // Checkbox for reactions.
+        $group[] =& $mform->createElement( 'advcheckbox', 'config_moduleselectm' . $cmid,
+                get_string('reactions', 'block_point_view'), null,
                 array(
                         'class' => 'reactions enablemodulereactions cbsec' . $sectionid . ' cb' . $type,
                         'data-section' => 'sec' . $sectionid,
                         'data-type' => $type
                 ),
-                array(0, $id)
+                array(0, $cmid)
         );
 
-        $group[] =& $mform->createElement( 'html', '<span id="track_' . $id . '" class="block_point_view track selecttrack difficultytracks"></span>' );
+        // Difficulty track.
+        $group[] =& $mform->createElement( 'html',
+                '<span id="track_' . $cmid . '" class="block_point_view track selecttrack difficultytracks"></span>' );
 
-        $group[] =& $mform->createElement( 'select', 'config_difficulty_' . $id, '',
+        // Difficulty track select.
+        $group[] =& $mform->createElement( 'select', 'config_difficulty_' . $cmid, '',
                 array(
                         get_string('nonetrack', 'block_point_view'),
                         get_string('greentrack', 'block_point_view'),
@@ -246,55 +236,56 @@ class block_point_view_edit_form extends block_edit_form {
                         get_string('redtrack', 'block_point_view'),
                         get_string('blacktrack', 'block_point_view')
                 ),
-                array('class' => 'difficultytracks moduletrackselect', 'data-id' => $id)
+                array('class' => 'difficultytracks moduletrackselect', 'data-id' => $cmid)
         );
 
-        $mform->addGroup( $group, 'config_activity_' . $id, $label, '', false );
+        $mform->addGroup( $group, 'config_activity_' . $cmid, $label, '', false );
 
     }
 
     /**
-     *
+     * Helper function to add a warning to a form.
      * @param MoodleQuickForm $mform
      * @param string $message
      */
-    private function add_warning_message(&$mform, $message) {
+    protected function add_warning_message(&$mform, $message) {
         $warning = html_writer::tag( 'div', $message, ['class' => 'warning'] );
         $mform->addElement('static', '', '', $warning);
     }
 
     /**
-     *
+     * Add all form controls for emoji selection to the form.
      * @param MoodleQuickForm $mform
      */
-    private function add_emoji_selection(&$mform) {
+    protected function add_emoji_selection(&$mform) {
         global $CFG;
 
         $mform->addElement('header', 'images_header', get_string('header_images', 'block_point_view'));
-
-        $fs = get_file_storage();
 
         $pixfiles = array('easy', 'better', 'hard');
 
         $adminpixenabled = get_config('block_point_view', 'enable_pix_admin');
         $custompixexist = false;
 
+        // List existing pix. Three options:
+        // - default pix (in blocks/point_view/pix),
+        // - admin pix (in block administration settings),
+        // - custom pix (in block configuration).
         $pix = array('default' => array(), 'admin' => array(), 'custom' => array());
         foreach ($pixfiles as $file) {
             $defaultsrc = $CFG->wwwroot . '/blocks/point_view/pix/' . $file . '.png';
             $pix['default'][$file] = $defaultsrc;
 
             if ($adminpixenabled) {
-                if ($fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
-                    $adminsrc = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
-                } else {
+                $adminsrc = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
+                if (!$adminsrc) {
                     $adminsrc = $defaultsrc;
                 }
                 $pix['admin'][$file] = $adminsrc;
             }
 
-            if ($fs->file_exists($this->block->context->id, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
-                $customsrc = block_point_view_pix_url($this->block->context->id, 'point_views_pix', $file);
+            $customsrc = block_point_view_pix_url($this->block->context->id, 'point_views_pix', $file);
+            if ($customsrc) {
                 $custompixexist = true;
             } else {
                 $customsrc = isset($adminsrc) ? $adminsrc : $defaultsrc;
@@ -309,6 +300,7 @@ class block_point_view_edit_form extends block_edit_form {
             $deletecustombutton = null;
         }
 
+        // Create select for the three options.
         $pixselect = array();
         $pixselect[] = &$mform->createElement('html', '<div class="pixselectgroup">');
         $this->create_emoji_radioselect($mform, $pixselect, 'default', $pix);
@@ -319,15 +311,10 @@ class block_point_view_edit_form extends block_edit_form {
         $pixselect[] = &$mform->createElement('html', '</div>');
 
         $mform->addGroup($pixselect, 'pixselectgroup', get_string('emojitouse', 'block_point_view'), '', false);
-
-        if ($adminpixenabled) {
-            $mform->setDefault('config_pixselect', 'admin');
-        } else {
-            $mform->setDefault('config_pixselect', 'default');
-        }
-
+        $mform->setDefault('config_pixselect', $adminpixenabled ? 'admin' : 'default');
         $mform->addHelpButton('pixselectgroup', 'emojitouse', 'block_point_view');
 
+        // Create file manager for custom emoji.
         $mform->addElement(
                 'filemanager',
                 'config_point_views_pix',
@@ -337,9 +324,9 @@ class block_point_view_edit_form extends block_edit_form {
                 );
 
         $mform->addHelpButton('config_point_views_pix', 'customemoji', 'block_point_view');
-
         $mform->disabledIf('config_point_views_pix', 'config_pixselect', 'neq', 'custom');
 
+        // Create fields for custom reaction text.
         $current = block_point_view_get_current_pix($this->block, $pixfiles);
         foreach ($pixfiles as $file) {
 
@@ -348,33 +335,43 @@ class block_point_view_edit_form extends block_edit_form {
 
             $mform->addElement('text',
                     $elementname,
-                    '<img src="' . $current[$file] . '" alt="' . $defaulttext . '" class="pix-preview currentpix" data-reaction="' . $file . '"/>' .
+                    html_writer::empty_tag('img', array(
+                            'src' => $current[$file],
+                            'class' => 'pix-preview currentpix',
+                            'alt' => $defaulttext,
+                            'data-reaction' => $file
+                    )) .
                     get_string('emojidesc', 'block_point_view')
                     );
 
             $mform->setDefault($elementname, $defaulttext);
-
             $mform->setType($elementname, PARAM_RAW);
-
             $mform->addHelpButton($elementname, 'emojidesc', 'block_point_view');
 
         }
     }
 
     /**
+     * Helper function to create a radio select element for emoji and add it to a form.
      *
      * @param MoodleQuickForm $mform
-     * @param Html_Common[] $group
+     * @param Html_Common[] $group Array to which the element should be added.
      * @param string $value
-     * @param string[][] $pix
-     * @param string|null $additionallegend
+     * @param string[][] $pix Array of pix sources.
+     * @param string|null $additionallegend Optional html to add after the emoji.
      */
-    private function create_emoji_radioselect($mform, &$group, $value, $pix, $additionallegend = null) {
-        $group[] = $mform->createElement('radio', 'config_pixselect', '', get_string($value . 'pix', 'block_point_view'), $value, array('class' => 'pr-2 m-r-0 w-100'));
+    protected function create_emoji_radioselect(&$mform, &$group, $value, $pix, $additionallegend = null) {
+        $group[] = $mform->createElement('radio', 'config_pixselect', '',
+                get_string($value . 'pix', 'block_point_view'), $value, array('class' => 'pr-2 m-r-0 w-100'));
 
         $legend = '<label for="id_config_pixselect_' . $value . '" class="d-inline-block">';
         foreach ($pix[$value] as $file => $src) {
-            $legend .= '<img src="' . $src . '" class="pix-preview" data-reaction="' . $file . '" data-source="' . $value . '"/>';
+            $legend .= html_writer::empty_tag('img', array(
+                    'src' => $src,
+                    'class' => 'pix-preview',
+                    'data-reaction' => $file,
+                    'data-source' => $value
+            ));
         }
         $legend .= '</label>';
         if ($additionallegend !== null) {
@@ -384,13 +381,14 @@ class block_point_view_edit_form extends block_edit_form {
     }
 
     /**
+     * Helper function to create an action button.
      *
-     * @param string $id
-     * @param string $str
-     * @param string|null $a
-     * @return string
+     * @param string $id Button id.
+     * @param string $str String identifier for the button label (in block_point_view component).
+     * @param string|null $a Additional data to pass to get_string for button label.
+     * @return string HTML fragment for the button.
      */
-    private function get_action_button($id, $str, $a = null) {
+    protected function get_action_button($id, $str, $a = null) {
         return '<button id="' . $id . '" class="btn btn-outline-warning" type="button">' .
                    get_string($str, 'block_point_view', $a) .
                '</button>';
@@ -439,7 +437,7 @@ class block_point_view_edit_form extends block_edit_form {
                 );
 
             if (empty($draftfiles)) {
-                $errors['config_point_views_pix'] = 'Please provide at least one file.';
+                $errors['config_point_views_pix'] = get_string('errorfilemanagerempty', 'block_point_view');
             }
 
             foreach ($draftfiles as $file) {
@@ -467,7 +465,7 @@ class block_point_view_edit_form extends block_edit_form {
     /**
      * File manager and Editor data
      *
-     * @param {array} $defaults
+     * @param array $defaults
      */
     public function set_data($defaults) {
 
@@ -514,7 +512,9 @@ class block_point_view_edit_form extends block_edit_form {
 
         unset($this->block->config->text);
 
-        if (!get_config('block_point_view', 'enable_pix_admin') && $this->block->config->pixselect == 'admin') {
+        if (!get_config('block_point_view', 'enable_pix_admin')
+                && isset($this->block->config->pixselect)
+                && $this->block->config->pixselect == 'admin') {
             $this->block->config->pixselect = 'default';
         }
 

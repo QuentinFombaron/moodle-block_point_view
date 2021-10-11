@@ -18,7 +18,7 @@
  * Strings for component 'block_point_view', language 'en'
  *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -62,6 +62,7 @@ $string['enable_disable_type'] = 'Enable/Disable all of this type';
 $string['enable_disable_type_help'] = 'Enable or disable reactions for all activity modules of this type in course.';
 $string['enable_type'] = 'Enable all <b>{$a}</b>';
 $string['errorfilemanager'] = '<b>ERROR</b>: The name of <b>{$a}.png</b> is not conform.';
+$string['errorfilemanagerempty'] = 'Please provide at least one file.';
 $string['greentrack'] = 'Green track';
 $string['module'] = 'Module';
 $string['noactivity'] = 'No activity';

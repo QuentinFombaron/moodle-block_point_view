@@ -18,21 +18,32 @@
     @template block_point_view/enabledisable
 
     Classes required for JS:
-    * 
+    * enable-disable
+    * reactions
 
     Data attributes required for JS:
-    * 
+    * data-enable
 
     Context variables required for this template:
-    * 
+    * helpbutton HTML fragment for help button.
+    * enablename id attribute for enable button.
+    * enablelabel Label of enable button.
+    * disablename id attribute for disable button.
+    * disablelabel Label of disable button.
+    * datattr HTML data attributes for both buttons.
 
     Example context (json):
     {
-        "TODO": "TODO"
+        "helpbutton": "<span></span>",
+        "enablename": "enable_type_quiz",
+        "enablelabel": "Enable all Quizzes",
+        "disablename": "disable_type_quiz",
+        "disablelabel": "Disable all Quizzes",
+        "dataattr": ""
     }
 }}
 <span class="enable-disable reactions">
-	{{{helpbutton}}}
-	<button id="{{enablename}}" class="btn btn-outline-success" type="button" data-enable="1" {{{dataattr}}}>{{{enablelabel}}}</button>
-	<button id="{{disablename}}" class="btn btn-outline-danger" type="button" data-enable="0" {{{dataattr}}}>{{{disablelabel}}}</button>
+    {{{helpbutton}}}
+    <button id="{{enablename}}" class="btn btn-outline-success" type="button" data-enable="1" {{{dataattr}}}>{{{enablelabel}}}</button>
+    <button id="{{disablename}}" class="btn btn-outline-danger" type="button" data-enable="0" {{{dataattr}}}>{{{disablelabel}}}</button>
 </span>

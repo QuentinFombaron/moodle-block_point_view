@@ -14,9 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Plugin local library.
+ *
+ * @package    block_point_view
+ * @copyright  2021 Astor Bizard
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Check consistency of given block instance with given parent context. Throws a moodle_exception on failed check.
+ *
+ * @param object|int $instanceorid Block instance or id.
+ * @param context $context Parent context of the block.
+ * @param string $errorcontext Information about the context in which a failed check occured.
+ * @param string $errorurl URL to redirect to on a failed check.
+ * @throws moodle_exception
+ */
 function block_point_view_check_instance($instanceorid, $context, $errorcontext = '', $errorurl = '') {
     global $DB;
     if (is_object($instanceorid)) {
@@ -31,30 +47,28 @@ function block_point_view_check_instance($instanceorid, $context, $errorcontext 
 }
 
 /**
- * Reaction image
+ * Find and return pix url.
  *
- * @param int $contextid
- * @param string $filearea
- * @param string $react
- * @return string
+ * @param int $contextid Context in which to search the file.
+ * @param string $filearea File area.
+ * @param string $file File name.
+ * @return string|boolean url if found, false if not.
  */
-function block_point_view_pix_url($contextid, $filearea, $react) {
-
-    return strval(moodle_url::make_pluginfile_url(
-            $contextid,
-            'block_point_view',
-            $filearea,
-            0,
-            '/',
-            $react)
-            );
+function block_point_view_pix_url($contextid, $filearea, $file) {
+    $fs = get_file_storage();
+    if ($fs->file_exists($contextid, 'block_point_view', $filearea, 0, '/', $file . '.png')) {
+        return moodle_url::make_pluginfile_url($contextid, 'block_point_view', $filearea, 0, '/', $file)->out();
+    } else {
+        return false;
+    }
 
 }
 
 /**
+ * Get current pix for a block instance.
+ * This method checks existence of selected pix, replacing them with default ones if the first do not exist.
  *
- * @param block_point_view $blockinstance
- * @param int $contextid
+ * @param block_point_view $blockinstance Block instance.
  * @param array|null $subset Requested subset of pix. If none specified, all will be returned.
  * @return string[]
  */
@@ -81,18 +95,17 @@ function block_point_view_get_current_pix($blockinstance, $subset = null) {
 
     $pix = array();
 
-    $fs = get_file_storage();
-
-    $blockcontextid = $blockinstance->context->id;
     foreach ($pixfiles as $file) {
-        if (isset($blockinstance->config->pixselect) && $blockinstance->config->pixselect == 'custom'
-                && $fs->file_exists($blockcontextid, 'block_point_view', 'point_views_pix', 0, '/', $file . '.png')) {
-            $pix[$file] = block_point_view_pix_url($blockcontextid, 'point_views_pix', $file);
-        } else if ((!isset($blockinstance->config->pixselect) || $blockinstance->config->pixselect == 'admin')
+        $pix[$file] = false;
+        if (isset($blockinstance->config->pixselect) && $blockinstance->config->pixselect == 'custom') {
+            $pix[$file] = block_point_view_pix_url($blockinstance->context->id, 'point_views_pix', $file);
+        }
+        if (!$pix[$file]
                 && get_config('block_point_view', 'enable_pix_admin')
-                && $fs->file_exists(1, 'block_point_view', 'point_views_pix_admin', 0, '/', $file . '.png')) {
+                && (!isset($blockinstance->config->pixselect) || $blockinstance->config->pixselect != 'default')) {
             $pix[$file] = block_point_view_pix_url(1, 'point_views_pix_admin', $file);
-        } else {
+        }
+        if (!$pix[$file]) {
             $pix[$file] = $CFG->wwwroot . '/blocks/point_view/pix/' . $file . '.png';
         }
     }
@@ -101,10 +114,11 @@ function block_point_view_get_current_pix($blockinstance, $subset = null) {
 }
 
 /**
+ * Get current text for a given reaction.
  *
- * @param block_point_view $blockinstance
- * @param string $reaction
- * @return string
+ * @param block_point_view $blockinstance Block instance.
+ * @param string $reaction Reaction name.
+ * @return string Current reaction text.
  */
 function block_point_view_get_reaction_text($blockinstance, $reaction) {
     return format_string((isset($blockinstance->config->{'pix_text_' . $reaction})) ?
@@ -113,10 +127,11 @@ function block_point_view_get_reaction_text($blockinstance, $reaction) {
 }
 
 /**
+ * Retrieve difficulty settings for modules within a course.
  *
- * @param block_point_view $blockinstance
- * @param int $courseid
- * @return array
+ * @param block_point_view $blockinstance Block instance.
+ * @param int $courseid Course id.
+ * @return array Difficulty settings for every course module. One entry for each module, empty array if difficulty tracks disabled.
  */
 function block_point_view_get_difficulty_levels($blockinstance, $courseid) {
 
@@ -130,7 +145,7 @@ function block_point_view_get_difficulty_levels($blockinstance, $courseid) {
 
     $difficultylevels = array();
 
-    // Loop through modules/courses.
+    // Loop through modules.
     foreach ($cms as $cm) {
         if (isset($blockinstance->config->{'difficulty_' . $cm->id})) {
             $difficulty = $blockinstance->config->{'difficulty_' . $cm->id};
@@ -147,6 +162,14 @@ function block_point_view_get_difficulty_levels($blockinstance, $courseid) {
     return $difficultylevels;
 }
 
+/**
+ * Retrieve reactions settings for modules within a course.
+ *
+ * @param block_point_view $blockinstance Block instance.
+ * @param int $userid User id, as returned array contains information about user's current vote.
+ * @param int $courseid Course id.
+ * @return array Reactions settings for every course module. One entry for each module with reactions enabled.
+ */
 function block_point_view_get_modules_with_reactions($blockinstance, $userid, $courseid) {
     global $DB;
 
@@ -209,8 +232,7 @@ function block_point_view_get_modules_with_reactions($blockinstance, $userid, $c
             AND cm.course = :courseid
             GROUP BY cm.id';
 
-        // TODO optimize this loading time.
-        // Maybe add some indexes to the table.
+        // TODO optimize this loading time, maybe add some indexes to the table.
 
         $params = array_merge($inparams, array('userid' => $userid, 'courseid' => $courseid));
 
@@ -218,6 +240,9 @@ function block_point_view_get_modules_with_reactions($blockinstance, $userid, $c
     }
 }
 
+/**
+ * Get difficulty tracks colors, as set in plugin administration configuration.
+ */
 function block_point_view_get_track_colors() {
     return array(
             '',
@@ -247,4 +272,26 @@ function block_point_view_format_users($userids, $users) {
     }
 
     return $string;
+}
+
+/**
+ * Call all required javascript for edit_form.
+ *
+ * @param int $blockcontextid Context id of the block.
+ */
+function block_point_view_require_edit_form_javascript($blockcontextid) {
+    global $COURSE, $PAGE;
+    $envconf = array(
+            'courseid' => $COURSE->id,
+            'contextid' => $blockcontextid
+    );
+
+    $trackcolors = block_point_view_get_track_colors();
+
+    $params = array($envconf, $trackcolors);
+
+    $PAGE->requires->js_call_amd('block_point_view/script_config_point_view', 'init', $params);
+    $PAGE->requires->string_for_js('resetreactionsconfirmation', 'block_point_view', format_string($COURSE->fullname));
+    $PAGE->requires->strings_for_js(array('deleteemojiconfirmation', 'reactionsresetsuccessfully'), 'block_point_view');
+    $PAGE->requires->strings_for_js(array('ok', 'info'), 'moodle');
 }

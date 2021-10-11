@@ -18,7 +18,7 @@
  * Strings for component 'block_point_view', language 'fr'
  *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -62,6 +62,7 @@ $string['enable_disable_type'] = 'Tout activer/désactiver pour ce type de modul
 $string['enable_disable_type_help'] = 'Activer ou désactiver les réactions pour tous les modules de ce type dans ce cours.';
 $string['enable_type'] = 'Activer tou.te.s les <b>{$a}</b>';
 $string['errorfilemanager'] = '<b>ERREUR</b> : Le nom du fichier <b>{$a}.png</b> n\'est pas conforme.';
+$string['errorfilemanagerempty'] = 'Veuillez fournir au moins un fichier.';
 $string['greentrack'] = 'Piste verte';
 $string['module'] = 'Module';
 $string['noactivity'] = 'Aucune activité';

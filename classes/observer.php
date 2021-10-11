@@ -15,26 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event observer.
+ * Observer for course modules creation and deletion, to update configuration and database accordingly.
  *
  * @package    block_point_view
- * @copyright  2020 Jayson Haulkory
+ * @copyright  2020 Jayson Haulkory, 2021 Astor Bizard
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Event observer.
+ * Observer class for course modules creation and deletion.
  *
  * @package    block_point_view
- * @copyright  2020 Jayson Haulkory
+ * @copyright  2020 Jayson Haulkory, 2021 Astor Bizard
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view_observer {
 
     /**
-     * Reactions automatically activated when a new activity is created (only if reactions are enabled).
+     * Course module creation: enable reactions on it (if corresponding parameter is set in block configuration).
      *
      * @param \core\event\course_module_created $event
      */
@@ -43,9 +43,9 @@ class block_point_view_observer {
 
         $coursecontext = context_course::instance($event->courseid);
         $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => $coursecontext->id), '*');
+                'parentcontextid' => $coursecontext->id));
 
-        if (!empty($blockrecord->configdata)) {
+        if ($blockrecord !== false && !empty($blockrecord->configdata)) {
             $blockinstance = block_instance('point_view', $blockrecord);
 
             $enablefornewmodules = isset($blockinstance->config->enable_point_views)
@@ -62,7 +62,7 @@ class block_point_view_observer {
     }
 
     /**
-     * Course module deleted - delete config data and database entries for votes for this module.
+     * Course module deleted: delete config data and database entries for votes for this module.
      *
      * @param \core\event\course_module_deleted $event
      */
@@ -71,9 +71,9 @@ class block_point_view_observer {
 
         $coursecontext = context_course::instance($event->courseid);
         $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => $coursecontext->id), '*');
+                'parentcontextid' => $coursecontext->id));
 
-        if (!empty($blockrecord->configdata)) {
+        if ($blockrecord !== false && !empty($blockrecord->configdata)) {
             $blockinstance = block_instance('point_view', $blockrecord);
             unset($blockinstance->config->{'moduleselectm' . $event->objectid});
             unset($blockinstance->config->{'difficulty_' . $event->objectid});

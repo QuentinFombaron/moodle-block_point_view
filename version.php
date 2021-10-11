@@ -18,7 +18,7 @@
  * Block version
  *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_point_view';
-$plugin->version   = 2021100500;
+$plugin->version   = 2021100501;
 $plugin->requires  = 2017051502;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = 'v1.6.2';

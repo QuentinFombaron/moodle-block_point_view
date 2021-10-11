@@ -17,9 +17,8 @@
 /**
  * Point of View external lib
  *
- *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
-require_once($CFG->dirroot . '/blocks/point_view/lib.php');
 
 /**
  * Class block_point_view_external
@@ -40,9 +38,7 @@ require_once($CFG->dirroot . '/blocks/point_view/lib.php');
  */
 class block_point_view_external extends external_api {
     /**
-     * All necessary parameters
-     *
-     * @return external_function_parameters
+     * Parameters definition for update_db.
      */
     public static function update_db_parameters() {
         return new external_function_parameters(
@@ -56,15 +52,13 @@ class block_point_view_external extends external_api {
     }
 
     /**
-     * Update the database after added, removed or removed a vote or all votes of course.
+     * Update the database after added, updated or removed vote on a course module, or a full reset of course reactions.
      *
-     * @param string $func Function name of database update
+     * @param string $func Function name of database update ('update' or 'reset').
      * @param int $courseid Course ID
      * @param int $cmid Course Module ID
      * @param int $vote Vote ID
      * @return string Log message
-     * @throws invalid_parameter_exception
-     * @throws dml_exception
      */
     public static function update_db(string $func, int $courseid, int $cmid, int $vote) {
         global $DB, $USER;
@@ -139,8 +133,10 @@ class block_point_view_external extends external_api {
         return new external_value(PARAM_TEXT, 'Log message');
     }
 
-    /* --------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Parameters definition for delete_custom_pix.
+     */
     public static function delete_custom_pix_parameters() {
         return new external_function_parameters(
                 array(
@@ -151,25 +147,27 @@ class block_point_view_external extends external_api {
         );
     }
 
+    /**
+     * Delete custom emoji for a block instance.
+     *
+     * @param int $contextid Context in which files are stored.
+     * @param int $courseid Course id.
+     * @param int $draftitemid Draft area id.
+     * @return boolean true on success
+     */
     public static function delete_custom_pix($contextid, $courseid, $draftitemid) {
         global $USER;
         require_capability('moodle/site:manageblocks', context_course::instance($courseid));
         $fs = get_file_storage();
         $success = $fs->delete_area_files($contextid, 'block_point_view', 'point_views_pix');
         $success = $success && $fs->delete_area_files(context_user::instance($USER->id)->id, 'user', 'draft', $draftitemid);
-        return array('success' => $success);
+        return $success;
     }
 
     /**
-     * Return track colors array
-     *
-     * @return external_description
+     * Return true on success
      */
     public static function delete_custom_pix_returns() {
-        return new external_single_structure(
-                array(
-                        'success' => new external_value(PARAM_BOOL, 'Whether operation was successful', VALUE_REQUIRED),
-                )
-        );
+        return new external_value(PARAM_BOOL, 'Whether operation was successful', VALUE_REQUIRED);
     }
 }

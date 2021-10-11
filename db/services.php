@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Point of View services
- *
+ * Point of View services.
  *
  * @package    block_point_view
  * @copyright  2020 Quentin Fombaron

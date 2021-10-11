@@ -18,17 +18,42 @@
     @template block_point_view/reactions
 
     Classes required for JS:
-    * 
+    * block_point_view
+    * reactions-container
+    * reactions
+    * reaction
+    * reactionnb
+    * group_img
+    * group_nb
 
     Data attributes required for JS:
-    * 
+    * data-reactionname
 
     Context variables required for this template:
-    * 
+    * reactions Possible reactions.
+        * name Name of the reaction.
+        * pix Pix src of the reaction.
+        * text Text for the reaction.
 
     Example context (json):
     {
-        "TODO": "TODO"
+        "reactions": [
+            {
+                "name": "easy",
+                "pix": "/blocks/point_view/pix/easy.png",
+                "text": "Easy!"
+            },
+            {
+                "name": "better",
+                "pix": "/blocks/point_view/pix/better.png",
+                "text": "I'm getting better!"
+            },
+            {
+                "name": "hard",
+                "pix": "/blocks/point_view/pix/hard.png",
+                "text": "So hard..."
+            }
+        ]
     }
 }}
 <div class="block_point_view reactions-container">
@@ -38,7 +63,7 @@
             <img src="{{pix}}" alt="{{text}}" data-reactionname="{{name}}" />
             <span class="tooltiptext">{{text}}</span>
         </span>
-        <span class="reactionnb" data-reactionname="{{name}}"></span>
+        <span class="reactionnb" data-reactionname="{{name}}">0</span>
         {{/ reactions }}
     </span>
     <span class="group">

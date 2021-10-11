@@ -17,7 +17,6 @@
 /**
  * Function's library
  *
- *
  * @package    block_point_view
  * @copyright  2020 Quentin Fombaron
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
@@ -28,14 +27,8 @@ use core\session\manager;
 
 defined('MOODLE_INTERNAL') || die;
 
-/** Administration configuration to enable Reactions */
-const DEFAULT_POINT_VIEW_ENABLE_REACTIONS = 1;
-
-/** Administration configuration to enable custom emojis */
-const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
-
 /**
- *
+ * Callback checking permissions and preparing the file for serving plugin files.
  *
  * @param stdClass $course Course object
  * @param stdClass $bi Block instance record
@@ -46,8 +39,6 @@ const DEFAULT_POINT_VIEW_ENABLE_CUSTOM_PIX = 0;
  * @param array $options Additional options affecting the file serving
  *
  * @return bool
- *
- * @throws moodle_exception
  */
 function block_point_view_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $CFG, $USER;

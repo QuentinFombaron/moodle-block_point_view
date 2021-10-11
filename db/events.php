@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Add event handlers
+ * Link course modules creation and deletion events to observer.
  *
  * @package    block_point_view
- * @copyright  2020 Jayson Haulkory
+ * @copyright  2020 Jayson Haulkory, 2021 Astor Bizard
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 
 defined('MOODLE_INTERNAL') || die();
 

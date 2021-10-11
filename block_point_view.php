@@ -15,29 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Point of View block
- *
+ * Point of View block definition
  *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * block_point_view Class
  *
- *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view extends block_base {
     /**
-     * Block initializations
-     *
-     * @throws coding_exception
+     * Block initialization
      */
     public function init() {
 
@@ -47,16 +45,14 @@ class block_point_view extends block_base {
 
     /**
      * We have global config/settings data.
-     * @return bool
+     * @return boolean
      */
     public function has_config() {
-
         return true;
-
     }
 
     /**
-     * Enable to add the block only in a course
+     * Enable to add the block only in a course.
      *
      * @return array
      */
@@ -67,25 +63,23 @@ class block_point_view extends block_base {
     }
 
     /**
-     * Content of Point of View block
-     *
+     * Build block content.
      * @return Object
-     * @throws dml_exception
-     * @throws coding_exception
-     * @throws moodle_exception
      */
     public function get_content() {
         global $CFG, $COURSE;
 
+        if ($this->content !== null) {
+            // Content has already been built, do not rebuild.
+            return $this->content;
+        }
+
+        $this->content = new stdClass();
+        $this->content->footer = '';
+
         if (get_config('block_point_view', 'enable_point_views_admin')) {
 
-            if ($this->content !== null) {
-                return $this->content;
-            }
-
-            $this->content = new stdClass();
-
-            $this->content->footer = '';
+            // Block text content.
             if (isset($this->config->text)) {
                 $this->config->text = file_rewrite_pluginfile_urls(
                     $this->config->text,
@@ -109,6 +103,7 @@ class block_point_view extends block_base {
                 $this->content->text = '<span>'.get_string('defaulttextcontent', 'block_point_view').'</span>';
             }
 
+            // Link to overview.
             if (has_capability('block/point_view:access_overview', $this->context)) {
                 $parameters = [
                     'instanceid' => $this->instance->id,
@@ -127,9 +122,7 @@ class block_point_view extends block_base {
                 );
             }
 
-        } else if (!get_config(
-                'block_point_view',
-                'enable_point_views_admin')
+        } else if (!get_config('block_point_view', 'enable_point_views_admin')
             && has_capability('block/point_view:addinstance', $this->context)) {
 
             $this->content->text = get_string('blockdisabled', 'block_point_view');
@@ -143,8 +136,6 @@ class block_point_view extends block_base {
      * Is content trusted
      *
      * @return bool
-     *
-     * @throws coding_exception
      */
     public function content_is_trusted() {
         global $SCRIPT;
@@ -163,6 +154,10 @@ class block_point_view extends block_base {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * @see block_base::get_required_javascript()
+     */
     public function get_required_javascript() {
         parent::get_required_javascript();
 
@@ -171,6 +166,7 @@ class block_point_view extends block_base {
 
             require_once(__DIR__ . '/locallib.php');
 
+            // Build data for javascript.
             $blockdata = new stdClass();
             $blockdata->trackcolors = block_point_view_get_track_colors();
             $blockdata->moduleswithreactions = block_point_view_get_modules_with_reactions($this, $USER->id, $COURSE->id);
@@ -241,6 +237,11 @@ class block_point_view extends block_base {
 
     }
 
+    /**
+     * {@inheritDoc}
+     * @see block_base::instance_config_commit()
+     * @param mixed $nolongerused
+     */
     public function instance_config_commit($nolongerused = false) {
         // Do not touch any files if this is a commit from somewhere else.
         parent::instance_config_save($this->config);

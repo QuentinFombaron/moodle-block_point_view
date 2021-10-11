@@ -14,10 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Database upgrade steps definition.
+ *
+ * @package    block_point_view
+ * @copyright  2021 Astor Bizard
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Performs database actions to upgrade from older versions, if required.
+ * @param int $oldversion Plugin version we are upgrading from.
+ * @param object $block Block version information.
+ * @return boolean
+ */
 function xmldb_block_point_view_upgrade($oldversion, $block) {
     global $DB, $OUTPUT;
-    $v1_6 = 2021092308; // Block v1.6.
-    if ($oldversion < $v1_6) {
+
+    $v1x6 = 2021092308; // Block v1.6.
+    if ($oldversion < $v1x6) {
+        // Inform capability changes.
         echo $OUTPUT->notification('Some capabilities have changed
             (block/point_view:view -> X,
             block/point_view:access_menu -> block/point_view:access_overview),
@@ -28,6 +46,7 @@ function xmldb_block_point_view_upgrade($oldversion, $block) {
             if (!empty($blockrecord->configdata)) {
                 $blockinstance = block_instance('point_view', $blockrecord);
 
+                // Rename some settings.
                 $config = clone($blockinstance->config);
                 if (isset($config->enable_point_views_checkbox)) {
                     $config->enable_point_views = $config->enable_point_views_checkbox;
@@ -39,6 +58,7 @@ function xmldb_block_point_view_upgrade($oldversion, $block) {
                     unset($config->enable_difficulties_checkbox);
                 }
 
+                // Emoji selection has changed, update corresponding settings.
                 if (!isset($config->pixselect)) {
                     $custompix = isset($config->enable_pix_checkbox) && $config->enable_pix_checkbox;
                     if ($custompix) {
@@ -58,7 +78,7 @@ function xmldb_block_point_view_upgrade($oldversion, $block) {
                 ));
             }
         }
-        upgrade_block_savepoint( true , $v1_6, 'point_view');
+        upgrade_block_savepoint( true , $v1x6, 'point_view');
     }
 
     return true;
