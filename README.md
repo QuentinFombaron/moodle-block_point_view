@@ -76,7 +76,7 @@ Once added to a course, the Point of View block needs to be configured.
 To enable reactions in the course, the following option needs to be set to Yes:  
 ![Global reactions activation](metadata/screenshots/block_reactions_activation.png)  
 
-Once enabled on block level, reactions can be enabled or disabled for each course module by checking the "Reactions" checkbox:
+Once enabled on block level, reactions can be enabled or disabled for each course module by checking the "Reactions" checkbox:  
 ![Course module reactions activation](metadata/screenshots/module_reactions_activation.png)  
 
 Reactions can also be enabled or disabled for all course modules of one type:  
