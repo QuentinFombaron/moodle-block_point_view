@@ -1,9 +1,9 @@
 # Moodle plugin « Point of View »
 
-*Quentin Fombaron - October 20th 2020, Astor Bizard - October 11th 2021*  
-*Centre des Nouvelles Pédagogies (CNP), Univ. Grenoble Alpes - University of innovation*  
+_Quentin Fombaron - October 20th 2020, Astor Bizard - October 11th 2021_  
+_Centre des Nouvelles Pédagogies (CNP*), Univ. Grenoble Alpes - University of innovation_  
 
-The plugin **Point of view** offers the possibility to react and give difficulty levels to activities within a Moodle course. Students know the difficulty of an activity thanks to color tracks, they also have the possibility to react via emojis, each representing an emotion, a feeling. It is fully customizable.
+The plugin **Point of view** offers the possibility to react and give difficulty levels to activities within a Moodle course. Students know the difficulty of an activity (estimated by the teacher) thanks to color tracks. They also have the possibility to react via emojis, each representing an emotion, a feeling. It is fully customizable.
 
 This plugin is developed by Quentin Fombaron and Astor Bizard. It is initially developped for [caseine.org](http://www.moodle.caseine.org). Do not hesitate to send your thinking and bug reports to the contact addresses below.
 
@@ -39,7 +39,7 @@ Once configured (see [Configuration](#configuration) below), the block enriches 
 
 ### Difficulty tracks
 
-The difficulty track is set by the teacher for each module. It displays on the left of the module name.  
+The difficulty track is set by the teacher for each module. It appears on the left of the module name.  
 By default, Green track, Blue track, Red track and Black track are available. These colors are [customizable](#difficulty-tracks-colors).
 
 ### Reactions
@@ -96,11 +96,11 @@ Once enabled on block level, difficulty tracks can be set for each course module
 
 ### Reactions emoji
 
-Custom emoji can be defined to be used as reactions pictures. This can be done either at site level (in plugin administration settings), or at block level (on the block configuration page).  
+Custom emoji can be defined to be used as reactions pictures. This can be done either at the site level (in plugin administration settings), or at the block level (on the block configuration page).  
 **Note:** Only **3** different reactions ("Easy", "I'm getting better" and "So hard" by default) are available.
 
 Site administrators can define custom emoji to be used as reactions pictures site-wide:  
-![Custom reactions emoji at site level](metadata/screenshots/custom_reaction_emoji_site_level.png)  
+![Custom reactions emoji at the site level](metadata/screenshots/custom_reaction_emoji_site_level.png)  
 11 files are needed: 3 emoji, 7 emoji groups (all possible groups from 1 to 3 emoji) and 1 neutral emoji meaning no vote on the activity. Please stick to the specified names.    
 |                      | Emoji                                | Emoji group                               | No vote emoji group  |
 | -------------------- |:------------------------------------:|:-----------------------------------------:|:--------------------:| 
@@ -109,10 +109,10 @@ Site administrators can define custom emoji to be used as reactions pictures sit
 | **Extension**        | PNG                                  | PNG                                       | PNG                  |
 
 
-At block level, teachers can choose which emoji to use, as well as using their own custom emoji. The requirements are the same as above.  
-![Reactions emoji selection at block level](metadata/screenshots/reactions_emoji_selection_block_level.png)  
+At the block level, teachers can choose which emoji to use, as well as using their own custom emoji. The requirements are the same as above.  
+![Reactions emoji selection at the block level](metadata/screenshots/reactions_emoji_selection_block_level.png)  
 
-At block level, custom text to be used for reactions can also be defined.  
+At the block level, custom text to be used for reactions can also be defined.  
 ![Example of custom reactions texts](metadata/screenshots/custom_emoji_text.png)
 
 ### Difficulty tracks colors
