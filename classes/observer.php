@@ -15,67 +15,71 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event observer.
+ * Observer for course modules creation and deletion, to update configuration and database accordingly.
  *
  * @package    block_point_view
- * @copyright  2020 Jayson Haulkory
+ * @copyright  2020 Jayson Haulkory, 2021 Astor Bizard
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Event observer.
+ * Observer class for course modules creation and deletion.
  *
  * @package    block_point_view
- * @copyright  2020 Jayson Haulkory
+ * @copyright  2020 Jayson Haulkory, 2021 Astor Bizard
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_point_view_observer {
 
     /**
-     * Reactions automatically activated when a new activity is created (only if reactions are enabled).
+     * Course module creation: enable reactions on it (if corresponding parameter is set in block configuration).
      *
-     * @param \core\event\base $event
-     * @return string
-     * @throws dml_exception
+     * @param \core\event\course_module_created $event
      */
-    public static function store(\core\event\base $event) {
-        global $DB, $CFG, $COURSE;
+    public static function store(\core\event\course_module_created $event) {
+        global $DB;
 
-        if (intval($COURSE->id) !== intval(1)) {
-            $coursecontext = context_course::instance($event->courseid);
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-            'parentcontextid' => $coursecontext->id), '*');
-        } else {
-            $homepagecontext = $DB->get_record("context", array('contextlevel' => intval(50),
-                'instanceid' => intval(1)), 'id', MUST_EXIST);
-            $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
-                'parentcontextid' => intval($homepagecontext->id)), '*');
-        }
+        $coursecontext = context_course::instance($event->courseid);
+        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => $coursecontext->id));
 
-        if (!empty($blockrecord->configdata)) {
+        if ($blockrecord !== false && !empty($blockrecord->configdata)) {
             $blockinstance = block_instance('point_view', $blockrecord);
-            $blockinstance->config->enable_point_views_checkbox;
 
-            $enablepointviewscheckbox = (isset($blockinstance->config->enable_point_views_checkbox)) ?
-            $blockinstance->config->enable_point_views_checkbox :
-            0;
+            $enablefornewmodules = isset($blockinstance->config->enable_point_views)
+                                    && $blockinstance->config->enable_point_views
+                                    && (!isset($blockinstance->config->enable_point_views_new_modules)
+                                            || $blockinstance->config->enable_point_views_new_modules);
 
-            if ($enablepointviewscheckbox) {
-                try {
-                    $moduleselectm = "moduleselectm" . $event->objectid;
-                    $blockinstance->config->$moduleselectm = $event->objectid;
-
-                    $DB->update_record("block_instances", array('id' => $blockrecord->id,
-                        'configdata' => base64_encode(serialize($blockinstance->config))));
-                } catch (dml_exception $e) {
-
-                    return 'Exception : ' . $e->getMessage() . '\n';
-
-                }
+            if ($enablefornewmodules) {
+                $blockinstance->config->{'moduleselectm' . $event->objectid} = $event->objectid;
+                $blockinstance->instance_config_commit();
             }
         }
 
+    }
+
+    /**
+     * Course module deleted: delete config data and database entries for votes for this module.
+     *
+     * @param \core\event\course_module_deleted $event
+     */
+    public static function remove(\core\event\course_module_deleted $event) {
+        global $DB;
+
+        $coursecontext = context_course::instance($event->courseid);
+        $blockrecord = $DB->get_record('block_instances', array('blockname' => 'point_view',
+                'parentcontextid' => $coursecontext->id));
+
+        if ($blockrecord !== false && !empty($blockrecord->configdata)) {
+            $blockinstance = block_instance('point_view', $blockrecord);
+            unset($blockinstance->config->{'moduleselectm' . $event->objectid});
+            unset($blockinstance->config->{'difficulty_' . $event->objectid});
+            $blockinstance->instance_config_commit();
+        }
+
+        $DB->delete_records('block_point_view', array('courseid' => $event->courseid, 'cmid' => $event->objectid));
     }
 }

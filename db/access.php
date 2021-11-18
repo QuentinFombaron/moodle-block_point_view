@@ -15,11 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Point of View block
- *
+ * Point of View block capabilities definition.
  *
  * @package    block_point_view
- * @copyright  2020 Quentin Fombaron
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
  * @author     Quentin Fombaron <q.fombaron@outlook.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,19 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'block/point_view:view' => array(
-        'riskbitmask' => RISK_PERSONAL,
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-            'coursecreator' => CAP_ALLOW
-        )
-    ),
-
-    'block/point_view:access_menu' => array(
+    'block/point_view:access_overview' => array(
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,

@@ -1,348 +1,167 @@
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Defines the behavior of the configuration page of a Point of View block.
+ * @package    block_point_view
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
-    return {
-        init: function(sectionid, envconf) {
 
-            var courseId = envconf.courseid;
+    /**
+     * Manage updating of visibility state of elements related to Reactions and Difficulty tracks,
+     * depending on whether they are enabled or not.
+     */
+    function manageElementsVisibility() {
+        var $enableReactions = $('#id_config_enable_point_views');
+        var $enableDifficultyTracks = $('#id_config_enable_difficultytracks');
 
-            var contextId = envconf.contextid;
+        var updateElementsVisibility = function() {
+            var reactionsEnabled = $enableReactions.val() > 0;
+            var difficultyTracksEnabled = $enableDifficultyTracks.val() > 0;
 
-            var ajaxPromises = ajax.call([
-                {
-                    methodname: 'block_point_view_get_section_range',
-                    args: {
-                        sectionid: sectionid,
-                    },
-                    fail: notification.exception
-                },
-                {
-                    methodname: 'block_point_view_get_course_data',
-                    args: {
-                        courseid: courseId,
-                        contextid: contextId
-                    },
-                    fail: notification.exception
-                },
-                {
-                    methodname: 'block_point_view_get_track_colors',
-                    args: {},
-                    fail: notification.exception
+            $('#id_activities_header').toggle(reactionsEnabled || difficultyTracksEnabled);
+
+            $('.reactions, #id_images_header').toggle(reactionsEnabled);
+            $('.difficultytracks').toggle(difficultyTracksEnabled);
+        };
+
+        updateElementsVisibility();
+
+        $enableReactions.change(updateElementsVisibility);
+        $enableDifficultyTracks.change(updateElementsVisibility);
+    }
+
+    /**
+     * Manage Enable/Disable buttons for sections and module types.
+     */
+    function manageEnableDisableButtons() {
+
+        // Update of Enable/Disable buttons state for a section or module type,
+        // depending on checkboxes state for that section or module type.
+        var updateEnableDisableButtonsFor = function(sectionOrType) {
+            var $checkboxes = $('.cb' + sectionOrType + ':checkbox');
+            var nBoxesChecked = $checkboxes.filter(':checked').length;
+            $('#enableall' + sectionOrType).toggleClass('active', nBoxesChecked === $checkboxes.length);
+            $('#disableall' + sectionOrType).toggleClass('active', nBoxesChecked === 0);
+        };
+
+        $('.enablemodulereactions').change(function() {
+            updateEnableDisableButtonsFor($(this).data('type')); // Update Enable/Disable buttons state for module type.
+            updateEnableDisableButtonsFor($(this).data('section'));  // Update Enable/Disable buttons state for section.
+        });
+
+        $('.enable-disable button').each(function() {
+            var sectionOrType = $(this).data('type') || $(this).data('section');
+
+            updateEnableDisableButtonsFor(sectionOrType); // Update Enable/Disable buttons state on page load.
+
+            $(this).click(function() {
+                $('.cb' + sectionOrType + ':checkbox')
+                .prop('checked', $(this).data('enable')) // Update all corresponding checkboxes.
+                .change(); // Trigger a change to update Enable/Disable buttons state accordingly.
+            });
+        });
+    }
+
+    /**
+     * Adds a listener to a button click with a confirm dialog and ajax call.
+     * @param {jQuery} $button The button to add the listener to.
+     * @param {String} message Confirmation message, a string component of block_point_view.
+     * @param {String} ajaxmethod Ajax method to be called.
+     * @param {Object} ajaxargs Arguments to be passed to the ajax call.
+     * @param {Function} callback A function called after ajax call completed successfully.
+     */
+    function buttonWithAjaxCall($button, message, ajaxmethod, ajaxargs, callback) {
+        $button.click(function(e) {
+            M.util.show_confirm_dialog(e, {
+                message: M.util.get_string(message, 'block_point_view'),
+                callback: function() {
+                    ajax.call([
+                        {
+                            methodname: 'block_point_view_' + ajaxmethod,
+                            args: ajaxargs,
+                            done: callback,
+                            fail: notification.exception
+                        }
+                    ]);
                 }
-            ]);
+            });
+        });
+    }
 
-            $.when(ajaxPromises[0], ajaxPromises[1], ajaxPromises[2])
-                .done(function(ajaxResult0, ajaxResult1, ajaxResult2) {
+    return {
+        init: function(envconf, trackcolors) {
 
-                    var sectionids = ajaxResult0;
+            manageElementsVisibility();
 
-                    var types = ajaxResult1.types;
+            manageEnableDisableButtons();
 
-                    var moduleids = ajaxResult1.ids;
-
-                    var trackcolor = ajaxResult2;
-
-                    /* Shortcut to the "SAVE" button at the bottom of the page */
-                    $('#id_go_to_save').click(function() {
-                        $('#id_submitbutton').click();
-                    }).removeClass('btn-secondary').addClass('btn-primary');
-
-                    /**
-                     * Management of the Enable/Disable all types button
-                     */
-                    function manageButtonGroup() {
-                        types.forEach(function(type) {
-                            var checkedType = $('.' + type + ':checkbox:checked').length;
-                            if (checkedType === $('.' + type + ':checkbox').length) {
-                                $('#id_enableall' + type).addClass('active');
-                                $('#id_disableall' + type).removeClass('active');
-                            } else if (checkedType === 0) {
-                                $('#id_disableall' + type).addClass('active');
-                                $('#id_enableall' + type).removeClass('active');
-                            } else {
-                                $('#id_enableall' + type).removeClass('active');
-                                $('#id_disableall' + type).removeClass('active');
-                            }
-                        });
-                    }
-
-                    /**
-                     * Management of the Enable/Disable all section button
-                     */
-                    function manageButtonSection() {
-                        sectionids.forEach(function(sectionid) {
-                            var checkedBoxGroup = $('.checkboxgroup' + sectionid + ':checkbox:checked').length;
-                            if (checkedBoxGroup === $('.checkboxgroup' + sectionid + ':checkbox').length) {
-                                $('#id_enable_' + sectionid).addClass('active');
-                                $('#id_disable_' + sectionid).removeClass('active');
-                            } else if (checkedBoxGroup === 0) {
-                                $('#id_disable_' + sectionid).addClass('active');
-                                $('#id_enable_' + sectionid).removeClass('active');
-                            } else {
-                                $('#id_disable_' + sectionid).removeClass('active');
-                                $('#id_enable_' + sectionid).removeClass('active');
-                            }
-                        });
-                    }
-
-                    /**
-                     * Enable all activities in the section
-                     * @param {array} event
-                     */
-                    function treatEnableForm(event) {
-                        $('.check_section_' + event.data.id).prop('checked', true);
-                        $(this).addClass('active');
-                        $('#id_disable_' + event.data.id).removeClass('active');
-                        /* Update the buttons state */
-                        manageButtonGroup();
-                    }
-
-                    /**
-                     * Disable all activities in the section
-                     * @param {array} event
-                     */
-                    function treatDisableForm(event) {
-                        $('.check_section_' + event.data.id).prop('checked', false);
-                        $(this).addClass('active');
-                        $('#id_enable_' + event.data.id).removeClass('active');
-                        /* Update the buttons state */
-                        manageButtonGroup();
-                    }
-
-                    /**
-                     * Manage enable/disable all button
-                     * @param {array} event
-                     */
-                    function manageButton(event) {
-                        if (!$(this).is(':checked')) {
-                            $('#id_enable_' + event.data.id).removeClass('active');
-                            $('#id_enableall' + event.data.type).removeClass('active');
-                        } else {
-                            $('#id_disable_' + event.data.id).removeClass('active');
-                            $('#id_disableall' + event.data.type).removeClass('active');
-                        }
-
-                        var checkedBoxGroup = $('.checkboxgroup' + event.data.id + ':checkbox:checked').length;
-                        if (checkedBoxGroup === $('.checkboxgroup' + event.data.id + ':checkbox').length) {
-                            $('#id_enable_' + event.data.id).addClass('active');
-                        } else if (checkedBoxGroup === 0) {
-                            $('#id_disable_' + event.data.id).addClass('active');
-                        }
-
-                        var checkedType = $('.' + event.data.type + ':checkbox:checked').length;
-                        if (checkedType === $('.' + event.data.type + ':checkbox').length) {
-                            $('#id_enableall' + event.data.type).addClass('active');
-                        } else if (checkedType === 0) {
-                            $('#id_disableall' + event.data.type).addClass('active');
-                        }
-                    }
-
-                    /**
-                     * Event when one select list has changed
-                     * @param {array} event
-                     */
-                    function selectChange(event) {
-                        var value;
-                        if (this.value !== undefined) {
-                            value = parseInt(this.value);
-                        } else {
-                            value = event.data.value;
-                        }
-
-                        if (value !== 0) {
-                            var difficulty;
-                            switch (value) {
-                                case 1:
-                                    difficulty = trackcolor.greentrack;
-                                    break;
-                                case 2:
-                                    difficulty = trackcolor.bluetrack;
-                                    break;
-                                case 3:
-                                    difficulty = trackcolor.redtrack;
-                                    break;
-                                case 4:
-                                    difficulty = trackcolor.blacktrack;
-                                    break;
-                            }
-
-                            (event.data.module).css({
-                                'background-color': difficulty,
-                                'color': 'white'
-                            });
-                        } else {
-                            (event.data.module).css({
-                                'background-color': '',
-                                'color': ''
-                            });
-                        }
-                    }
-
-                    /**
-                     * Manage button state to be interactive
-                     */
-                    function checkConf() {
-                        if ($('#id_config_enable_point_views_checkbox').is(':checked')
-                            || $('#id_config_enable_difficulties_checkbox').is(':checked')) {
-                            $('#id_activities').css({'display': ''});
-                        } else {
-                            $('#id_activities').css({'display': 'none'});
-                        }
-
-                        if ($('#id_config_enable_difficulties_checkbox').is(':checked')) {
-                            moduleids.forEach(function(moduleId) {
-                                $('#id_config_difficulty_' + moduleId).css({'display': ''});
-                            });
-                        } else {
-                            moduleids.forEach(function(moduleId) {
-                                $('#id_config_difficulty_' + moduleId).css({'display': 'none'});
-                            });
-                        }
-
-                        if ($('#id_config_enable_point_views_checkbox').is(':checked')) {
-                            $('#id_config_images').css({'display': ''});
-                            moduleids.forEach(function(moduleId) {
-                                $('#id_config_moduleselectm' + moduleId).css({'display': ''});
-                            });
-                            types.forEach(function(typeParam) {
-                                $('div[data-groupname="' + typeParam + '_group_type"]').css({'display': ''});
-                            });
-                            sectionids.forEach(function(sectionid) {
-                                $('#id_enable_' + sectionid).css({'display': ''});
-                                $('#id_disable_' + sectionid).css({'display': ''});
-                            });
-                        } else {
-                            $('#id_config_images').css({'display': 'none'});
-                            moduleids.forEach(function(moduleId) {
-                                $('#id_config_moduleselectm' + moduleId).css({'display': 'none'});
-                            });
-                            types.forEach(function(typeParam) {
-                                $('div[data-groupname="' + typeParam + '_group_type"]').css({'display': 'none'});
-                            });
-                            sectionids.forEach(function(sectionid) {
-                                $('#id_enable_' + sectionid).css({'display': 'none'});
-                                $('#id_disable_' + sectionid).css({'display': 'none'});
-                            });
-                        }
-                    }
-
-                    $('#id_close_field').click(function() {
-                        $('#id_activities').addClass('collapsed');
-                        window.location = '#maincontent';
-                    });
-
-                    /* Listen a checkbox state change */
-                    moduleids.forEach(function(moduleId) {
-                        var classList = $('#id_config_moduleselectm' + moduleId).attr('class');
-                        if (classList !== undefined) {
-                            var classes = classList.split(' ');
-                            var type = null;
-                            var id = null;
-                            classes.forEach(function(className) {
-                                if (types.indexOf(className) !== -1) {
-                                    type = types[types.indexOf(className)];
-                                }
-                                if (className.search('check_section_') !== -1) {
-                                    id = className.match(/\d+/);
-                                }
-                            });
-
-                            $('#id_config_moduleselectm' + moduleId).click({id: id, type: type}, manageButton);
-                        }
-
-                        var value = parseInt($('#id_config_difficulty_' + moduleId + ' :selected').val());
-                        var idConfigDifficulty = $('#id_config_difficulty_' + moduleId);
-
-                        selectChange({data: {value: value, module: idConfigDifficulty}});
-
-                        idConfigDifficulty.change({module: idConfigDifficulty}, selectChange);
-                    });
-
-                    /* Button state at the loading */
-                    sectionids.forEach(function(sectionid) {
-                        $('#id_enable_' + sectionid).click({id: sectionid}, treatEnableForm)
-                            .removeClass('btn-secondary').addClass('btn-outline-success');
-                        $('#id_disable_' + sectionid).click({id: sectionid}, treatDisableForm)
-                            .removeClass('btn-secondary').addClass('btn-outline-danger');
-                        $('div[data-groupname="manage_checkbox_' + sectionid + '"] .pull-xs-right').css({'padding-top': '20px'});
-                        $('div[data-groupname="manage_checkbox_' + sectionid + '"] .float-sm-right').css({'padding-top': '20px'});
-                    });
-
-                    manageButtonSection();
-
-                    types.forEach(function(type) {
-                        $('#id_enableall' + type).click(function() {
-                            /* Check all checkbox of $type */
-                            $('input.' + type).prop('checked', true);
-                            /* Make the button darker without disable it */
-                            $(this).addClass('active');
-                            /* And reset the other one to see that this one was cliked */
-                            $('#id_disableall' + type).removeClass('active');
-                            manageButtonSection();
-                        }).removeClass('btn-secondary').addClass('btn-outline-success');
-
-                        $('#id_disableall' + type).click(function() {
-                            $('input.' + type).prop('checked', false);
-                            $(this).addClass('active');
-                            $('#id_enableall' + type).removeClass('active');
-                            manageButtonSection();
-                        }).removeClass('btn-secondary').addClass('btn-outline-danger');
-                        manageButtonGroup();
-                    });
-
-                    /* Reset images button  */
-                    $('#id_config_reset_pix')
-                        .removeClass('btn-secondary')
-                        .addClass('btn-outline-warning')
-                        .click(function() {
-                            $('#id_config_enable_pix_checkbox:checked').prop('checked', false);
-                            $('#id_submitbutton').click();
-                        });
-
-                    /* Hide fieldsets if Reactions or Difficulties checkboxes are disabled */
-                    checkConf();
-
-                    $('#id_config_enable_point_views_checkbox').click(checkConf);
-                    $('#id_config_enable_difficulties_checkbox').click(checkConf);
-
-                    $('div[data-groupname="config_reset_confirm"]').css({'display': 'none'});
-
-                    /* Reset vote */
-                    $('#id_config_reset_yes')
-                        .removeClass('btn-secondary')
-                        .addClass('btn-success')
-                        .click(function() {
-                            /* AJAX call to the PHP function which reset DB */
-                            ajax.call([
-                                {
-                                    methodname: 'block_point_view_update_db',
-                                    args: {
-                                        func: 'reset',
-                                        userid: 0, /* Can't be set to null */
-                                        courseid: courseId,
-                                        cmid: 0, /* Can't be set to null */
-                                        vote: 0 /* Can't be set to null */
-                                    },
-                                    done: (function() {
-                                        $('#id_submitbutton').click();
-                                    }),
-                                fail: notification.exception
-                                }
-                            ]);
-                        });
-
-                    $('#id_config_reset_no')
-                        .removeClass('btn-secondary')
-                        .addClass('btn-danger')
-                        .click(function() {
-                            $('div[data-groupname="config_reset_confirm"]').css({'display': 'none'});
-                        });
-
-                    $('#id_config_reaction_reset_button')
-                        .removeClass('btn-secondary')
-                        .addClass('btn-outline-warning')
-                        .click(function() {
-                            $('div[data-groupname="config_reset_confirm"]').css({'display': ''});
-                        });
+            // Difficulty track change.
+            $('.moduletrackselect select').change(function() {
+                $('#track_' + $(this).data('id')).css({
+                    'background-color': trackcolors[$(this).val()] // Change track color.
                 });
+            }).change(); // Update track colors once on page load.
+
+            // Custom emoji deletion.
+            buttonWithAjaxCall(
+                    $('#delete_custom_pix'),
+                    'deleteemojiconfirmation',
+                    'delete_custom_pix',
+                    {
+                        contextid: envconf.contextid,
+                        courseid: envconf.courseid,
+                        draftitemid: $('input[name="config_point_views_pix"]').val()
+                    },
+                    function() {
+                        $('.pix-preview[data-source="custom"], #delete_custom_pix').remove(); // Remove emoji preview and button.
+                        // Refresh draft area files.
+                        // # For an unknown reason, the following instruction with jQuery does not work
+                        // # (or at least does not trigger the expected listener).
+                        document.querySelector('#fitem_id_config_point_views_pix .fp-path-folder-name').click();
+                    }
+            );
+
+            // Update current emoji on emoji change.
+            $('[name=config_pixselect]').change(function() {
+                var newsource = $(this).val();
+                $('img.currentpix').each(function() {
+                    var $img = $('img[data-source="' + newsource + '"][data-reaction="' + $(this).data('reaction') + '"]');
+                    if ($img.length == 1 && $img.attr('src') > '') {
+                        $(this).attr('src', $img.attr('src'));
+                    }
+                });
+            });
+
+            // Course reactions reset.
+            buttonWithAjaxCall(
+                    $('#reset_reactions'),
+                    'resetreactionsconfirmation',
+                    'update_db',
+                    {
+                        func: 'reset',
+                        courseid: envconf.courseid
+                    },
+                    function() {
+                        notification.alert(M.util.get_string('info', 'moodle'),
+                                M.util.get_string('reactionsresetsuccessfully', 'block_point_view'),
+                                M.util.get_string('ok', 'moodle'));
+                    }
+            );
         }
     };
 });

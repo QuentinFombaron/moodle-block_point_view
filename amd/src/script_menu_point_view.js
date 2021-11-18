@@ -1,84 +1,43 @@
-/* Include JQuery */
-define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Defines the behavior of the overview (reactions details) page of a Point of View block.
+ * @package    block_point_view
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+define(['jquery'], function($) {
     return {
-        init: function(envconf) {
+        init: function() {
+            // Create an accordion home-made table.
+            $('.row_module').each(function() {
+                var $detailsrow = $(this).next('.row_module_details');
 
-            var userId = parseInt(envconf.userid);
+                $(this).find('.c6')
+                .click(function() {
+                    $detailsrow.toggle();
+                    $(this).find('i').toggleClass('fa-caret-right fa-caret-down');
+                })
+                .find('i').show();
+            });
 
-            var courseId = envconf.courseid;
-
-            var ajaxPromises = ajax.call([
-                {
-                    methodname: 'block_point_view_get_database',
-                    args: {
-                        userid: userId,
-                        courseid: courseId
-                    },
-                    fail: notification.exception
-                }
-            ]);
-
-            $.when(ajaxPromises[0])
-                .done(function(ajaxResult0) {
-
-                    var moduleIds = [];
-                    ajaxResult0.forEach(function(element) {
-                        moduleIds.push(parseInt(element.cmid));
-                    });
-
-                    var openRow = [];
-
-                    /**
-                     * Hide/Show row details of the table.
-                     *
-                     * @param {array} event
-                     */
-                    function rowDetails(event) {
-                        if (openRow[event.data.id]) {
-                            $('.row_module' + event.data.id + '_details').css({'display': 'none'});
-                            $('.row_module' + event.data.id + ' .c6').html('+');
-                            openRow[event.data.id] = false;
-                        } else {
-                            $('.row_module' + event.data.id + '_details').css({'display': ''});
-                            $('.row_module' + event.data.id + ' .c6').html('-');
-                            openRow[event.data.id] = true;
-                        }
-                    }
-
-                    $(function() {
-                        /* Create an accordeon home made table */
-                        moduleIds.forEach(function(id) {
-                            openRow[id] = false;
-                            $('.row_module' + id + '_details').css({'display': 'none'});
-                            $('.row_module' + id + ' .c6').click({id: id}, rowDetails);
-
-                            [2, 3, 4].forEach(function(index) {
-                                if ($('.row_module' + id + ' .c' + index + ' .voteInt').text() === '0') {
-                                    $('.row_module' + id + ' .c' + index + ' .overview_img')
-                                        .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                                }
-                            });
-                        });
-
-                        /* Create two views : Integer and Pourcentage, both visible on click */
-                        var intDisplay = false;
-                        $('.voteInt').css({'display': 'none'});
-
-                        $('.c2, .c3, .c4').click(function() {
-                            if (!intDisplay) {
-                                $('.voteInt').css({'display': ''});
-                                $('.votePercent').css({'display': 'none'});
-                                intDisplay = true;
-                            } else {
-                                $('.votePercent').css({'display': ''});
-                                $('.voteInt').css({'display': 'none'});
-                                intDisplay = false;
-                            }
-                        }).mouseout(function() {
-                            $(this).css({'cursor': 'pointer'});
-                        });
-                    });
-                });
+            // Create two views : Integer and Percentage, both visible on click.
+            $('.reactions-col').click(function() {
+                $('.voteInt, .votePercent').toggle();
+            });
         }
     };
 });

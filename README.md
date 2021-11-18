@@ -1,235 +1,122 @@
 # Moodle plugin « Point of View »
 
-*Quentin Fombaron - October 20<SUP>th</SUP> 2020*<br />
-*Centre des Nouvelles Pédagogies (CNP\*), Univ. Grenoble Alpes - University of  innovation*<br />
+_Quentin Fombaron - October 20th 2020, Astor Bizard - October 11th 2021_  
+_Centre des Nouvelles Pédagogies (CNP*), Univ. Grenoble Alpes - University of innovation_  
 
-The plugin **Point of view** offers the possibility to react and give difficulty levels to activities of a Moodle course. Students know the difficulty of the activity thank to color tracks, they also have the possibility to react via emojis, each representing an emotion, a feeling (see **Usage** section).
+The plugin **Point of view** offers the possibility to react and give difficulty levels to activities within a Moodle course. Students know the difficulty of an activity (estimated by the teacher) thanks to color tracks. They also have the possibility to react via emojis, each representing an emotion, a feeling. It is fully customizable.
 
-It is a Moodle plugin managed by a block to be added in a course (see **0.1** part).
+This plugin is developed by Quentin Fombaron and Astor Bizard. It is initially developped for [caseine.org](http://www.moodle.caseine.org). Do not hesitate to send your thinking and bug reports to the contact addresses below.
 
-This plugin is developed by Quentin Fombaron. It is initialy developped for [caseine.org](http://www.caseine.org). Do not hesitate to send your thinking and bug reports to the contact addresses bellow.
-
-Contacts :
+Contacts:
 - [Quentin Fombaron](mailto:q.fombaron@outlook.fr)
+- [Astor Bizard](mailto:astor.bizard@univ-grenoble-alpes.fr)
 - [Caseine](mailto:contact.caseine@grenoble-inp.fr)
 
-<br />\* *The CNP, set up as part of the IDEX Training component, brings together the DAPI, PerForm and IDEX support teams.*<br />
+\* *The CNP, set up as part of the IDEX Training component, brings together the DAPI, PerForm and IDEX support teams.*  
 
-## Block
+## Table of Contents
 
-### 0.1 - Add the block to a course
+* [Point of View as a block](#point-of-view-as-a-block)
+* [Usage](#usage)
+    * [Difficulty tracks](#difficulty-tracks)
+    * [Reactions](#reactions)
+        * [Accessing reactions details](#accessing-reactions-details)
+* [Configuration](#configuration)
+    * [Enabling reactions](#enabling-reactions)
+    * [Enabling difficulty tracks](#enabling-difficulty-tracks)
+* [Customization](#customization)
+    * [Reactions emoji](#reactions-emoji)
+    * [Difficulty tracks colors](#difficulty-tracks-colors)
 
-<img src='https://i.imgur.com/xzkxGdD.png' alt='0.1.1' width='250px' /><br />
+## Point of View as a block
 
-On the course page, in the side panel, click the `Add a Block` button, then in the block list, choose `Point of View`. The block is then added; all that remains is to configure it (See **Configuration** section).
-
-### 0.2 Delete the block of a course
-
-<img src='https://i.imgur.com/KTGmG31.png' alt='0.2.1' width='250px' /><br />
-
-Once the block has been added (see **0.1** part), switch to edit mode then click on the `Actions` icon (⚙️ a gear), then `Delete Point of View block`.
-
-<img src='https://i.imgur.com/AI48l1c.png' alt='0.2.2' width='250px' />
-
-### 0.3 Configuration page access
-
-<img src='https://i.imgur.com/KTGmG31.png' alt='0.3.1' width='250px' /><br />
-
-Once the block has been added (see **0.1** part), switch to edit mode then click on the `Actions` icon (⚙️ a gear), then `Configure the Point of View block`.
-
-<img src='https://i.imgur.com/TXzODfL.png' alt='0.3.2' width='250px' />
+The Point of View plugin is a block. For general information about how blocks work, see [Moodle documentation on blocks](https://docs.moodle.org/en/Block_settings).
 
 ## Usage
 
-**Important to know :**
-- Only **3** possible reactions are available ("Easy", "I'm getting better" and "So hard" by default).
-- Only **4** possible difficulty tracks (Green, Blue, Red and Black by default) are available.
+Once configured (see [Configuration](#configuration) below), the block enriches the display of course modules with difficulty tracks and reactions.  
+![Example of difficulty tracks and reaction on three modules.](metadata/screenshots/coursemodules_display.png)
 
-### 1.0 - How to display the details of an activity's reactions?
+### Difficulty tracks
 
-<img src='https://i.imgur.com/be3aPgr.png' alt='1.0.1' height='50px' /><br />
+The difficulty track is set by the teacher for each module. It appears on the left of the module name.  
+By default, Green track, Blue track, Red track and Black track are available. These colors are [customizable](#difficulty-tracks-colors).
 
-The emojis are initially grouped; it is enough to leave the mouse on the group so that the detail is displayed.
+### Reactions
 
-<img src='https://i.imgur.com/SjqJQJg.png' alt='1.0.2' width='250px' />
+Reactions are a way for students to express their point of view on a module. The reaction interface is displayed on the right of the module line.  
+The total number of votes for the module is displayed, as well as a preview of reactions that have been voted for. A green dot indicates that the user has voted.
 
-### 1.1 - How to react to an activity?
+Hovering the reactions or clicking on them reveals the different reactions, allowing the user to vote for a reaction by clicking on the associated emoji.  
+![Reactions interface.](metadata/screenshots/reactions_interface.png)
 
-<img src='https://i.imgur.com/iGzc2Zl.png' alt='1.1.1' width='250px' /><br />
+By default, the available reactions are "Easy!", "I'm getting better!" and "So hard...". These texts and their associated emoji are [customizable](#reactions-emoji).  
+Only one vote per module is allowed for each user. Users can freely change their vote, or remove it (by clicking again the previously selected reaction).
 
-Once the voting details are displayed (see **1.0** part), move the mouse under each emoji to have the associated reaction.
+#### Accessing reactions details
 
-<img src='https://i.imgur.com/BCrwdOE.png' alt='1.1.2' width='250px' /><br />
+Teachers can access detailed information about reactions by clicking the link in the block content:  
+![Block content with link to overview](metadata/screenshots/link_to_overview.png)
 
-Voting by clicking on the desired emoji, the number of votes for the associated reaction increments and turns blue. If the reaction had no vote and was therefore in black and white, it becomes in color.
+This leads to a table with information about votes for each user and each course module:  
+![Overview table with percentages](metadata/screenshots/overview_table_percentages.png)
 
-**Important** : One and only one vote is possible per user and per activity.
+Information about reactions votes is displayed as percentages by default. This can be toggled to number of votes by clicking on the reactions:  
+![Overview table with number of votes](metadata/screenshots/overview_table_numbers.png)
 
-### 1.2 - How to change of vote?
-
-<img src='https://i.imgur.com/4ArKvFq.png' alt='1.2.1' width='250px' /><br />
-
-Once a vote has been taken (see **1.1** part), modify its vote by clicking on another reaction, the number of votes will then be automatically updated.
-
-### 1.3 - How to delete of vote?
-
-<img src='https://i.imgur.com/85N9Buy.png' alt='1.3.1' width='250px' /><br />
-
-Once a vote has been taken (see **1.1** part), delete this vote by clicking again on the voted activity. The vote will then be deleted.
-
-### 1.4 - How to know the difficulty of an activity?
-
-<img src='https://i.imgur.com/njUZ4l3.png' alt='1.4.1' width='500px' /><br />
-
-Once it was configured (see **3.3** part), the difficulty track is displayed at the left of the activity name.
+Clicking the arrow on the right of a row allows access to detailed information about each user's vote on the module:  
+![Overview table with users information](metadata/screenshots/overview_table_users.png)
 
 ## Configuration
 
-### 2.0 - How to enable the reaction system?
+Once added to a course, the Point of View block needs to be configured.  
 
-<img src='https://i.imgur.com/bkYlOqS.png' alt='2.0.1' width='400px' /><br />
+### Enabling reactions
 
-On the plugin configuration page, in the `Block setting` tab, check/uncheck the box to enable/disable the reaction system. The activity activation and emojis customization options will be automatically hidden if the checkbox is unchecked.
+To enable reactions in the course, the following option needs to be set to Yes:  
+![Global reactions activation](metadata/screenshots/block_reactions_activation.png)  
 
-### 2.1  - How to enable the Difficulty tracks?
+Once enabled on block level, reactions can be enabled or disabled for each course module by checking the "Reactions" checkbox:  
+![Course module reactions activation](metadata/screenshots/module_reactions_activation.png)  
 
-<img src='https://i.imgur.com/QTJEJ99.png' alt='2.1.1' width='400px' /><br />
+Reactions can also be enabled or disabled for all course modules of one type:  
+![Reactions activation for a course module type](metadata/screenshots/enabledisable_reactions_by_module_type.png)  
+...or for all course modules in a section:  
+![Reactions activation for a course section](metadata/screenshots/enabledisable_reactions_by_section.png)  
 
-On the plugin configuration page, in the `Block setting` tab, check/uncheck the box to enable/disable the difficulty tracks. The activation options on the activities will be automatically hidden if the box is unchecked.
+### Enabling difficulty tracks
 
-### 3.0 - How to enable reactions on an activity?
+To enable difficulty tracks in the course, the following option needs to be set to Yes:  
+![Global difficulty tracks activation](metadata/screenshots/block_difficultytracks_activation.png)  
 
-<img src='https://i.imgur.com/QYE7U25.png' alt='3.0.1' width='400px' /><br />
+Once enabled on block level, difficulty tracks can be set for each course module with a dropdown menu:
+![Course module difficulty track setting](metadata/screenshots/module_difficultytrack_setting.png)
 
-Once the reaction system is enabled (see **2.0** part), in the ` Configuration of Reactions and Difficulty Tracks` tab, enable reactions on an activity by simply checking the box to the right of the name of the associated activity.
+## Customization
 
-### 3.1 - How to activate reactions on all activities of the same type?
+### Reactions emoji
 
-<img src='https://i.imgur.com/ils6HG0.png' alt='3.1.1' width='400px' /><br />
+Custom emoji can be defined to be used as reactions pictures. This can be done either at the site level (in plugin administration settings), or at the block level (on the block configuration page).  
+**Note:** Only **3** different reactions ("Easy", "I'm getting better" and "So hard" by default) are available.
 
-Once the reaction system is enabled (see **2.0** part), in the tab `Configuration of Reactions and Difficulty Tracks`, enable/disable reactions on all activities of the same type by clicking on the associated buttons. For example on the image above, the management of all resources.
+Site administrators can define custom emoji to be used as reactions pictures site-wide:  
+![Custom reactions emoji at the site level](metadata/screenshots/custom_reaction_emoji_site_level.png)  
+11 files are needed: 3 emoji, 7 emoji groups (all possible groups from 1 to 3 emoji) and 1 neutral emoji meaning no vote on the activity. Please stick to the specified names.    
+|                      | Emoji                                | Emoji group                               | No vote emoji group  |
+| -------------------- |:------------------------------------:|:-----------------------------------------:|:--------------------:| 
+| **File names**       | easy.png<br/>better.png<br/>hard.png | group\_E.png<br/>group\_B.png<br/>group\_H.png<br/>group\_EB.png<br/>group\_EH.png<br/>group\_BH.png<br/>group\_EBH.png | group\_.png           |
+| **Preferred size**                | 200x200                              | 400x200                                                                                                          | 400x200              |
+| **Extension**        | PNG                                  | PNG                                       | PNG                  |
 
-### 3.2 - How to enable the reactions on all the activities of the same course?
 
-<img src='https://i.imgur.com/y5ad5OC.png' alt='3.2.1' width='600px' /><br />
+At the block level, teachers can choose which emoji to use, as well as using their own custom emoji. The requirements are the same as above.  
+![Reactions emoji selection at the block level](metadata/screenshots/reactions_emoji_selection_block_level.png)  
 
-Once the reaction system is enabled (see **2.0** part), in the tab `Configuration of Reactions and Difficulty Tracks`, enable/disable the reactions on all the activities of the same course by clicking on the associated button.
+At the block level, custom text to be used for reactions can also be defined.  
+![Example of custom reactions texts](metadata/screenshots/custom_emoji_text.png)
 
-### 3.3 - How to define difficulty tracks?
+### Difficulty tracks colors
 
-<img src='https://i.imgur.com/lsrS7iK.png' alt='3.3.1' width='400px' /><br />
-
-Once the difficulty tracks are enabled (see **2.1** part), in the `Configuration of Reactions and Difficulty Tracks` tab, define a track to a course by choosing in the drop-down list to the right of the associated activity.
-
-<img src='https://i.imgur.com/WMirurL.png' alt='3.3.2' width='200px' />
-
-### 3.4 - How to use the navigation buttons?
-
-<img src='https://i.imgur.com/s7qgHCR.png' alt='3.4.1' width='150px' /><br />
-
-In the `Configuration of Reaction and Difficulty Tracks` tab, two buttons facilitate navigation.`Save` saves the configuration.`Close Tab` closes the `Configuration of Reaction and Difficulty Tracks` tab.
-
-### 4.0 - How to customize emojis?
-
-<img src='https://i.imgur.com/zrFKnDC.png' alt='4.0.1' width='350px' /><br />
-
-Once the reaction system is enabled (see **2.0** part), in the tab `Configuration of Emojis`, activate the emojis customization by checking the box above.
-
-Then provide the required 11 files in the file area.
-
-<img src='https://i.imgur.com/lvmHzy7.png' alt='4.0.2' width='700px' /><br />
-
-11 files are needed, 3 emojis, 7 emoji groups (all possible groups from 1 to 3 emojis) and 1 neutral emoji meaning no vote on the activity.
-
-Exemple : 
-
-<img src='https://i.imgur.com/acoB3d0.png' alt='4.0.3' width='700px' /><br />
-
-|                          | Emojis                               | Emojis group                                                                                                     | None vote emoji      |
-| ------------------------ |:------------------------------------:|:----------------------------------------------------------------------------------------------------------------:|:--------------------:| 
-| **File names**           | easy.png<br/>better.png<br/>hard.png | group_E.png<br/>group_B.png<br/>group_H.png<br/>group_EB.png<br/>group_EH.png<br/>group_BH.png<br/>group_EBH.png | group_.png           |
-| **Sizes**                | 200x200                              | 400x200                                                                                                          | 400x200              |
-| **Extensions**           | PNG                                  | PNG                                                                                                              | PNG                  |
-
-### 4.1- How to restore emojis by default? 
-
-<img src='https://i.imgur.com/RptnjSt.png' alt='4.1.1' width='800px' /><br />
-
-Once the reaction system is enabled (see **2.0** part), in the tab `Configuration of Emojis`, reset emojis by pressing the button `Reset emojis`. You will be automatically redirected to the course page.
-
-### 4.2 - How to modify the text associated with an emoji?
-
-<img src='https://i.imgur.com/zx6GoZ9.png' alt='4.2.1' width='500px' /><br />
-
-Once the reaction system is enabled (see **2.0** part), in the `Configuration of Emojis` tab, change the name by replacing the content of the text box associated with each emoji.
-
-### 4.3 How to reset the votes of a course?
-
-<img src='https://i.imgur.com/1LFTSgP.png' alt='4.3.1' width='300px' /><br />
-
-In the `Reset reactions` tab, press the button above, a confirmation message will appear. Confirm and you will be automatically redirected to the course page. It will delete all votes of all activities the course.
-
-<img src='https://i.imgur.com/zrqJ4hF.png' alt='4.3.2' width='800px' />
-
-## Menu
-
-### 5.0 - How to access the overview?
-
-<img src='https://i.imgur.com/Cj2C9Kx.png' alt='5.0.1' width='100px' /><br />
-
-In the block content, a menu button, only visible by teachers, redirects to a page containing several tabs, including `Overview`.
-
-<img src='https://i.imgur.com/5UOa9Wy.png' alt='5.0.2' width='800px' /><br />
-
-This page gives the details of the course votes in a readable table.
-
-**Reminder**: Only teachers, editingteacher, manager and coursecreator have the `Menu` button visible.
-
-### 5.1 - How to modify the display in number of votes, or in percentage?
-
-<img src='https://i.imgur.com/KRW8bfw.png' alt='5.1.1' width='800px' /><br />
-
-By default, the votes are displayed in percentage, click on one of the votes and the display will be modified in number of votes.
-
-<img src='https://i.imgur.com/pGf6pm2.png' alt='5.1.2' width='800px' />
-
-### 5.2 - How to get the details of users who voted for an activity?
-
-<img src='https://i.imgur.com/VlbBIKQ.png' alt='5.2.1' width='800px' /><br />
-
-Click on the `+` to the right of the line and the details of the users associated with their voted reaction will be displayed.
-
-<img src='https://i.imgur.com/sWFf3jG.png' alt='5.2.2' width='800px' />
-
-### 6.0 - How to access the export menu?
-
-<img src='https://i.imgur.com/TFd4KdX.png' alt='6.0.1' width='300px' /><br />
- 
-Click on the second tab named `Export`.
-
-### 6.1 - How to export the votes of a course?
-
-<img src='https://i.imgur.com/NMyhlH4.png' alt='6.1.1' width='300px' /><br />
-
-Choose its extension between CSV, OpenOffice or Excel and click on the associated button. The download of the table will start automatically.
-
-## Administration
-
-### 7.0 - How to enable/disable the reaction system on the site?
-
-<img src='https://i.imgur.com/S025OiV.png' alt='7.0.1' width='300px' /><br />
-
-In `Site Administration > Plugins > Blocks > Point of View` menu, enable/disable the reaction system by checking/un-checking the box above.
-
-### 7.1 - How to set default emojis for the website?
-
-<img src='https://i.imgur.com/IF606jI.png' alt='7.1.1' width='700px' /><br />
-
-In `Site Administration > Plugins > Blocks > Point of View` menu, enable emojis customization by checking the box above and provide the required 11 files in the file area (see **4.0** part).
-
-### 7.2 - How to customize the color of the difficulty tracks on the website?
-
-<img src='https://i.imgur.com/dl6uS9Z.png' alt='7.2.1' width='400px' /><br />
-
-In `Site Administration > Plugins > Blocks > Point of View` menu, define the color of the associated track.
-
+Site administrators can define custom difficulty tracks colors. This is useful if your site uses a theme where one of the default colors renders badly.  
+**Note:** Only **4** difficulty tracks (Green, Blue, Red and Black by default) are available.  
+![Custom color setting for green difficulty track](metadata/screenshots/green_difficultytrack_color_setting.png)

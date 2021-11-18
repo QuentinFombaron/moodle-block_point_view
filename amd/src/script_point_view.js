@@ -1,1016 +1,409 @@
-/* Include JQuery */
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Module to display and manage reactions and difficulty tracks on course page.
+ * @package    block_point_view
+ * @copyright  2020 Quentin Fombaron, 2021 Astor Bizard
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
-    return {
-        init: function(envconf) {
-            /* Wait that the DOM is fully loaded */
-            $(function() {
-                /* ID of the current user */
-                var userId = parseInt(envconf.userid);
 
-                var courseId = envconf.courseid;
+    /**
+     * Call a function each time a course section is loaded.
+     * @param {Function} call Function to call.
+     */
+    function callOnModulesListLoad(call) {
+        call();
 
-                var contextId = envconf.contextid;
-
-                var ajaxPromises = ajax.call([
-                    {
-                        methodname: 'block_point_view_get_database',
-                        args: {
-                            userid: userId,
-                            courseid: courseId
-                        },
-                        fail: notification.exception
-                    },
-                    {
-                        methodname: 'block_point_view_get_pixparam',
-                        args: {
-                            courseid: courseId,
-                            contextid: contextId
-                        },
-                        fail: notification.exception
-                    },
-                    {
-                        methodname: 'block_point_view_get_moduleselect',
-                        args: {
-                            courseid: courseId,
-                        },
-                        fail: notification.exception
-                    },
-                    {
-                        methodname: 'block_point_view_get_difficulty_levels',
-                        args: {
-                            courseid: courseId,
-                        },
-                        fail: notification.exception
-                    },
-                    {
-                        methodname: 'block_point_view_get_track_colors',
-                        args: {},
-                        fail: notification.exception
-                    },
-                    {
-                        methodname: 'block_point_view_get_enrol_list',
-                        args: {
-                            userid: userId,
-                        },
-                        fail: notification.exception
+        // The following listener is needed for the Tiles course format, where sections are loaded on demand.
+        $(document).ajaxComplete(function(event, xhr, settings) {
+            if (typeof(settings.data) !== 'undefined') {
+                var data = JSON.parse(settings.data);
+                if (data.length > 0 && typeof(data[0].methodname) !== 'undefined') {
+                    if (data[0].methodname == 'format_tiles_get_single_section_page_html' // Tile load.
+                        || data[0].methodname == 'format_tiles_log_tile_click') { // Tile load, cached.
+                        call();
                     }
-                ]);
+                }
+            }
+        });
+    }
 
-                $.when(ajaxPromises[0], ajaxPromises[1], ajaxPromises[2], ajaxPromises[3], ajaxPromises[4], ajaxPromises[5])
-                    .done(function(ajaxResult0, ajaxResult1, ajaxResult2, ajaxResult3, ajaxResult4, ajaxResult5) {
+    /**
+     * Set up difficulty tracks on course modules.
+     * @param {Array} difficultyLevels Array of difficulty tracks, one entry for each course module.
+     * @param {Array} trackColors Tracks colors, from block plugin configuration.
+     */
+    function setUpDifficultyTracks(difficultyLevels, trackColors) {
+        difficultyLevels.forEach(function(module) {
+            var difficultyLevel = parseInt(module.difficultyLevel);
+            var title = '';
+            if (difficultyLevel > 0) {
+                var track = ['greentrack', 'bluetrack', 'redtrack', 'blacktrack'][difficultyLevel - 1];
+                title = M.util.get_string(track, 'block_point_view');
+            }
+            var $track = $('<div>', {
+                'class': 'block_point_view track',
+                'title': title,
+                'style': 'background-color: ' + trackColors[difficultyLevel] + ';'
+            });
+            // Decide where to put the track.
+            var $container = $('#module-' + module.id + ' .mod-indent-outer');
 
-                        /* Array with all the needed data about the reactions of the page */
-                        var pointViewsSQL = ajaxResult0;
+            // Add the track.
+            if ($container.find('.block_point_view.track').length === 0) {
+                $container.prepend($track);
+            }
+            // If there is indentation, move the track after it.
+            $container.find('.mod-indent').after($track);
 
-                        var pix = ajaxResult1;
+        });
+    }
 
-                        var difficultylevels = ajaxResult3;
 
-                        var trackcolor = ajaxResult4;
+    /**
+     * Get a jQuery object in reaction zone for given module ID.
+     * @param {Number} moduleId Module ID.
+     * @param {String} selector (optional) Sub-selector.
+     * @return {jQuery} If selector was provided, the corresponding jQuery object within the reaction zone.
+     *  If not, the reaction zone jQuery object.
+     */
+    function $get(moduleId, selector) {
+        var $element = $('#module-' + moduleId + ' .block_point_view.reactions-container');
+        if (typeof(selector) === 'undefined') {
+            return $element;
+        } else {
+            return $element.find(selector);
+        }
+    }
 
-                        var custom = ajaxResult5;
+    // Enumeration of the possible reactions.
+    var Reactions = {
+            none: 0,
+            easy: 1,
+            better: 2,
+            hard: 3
+    };
 
-                        /* Array of the modules which have the reactions activated */
+    // Array of Reaction of the user for the activity.
+    var reactionVotedArray = {};
 
-                        var moduleSelect = ajaxResult2;
+    /**
+     * Set up difficulty tracks on course modules.
+     * @param {Number} courseId Course ID.
+     * @param {Array} modulesWithReactions Array of reactions state, one entry for each course module with reactions enabled.
+     * @param {String} reactionsHtml HTML fragment for reactions.
+     * @param {Array} pixSrc Array of pictures sources for group images.
+     */
+    function setUpReactions(courseId, modulesWithReactions, reactionsHtml, pixSrc) {
+        // For each selected module, create a reaction zone.
+        modulesWithReactions.forEach(function(module) {
+            var moduleId = parseInt(module.cmid);
+            var uservote = parseInt(module.uservote);
 
-                        /* Enumeration of the possible reactions */
-                        var Reactions = {
-                            NULL: 0,
-                            EASY: 1,
-                            BETTER: 2,
-                            HARD: 3
-                        };
+            // Initialise reactionVotedArray.
+            reactionVotedArray[moduleId] = uservote;
 
-                        /* Array of boolean which determine if the mouse is over or not the reaction zone */
-                        var reactionArray = {};
-                        /*  Array of Reaction of the user for the activity */
-                        var reactionVotedArray = {};
-                        /* Array of total number of reaction for the activity */
-                        var totalVoteArray = {};
-                        /* Array of timer to see how long the mouse stay out of the reaction zone */
-                        var timerReactionsArray = {};
-                        /* Array of timer to see how long the mouse stay over the reaction group image */
-                        var timerGroupImgArray = {};
+            if ($('#module-' + moduleId).length === 1 && $get(moduleId).length === 0) {
 
-                        /* Initialisation of the different arrays */
-                        moduleSelect.forEach(function(moduleIdParam) {
-                            var moduleId = parseInt(moduleIdParam);
-                            reactionArray[moduleId] = false;
-                            reactionVotedArray[moduleId] = null;
-                            totalVoteArray[moduleId] = null;
-                            timerReactionsArray[moduleId] = null;
-                            timerGroupImgArray[moduleId] = null;
+                // Add the reaction zone to the module.
+                $('#module-' + moduleId).prepend(reactionsHtml);
+
+                // Setup reaction change.
+                var reactionsLock = false;
+                $get(moduleId, '.reaction img')
+                .click(function() {
+                    // Use a mutex to avoid query / display inconsistencies.
+                    // This is not a perfect mutex, but is actually enough for our needs.
+                    if (reactionsLock === false) {
+                        reactionsLock = true;
+                        reactionChange(courseId, moduleId, $(this).data('reactionname'))
+                        .always(function() {
+                            reactionsLock = false;
+                            updateGroupImgAndNb(moduleId, pixSrc);
                         });
-
-                        /**
-                         * Function which modify the reaction group image in terms of kind of vote
-                         * @param {Object} module
-                         * @param {int} moduleId
-                         */
-                        function updateGroupImg(module, moduleId) {
-
-                            /* Get the number of reaction for each one of it */
-                            var easyVote = parseInt(module.getElementsByClassName('easy_nb')[0].innerText);
-                            var betterVote = parseInt(module.getElementsByClassName('better_nb')[0].innerText);
-                            var hardVote = parseInt(module.getElementsByClassName('hard_nb')[0].innerText);
-                            var groupImg = 'group_';
-
-                            /* Add the image suffix if there is at least 1 vote for the selected reaction */
-                            if (easyVote) {
-                                groupImg += 'E';
-                            }
-                            if (betterVote) {
-                                groupImg += 'B';
-                            }
-                            if (hardVote) {
-                                groupImg += 'H';
-                            }
-
-                            if (reactionVotedArray[moduleId] !== null && reactionVotedArray[moduleId] !== Reactions.NULL) {
-                                var groupNb = $('#module-' + moduleId + ' .group_nb');
-                                groupNb.addClass('voted');
-                                if (totalVoteArray[moduleId] >= 10) {
-                                    groupNb.css({'font-size': '10px'});
-                                }
-                            } else {
-                                $('#module-' + moduleId + ' .group_nb').removeClass('voted');
-                            }
-
-                            /* Modify the image source of the reaction group */
-                            $('#module-' + moduleId + ' .group_img').attr('src', pix[groupImg]);
-                        }
-
-                        /**
-                         * Update PointView SQL
-                         */
-                        function updatePointViewSql() {
-                            var ajaxPromises = ajax.call([
-                                {
-                                    methodname: 'block_point_view_get_database',
-                                    args: {
-                                        userid: userId,
-                                        courseid: courseId
-                                    },
-                                    fail: notification.exception
-                                }
-                            ]);
-
-                            $.when(ajaxPromises[0])
-                                .done(function(ajaxResult0) {
-                                    pointViewsSQL = ajaxResult0;
-                                });
-                        }
-
-                        /**
-                         * Function which returns the data for the moduleId in parameter
-                         * @param {int} moduleId - ID of the module
-                         * @returns {*} - Data for moduleId module
-                         */
-                        function searchModule(moduleId) {
-
-                            /* Boolean which check if the data are in pointViewsSQL array */
-                            var assign = false;
-
-                            /* Variable which will be returned */
-                            var resultSearch;
-                            updatePointViewSql();
-                            pointViewsSQL.forEach(function(element) {
-                                if (parseInt(element.cmid) === moduleId) {
-                                    resultSearch = element;
-                                    assign = true;
-                                }
-                            });
-
-                            /* If the moduleId is not present in the array, there is no vote, so it creates an empty result */
-                            if (!assign) {
-                                resultSearch = {
-                                    'cmid': moduleId.toString(),
-                                    'courseid': courseId,
-                                    'total': '0',
-                                    'typeone': '0',
-                                    'typetwo': '0',
-                                    'typethree': '0',
-                                    'uservote': '0'
-                                };
-                            }
-
-                            return resultSearch;
-                        }
-
-                        /**
-                         * Event when the group image is mouse over
-                         * @param {Object} event
-                         */
-                        function groupImgMouseOver(event) {
-
-                            /* Clear the animation queue to avoid image blinking */
-                            $(this).stop();
-
-                            /* Pointer modification to inform a possible click or interaction */
-                            $(this).css({'cursor': 'pointer'});
-
-                            /* Widen a little to inform that the image is mouse over */
-                            $(this).animate({
-                                top: -1.5,
-                                left: -3,
-                                height: 23
-                            }, 100);
-
-                            /* IF the mouse stay over at least 0.3 seconds */
-                            timerGroupImgArray[event.data.moduleId] = setTimeout(function() {
-
-                                /* Reactions images modifications to black and white if no reaction has been made */
-                                if (parseInt((event.data.module).getElementsByClassName('easy_nb')[0].innerText) === 0) {
-                                    $('#module-' + (event.data.moduleId) + ' .easy')
-                                        .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                                }
-                                if (parseInt((event.data.module).getElementsByClassName('better_nb')[0].innerText) === 0) {
-                                    $('#module-' + (event.data.moduleId) + ' .better')
-                                        .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                                    /** ... .attr('src', '../blocks/point_view/pix/better_BW.png'); */
-                                }
-                                if (parseInt((event.data.module).getElementsByClassName('hard_nb')[0].innerText) === 0) {
-                                    $('#module-' + (event.data.moduleId) + ' .hard')
-                                        .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                                }
-
-                                /*
-                                * Hide the reaction group image with nice animation
-                                * Completely hide the reaction group image to be sure
-                                */
-                                $('#module-' + (event.data.moduleId) + ' .group_img').animate({
-                                    top: '+=15',
-                                    left: '+=35',
-                                    height: 0
-                                }, 300).hide(0);
-
-                                /* Also hide the number of total reaction */
-                                $('#module-' + (event.data.moduleId) + ' .group_nb').delay(50).hide(300);
-
-                                $('#module-' + (event.data.moduleId) + ' .actions').hide(300);
-
-                                /* Enable the pointer events for each reactions images */
-
-                                /* After a short delay, show the 'Easy !' reaction image with nice animation */
-                                $('#module-' + (event.data.moduleId) + ' .easy').delay(50).animate({
-                                    top: -15,
-                                    left: -20,
-                                    height: 20
-                                }, 300)
-                                   .css({'pointer-events': 'auto'});
-
-                                /* Also show the number of 'Easy !' reaction */
-                                $('#module-' + (event.data.moduleId) + ' .easy_nb').delay(50).show(300);
-
-                                /*
-                                 * After a delay, show the 'I'm getting better !' reaction image with nice
-                                * animation
-                                */
-                                $('#module-' + (event.data.moduleId) + ' .better').delay(200).animate({
-                                    top: -15,
-                                    left: 25,
-                                    height: 20
-                                }, 300)
-                                    .css({'pointer-events': 'auto'});
-
-                                /* Also show the number of 'I'm getting better !' reaction */
-                                $('#module-' + (event.data.moduleId) + ' .better_nb').delay(200).show(300);
-
-                                /* After a delay, show the 'So Hard...' reaction image with nice animation */
-                                $('#module-' + (event.data.moduleId) + ' .hard').delay(400).animate({
-                                    top: -15,
-                                    left: 70,
-                                    height: 20
-                                }, 300)
-                                    .css({'pointer-events': 'auto'});
-
-                                /* Also show the number of 'So Hard...' reaction */
-                                $('#module-' + (event.data.moduleId) + ' .hard_nb').delay(400).show(300);
-                            }, 500);
-
-                            /* Reset timerReactions timer */
-                            clearTimeout(timerReactionsArray[event.data.moduleId]);
-
-                            /* IF the mouse stay over at least 3 seconds... */
-                            timerReactionsArray[event.data.moduleId] = setTimeout(function() {
-
-                                /* BUT the mouse is not in the reaction zone */
-                                if (!(reactionArray[event.data.moduleId])) {
-
-                                    /*
-                                    * Disable the pointer events for each reactions images. This is to avoid a
-                                    * bug, because this is possible  select a reaction during the hiding and
-                                    * it create a bad comportment
-                                    */
-
-                                    /*
-                                    * After a short delay, hide the 'So Hard...' reaction image with nice
-                                    * animation
-                                    */
-                                    $('#module-' + (event.data.moduleId) + ' .hard').css({'pointer-events': 'none'})
-                                        .delay(50).animate({
-                                            top: -7.5,
-                                            left: 80,
-                                            height: 0
-                                        }, 500);
-
-                                    /* Also hide the number of 'So Hard...' reaction */
-                                    $('#module-' + (event.data.moduleId) + ' .hard_nb').delay(50).hide(300);
-
-                                    /*
-                                    * After a delay, show the 'I'm getting better !' reaction image with nice
-                                    * animation
-                                    */
-                                    $('#module-' + (event.data.moduleId) + ' .better').css({'pointer-events': 'none'})
-                                        .delay(300).animate({
-                                            top: -7.5,
-                                            left: 35,
-                                            height: 0
-                                        }, 500);
-
-                                    /* Also hide the number of 'I'm getting better !' reaction */
-                                    $('#module-' + (event.data.moduleId) + ' .better_nb').delay(300).hide(300);
-
-                                    /* After a delay, hide the 'Easy !' reaction image with nice animation */
-                                    $('#module-' + (event.data.moduleId) + ' .easy').css({'pointer-events': 'none'})
-                                        .delay(600).animate({
-                                            top: -7.5,
-                                            left: -10,
-                                            height: 0
-                                        }, 500);
-
-                                    /* Also hide the number of 'Easy !' reaction */
-                                    $('#module-' + (event.data.moduleId) + ' .easy_nb').delay(600).hide(300);
-
-                                    updateGroupImg(event.data.module, event.data.moduleId);
-
-                                    /* Show the reaction group image with nice animation */
-                                    $('#module-' + (event.data.moduleId) + ' .group_img').show(0).delay(500).animate({
-                                        top: 0,
-                                        left: 0,
-                                        height: 20
-                                    }, 300);
-
-                                    if (parseInt((event.data.module).getElementsByClassName('group_nb')[0].innerText) !== 0) {
-                                        /* Also show the number of total reaction */
-                                        $('#module-' + (event.data.moduleId) + ' .group_nb').delay(600).show(300);
-                                    }
-
-                                    $('#module-' + (event.data.moduleId) + ' .actions').delay(600).show(300);
-                                }
-                            }, 2000);
-                        }
-
-                        /**
-                         * Event when the group image is mouse out
-                         * @param {Object} event
-                         */
-                        function groupImgMouseOut(event) {
-
-                            /* Clear the animation queue to avoid image blinking */
-                            $(this).stop();
-
-                            /* Reset timerGroupImg timer */
-                            clearTimeout(timerGroupImgArray[event.data.moduleId]);
-
-                            /* IF the mouse out before the reaction group hide */
-                            if ($('#module-' + (event.data.moduleId) + ' .easy').css('height') === '0px') {
-                                /* Come back to the original size to inform that the image is mouse out */
-                                $(this).animate({
-                                    top: 0,
-                                    left: 0,
-                                    height: 20
-                                }, 100);
-                            }
-                        }
-
-                        /**
-                         * Event when the reaction image is mouse over
-                         * @param {Object} event
-                         */
-                        function mouseOver(event) {
-
-                            /* Clear the animation queue to avoid image blinking */
-                            $(this).stop();
-
-                            var widthParam = $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').width();
-
-                            var translation = event.data.leftReaction - (widthParam / 2) - 10;
-                            /* Modification of the toolbox position (centered) */
-                            $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_txt').css({
-                                '-webkit-transform': 'translateX(' + translation + 'px)',
-                                '-moz-transform': 'translateX(' + translation + 'px)',
-                                '-ms-transform': 'translateX(' + translation + 'px)',
-                                'transform': 'translateX(' + translation + 'px)'
-                            });
-
-                            /* Get the number of 'reactionName' reaction */
-                            var nbReation = parseInt((event.data.module)
-                                .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
-
-                            /* To have the bigger image in color if there is no vote */
-                            if (nbReation === 0) {
-                                $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                    .css({'-webkit-filter': '', 'filter': ''});
-                            }
-
-                            /* Pointer modification to know that we can click or interact */
-                            $(this).css({'cursor': 'pointer'});
-
-                            /* Widen a little to inform that the image is mouse over */
-                            $(this).animate({
-                                top: -25,
-                                left: event.data.leftReaction,
-                                height: 40
-                            }, 100);
-                        }
-
-                        /**
-                         * Event when the reaction image is mouse out
-                         * @param {Object} event
-                         */
-                        function mouseOut(event) {
-
-                            /* Clear the animation queue to avoid image blinking */
-                            $(this).stop();
-
-                            /* Come back to the original size to inform that the image is mouse out */
-                            $(this).animate({
-                                top: -15,
-                                left: event.data.leftReaction,
-                                height: 20
-                            }, 100);
-
-                            /* Get the number of 'reactionName' reaction */
-                            var nbReation = parseInt((event.data.module)
-                                .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
-
-                            /* Restore the image in black and white if there is no vote */
-                            if (nbReation === 0) {
-                                $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                    .css({'-webkit-filter': 'grayscale(100%)', 'filter': 'grayscale(100%)'});
-                            }
-                        }
-
-                        /**
-                         * Event when the reaction image is clicked
-                         * @param {Object} event
-                         */
-                        function onClick(event) {
-                            /* Test if action is on main if true then test if user is enrolled in course */
-                            var isOnMainPage = (courseId !== 1 ? true : (custom.ids).includes(event.data.moduleId.toString(10)));
-                            if (isOnMainPage) {
-                                if (userId !== null && userId !== 1) {
-
-                                    /* Get the number of 'reactionName' reaction */
-                                    var nbReation = parseInt((event.data.module)
-                                        .getElementsByClassName(event.data.reactionName + '_nb')[0].innerText);
-
-                                    /* Get the total number of reaction */
-                                    totalVoteArray[event.data.moduleId] = parseInt((event.data.module)
-                                        .getElementsByClassName('group_nb')[0].innerText);
-
-                                    /* IF there is no 'reactionName' reaction, change the emoji in black and white */
-                                    if (nbReation === 0) {
-                                        $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                            .css({'-webkit-filter': '', 'filter': ''});
-                                    }
-
-                                    /* IF this is a new vote for the user */
-                                    if (reactionVotedArray[event.data.moduleId] === Reactions.NULL) {
-
-                                        /* AJAX call to the PHP function which add a new line in DB */
-                                        ajax.call([
-                                            {
-                                                methodname: 'block_point_view_update_db',
-                                                args: {
-                                                    func: 'insert',
-                                                    userid: userId,
-                                                    courseid: courseId,
-                                                    cmid: event.data.moduleId,
-                                                    vote: event.data.reactionSelect
-                                                },
-                                                done: function() {
-
-                                                    /* Increment the number of the new reaction of 1 */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
-                                                        .text(nbReation + 1);
-
-                                                    /* Update the text appearance to know that this is the selected reaction */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
-                                                        .css({
-                                                        'font-weight': 'bold',
-                                                        'color': '#5585B6'
-                                                    });
-
-                                                    /* Update the value of total number reaction with an increment of 1 */
-                                                    (event.data.module).getElementsByClassName('group_nb')[0].innerText =
-                                                        (totalVoteArray[event.data.moduleId] + 1);
-
-                                                    /* Update the current reation with the new one */
-                                                    reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
-                                                },
-                                                fail: notification.exception
-                                            }
-                                        ]);
-                                    } else if (reactionVotedArray[event.data.moduleId] === event.data.reactionSelect) {
-                                        /* IF the user canceled its vote */
-
-                                        /* AJAX call to the PHP function which remove a line in DB */
-                                        ajax.call([
-                                            {
-                                                methodname: 'block_point_view_update_db',
-                                                args: {
-                                                    func: 'remove',
-                                                    userid: userId,
-                                                    courseid: courseId,
-                                                    cmid: event.data.moduleId,
-                                                    vote: event.data.reactionSelect
-                                                },
-                                                done: function() {
-
-                                                    /* Decrement the number of old of 1 */
-                                                    nbReation--;
-
-                                                    /* Update the number of old reaction */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
-                                                        .text(nbReation);
-
-                                                    /**
-                                                    * Update the text appearance to know that this is no longer
-                                                    * the selected reaction
-                                                    */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
-                                                        .css({
-                                                        'font-weight': 'normal',
-                                                        'color': 'black'
-                                                    });
-
-                                                    /*
-                                                        * IF after the decrementation, the number of old reaction is 0
-                                                        * THEN change the emoji in black and white
-                                                        */
-                                                    if (nbReation === 0) {
-                                                        $('#module-' + event.data.moduleId + ' .' + event.data.reactionName)
-                                                            .css({
-                                                                '-webkit-filter': 'grayscale(100%)',
-                                                                'filter': 'grayscale(100%)'
-                                                            });
-                                                    }
-
-                                                    /* Update the value of total number reaction with an decrement of 1 */
-                                                    (event.data.module).getElementsByClassName('group_nb')[0].innerText =
-                                                        (totalVoteArray[event.data.moduleId] - 1);
-
-                                                    /* Update the current reaction with 'none reaction' */
-                                                    reactionVotedArray[event.data.moduleId] = Reactions.NULL;
-                                                },
-                                                fail: notification.exception
-                                            }
-                                        ]);
-                                    } else {
-                                        /* IF the user update its vote */
-
-                                        /* AJAX call to the PHP function which update a line in DB */
-                                        ajax.call([
-                                            {
-                                                methodname: 'block_point_view_update_db',
-                                                args: {
-                                                    func: 'update',
-                                                    userid: userId,
-                                                    courseid: courseId,
-                                                    cmid: event.data.moduleId,
-                                                    vote: event.data.reactionSelect
-                                                },
-                                                done: function() {
-
-                                                    /* Increment the number of 'reactionName' reaction of 1 */
-                                                    $('#module-' + event.data.moduleId + ' .' + event.data.reactionName + '_nb')
-                                                        .text(nbReation + 1);
-
-                                                    /* Update the text appearance to know that this is the selected reaction */
-                                                    $('#module-' + (event.data.moduleId) + ' .' + (event.data.reactionName) + '_nb')
-                                                        .css({
-                                                        'font-weight': 'bold',
-                                                        'color': '#5585B6'
-                                                    });
-
-                                                    /* Find the name of the reaction selected */
-                                                    var reationSelectName;
-                                                    switch (reactionVotedArray[event.data.moduleId]) {
-                                                        case Reactions.EASY:
-                                                            reationSelectName = 'easy';
-                                                            break;
-                                                        case Reactions.BETTER:
-                                                            reationSelectName = 'better';
-                                                            break;
-                                                        case Reactions.HARD:
-                                                            reationSelectName = 'hard';
-                                                            break;
-                                                    }
-
-                                                    /*  Get the current number of the old reaction and decrement it of 1 */
-                                                    var nbReationSelect = parseInt((event.data.module)
-                                                        .getElementsByClassName(reationSelectName + '_nb')[0].innerText) - 1;
-
-                                                    /* Update the value of the old reaction */
-                                                    $('#module-' + event.data.moduleId + ' .' + reationSelectName + '_nb')
-                                                        .text(nbReationSelect);
-
-                                                    /** Update the text appearance to know that this is no longer
-                                                     * the selected reaction
-                                                     */
-                                                    $('#module-' + (event.data.moduleId) + ' .' + reationSelectName + '_nb')
-                                                        .css({
-                                                        'font-weight': 'normal',
-                                                        'color': 'black'
-                                                    });
-
-                                                    /*
-                                                    * IF after the decrementation, the number of the old
-                                                    * reaction is 0 THEN change the emoji in black and white
-                                                    */
-                                                    if (nbReationSelect === 0) {
-                                                        $('#module-' + (event.data.moduleId) + ' .' + reationSelectName)
-                                                            .css({
-                                                                '-webkit-filter': 'grayscale(100%)',
-                                                                'filter': 'grayscale(100%)'
-                                                            });
-                                                    }
-
-                                                    /* Update the current reation with the new one */
-                                                    reactionVotedArray[event.data.moduleId] = event.data.reactionSelect;
-                                                },
-                                                fail: notification.exception
-                                            }
-                                        ]);
-                                    }
-                                }
-                            } else {
-                                /** FIXME alert("You are not enrolled in this course, you can't react to this."); */
-                            }
-                        }
-
-                        /**
-                         * Event when the reaction zone is mouse over
-                         * @param {Object} event
-                         */
-                        function reactionMouseOver(event) {
-
-                            /* The mouse is over the reaction zone */
-                            reactionArray[event.data.moduleId] = true;
-                        }
-
-                        /**
-                         * Event when the reaction zone is mouse out
-                         * @param {Object} event
-                         */
-                        function reactionMouseOut(event) {
-
-                            /* The mouse is out the reaction zone */
-                            reactionArray[event.data.moduleId] = false;
-
-                            /* Reset timerReactions timer */
-                            clearTimeout(timerReactionsArray[event.data.moduleId]);
-
-                            /* IF the mouse stay over at least 3 seconds... */
-                            timerReactionsArray[event.data.moduleId] = setTimeout(function() {
-
-                                /* BUT that the mouse is note in the reaction zone */
-                                if (!(reactionArray[event.data.moduleId])) {
-
-                                    /*
-                                    * Disable the pointer events for each reactions images. This is to avoid a
-                                    * bug, because this is possible  select a reaction during the hiding and
-                                    * it create a bad comportment
-                                    */
-
-                                    /*
-                                    * After a short delay, hide the 'So Hard...' reaction image with nice
-                                    * animation
-                                    */
-
-                                    $('#module-' + (event.data.moduleId) + ' .hard').css({'pointer-events': 'none'})
-                                        .delay(50).animate({
-                                            top: -7.5,
-                                            left: 80,
-                                            height: 0
-                                        }, 500);
-
-                                    /* Also hide the number of 'So Hard...' reaction */
-                                    $('#module-' + (event.data.moduleId) + ' .hard_nb').delay(50).hide(300);
-
-                                    /*
-                                    * After a delay, show the 'I'm getting better !' reaction image with nice
-                                    * animation
-                                    */
-                                    $('#module-' + (event.data.moduleId) + ' .better').css({'pointer-events': 'none'})
-                                        .delay(300).animate({
-                                            top: -7.5,
-                                            left: 35,
-                                            height: 0
-                                        }, 500);
-
-                                    /* Also hide the number of 'I'm getting better !' reaction */
-                                    $('#module-' + (event.data.moduleId) + ' .better_nb').delay(300).hide(300);
-
-                                    /* After a delay, hide the 'Easy !' reaction image with nice animation */
-                                    $('#module-' + (event.data.moduleId) + ' .easy').css({'pointer-events': 'none'})
-                                        .delay(600).animate({
-                                            top: -7.5,
-                                            left: -10,
-                                            height: 0
-                                        }, 500);
-
-                                    /* Also hide the number of 'Easy !' reaction */
-                                    $('#module-' + (event.data.moduleId) + ' .easy_nb').delay(600).hide(300);
-
-                                    updateGroupImg(event.data.module, event.data.moduleId);
-
-                                    /* Show the reaction group image with nice animation */
-                                    $('#module-' + (event.data.moduleId) + ' .group_img').delay(500).show(0).animate({
-                                        top: 0,
-                                        left: 0,
-                                        height: 20
-                                    }, 300);
-
-                                    if (parseInt((event.data.module).getElementsByClassName('group_nb')[0].innerText) !== 0) {
-                                        /* Also show the number of total reaction */
-                                        $('#module-' + (event.data.moduleId) + ' .group_nb').delay(600).show(300);
-                                    }
-
-                                    $('#module-' + (event.data.moduleId) + ' .actions').delay(600).show(300);
-                                }
-                            }, 1000);
-                        }
-
-                        $('.activity').not('.label')
-                            .mouseover(function() {
-                                $(this).css({
-                                    'background': 'linear-gradient(to right, #f4f4f4, #f4f4f4, white)',
-                                    'border-radius': '5px'
-                                });
-                            })
-                            .mouseout(function() {
-                                $(this).css({'background': ''});
-                            });
-
-                        createReactions();
-
-                        $(document).ajaxComplete(function(event, xhr, settings) {
-                            if (settings.data !== undefined) {
-                                var data = JSON.parse(settings.data);
-                                if (data.length > 0 && data[0].methodname !== undefined) {
-                                    var methodname = data[0].methodname;
-                                    if (
-                                        methodname === 'format_tiles_get_single_section_page_html'
-                                        || methodname === 'format_tiles_log_tile_click'
-                                    ) {
-                                        createReactions();
-                                    }
-                                }
-                            }
-                        });
-
-                        /**
-                         * Create reaction
-                         */
-                        function createReactions() {
-                            /* Resize the activity name field to give space to Likes icons */
-                            $('.mod-indent-outer').css({'width': '85%'});
-
-                            /* Folder friendly */
-                            $('.folder .mod-indent-outer').each(function(index, element) {
-                                if (!$(element).find(".activityinstance").length > 0) {
-                                    $(element).prepend('<div class="activityinstance" style="width: 0;"><a></a></div>');
-                                }
-                            });
-
-                            /* For each selected module, create a reaction zone */
-                            moduleSelect.forEach(function(moduleIdParam) {
-                                var moduleId = parseInt(moduleIdParam);
-                                var pointViewsModule = searchModule(moduleId);
-
-                                /* Create the HTML block necessary to each activity */
-                                var htmlBlock = '<div class="block_point_view block_point_view_container"><div class="reactions">' +
-                                    '<!-- EASY ! --><span class="tooltipreaction">' +
-                                    '<img src="' + pix.easy + '" alt=" " class="easy"/>' +
-                                    '<span class="tooltiptextreaction easy_txt">' + pix.easytxt + '</span></span>' +
-                                    '<span class="easy_nb">' + pointViewsModule.typeone + '</span>' +
-                                    '<!-- I\'M GETTING BETTER --><span class="tooltipreaction">' +
-                                    '<img src="' + pix.better + '" alt=" " class="better"/>' +
-                                    '<span class="tooltiptextreaction better_txt">' + pix.bettertxt + '</span></span>' +
-                                    '<span class="better_nb">' + pointViewsModule.typetwo + '</span>' +
-                                    '<!-- SO HARD... --><span class="tooltipreaction">' +
-                                    '<img src="' + pix.hard + '" alt=" " class="hard"/>' +
-                                    '<span class="tooltiptextreaction hard_txt">' + pix.hardtxt + '</span></span>' +
-                                    '<span class="hard_nb">' + pointViewsModule.typethree + '</span></div>' +
-                                    '<!-- GROUP --><div class="group">' +
-                                    '<img src="" alt=" " class="group_img"/>' +
-                                    '<span class="group_nb">' + pointViewsModule.total + '</span></div></div>';
-
-                                if (
-                                    (document.getElementById('module-' + moduleId) !== null)
-                                    && document.querySelectorAll('#module-' + moduleId + ' .block_point_view_container')
-                                        .length === 0
-                                ) {
-                                    $('#module-' + moduleId + ' .activityinstance').append(htmlBlock);
-                                    manageReact(moduleId, '#module-');
-                                }
-
-                                /* Initialise reactionVotedArray and CSS */
-                                switch (parseInt(pointViewsModule.uservote)) {
-                                    case 1:
-                                        reactionVotedArray[moduleId] = Reactions.EASY;
-                                        /* Update the text appearance to know that this is the selected reaction */
-                                        $('#module-' + moduleId + ' .easy_nb').css({
-                                            'font-weight': 'bold',
-                                            'color': '#5585B6'
-                                        });
-                                        break;
-                                    case 2:
-                                        reactionVotedArray[moduleId] = Reactions.BETTER;
-                                        /* Update the text appearance to know that this is the selected reaction */
-                                        $('#module-' + moduleId + ' .better_nb').css({
-                                            'font-weight': 'bold',
-                                            'color': '#5585B6'
-                                        });
-                                        break;
-                                    case 3:
-                                        reactionVotedArray[moduleId] = Reactions.HARD;
-                                        /* Update the text appearance to know that this is the selected reaction */
-                                        $('#module-' + moduleId + ' .hard_nb').css({
-                                            'font-weight': 'bold',
-                                            'color': '#5585B6'
-                                        });
-                                        break;
-                                    default:
-                                        reactionVotedArray[moduleId] = Reactions.NULL;
-                                        break;
-                                }
-
-                                var module = document.getElementById('module-' + moduleId);
-                                if (module !== null) {
-                                    updateGroupImg(module, moduleId);
-                                }
-                            });
-                        }
-
-                        /**
-                         * @param {string} moduleIdParam
-                         * @param {string} zone
-                         */
-                        function manageReact(moduleIdParam, zone) {
-                            var moduleId = parseInt(moduleIdParam);
-                            /* Shortcut to select the 'module-' + moduleId ID in the page */
-                            var module = document.getElementById('module-' + moduleId);
-
-                            if (module !== null) {
-                                if (parseInt(module.getElementsByClassName('group_nb')[0].innerText) === 0) {
-                                    /* Also show the number of total reaction */
-                                    $(zone + moduleId + ' .group_nb').hide();
-                                }
-
-                                updateGroupImg(module, moduleId);
-
-                                /* Management of the reaction group */
-                                $(zone + moduleId + ' .group_img')
-                                    /* MOUSE OVER */
-                                    .mouseover({module: module, moduleId: moduleId}, groupImgMouseOver)
-                                    /* ON CLICK */
-                                    .click({module: module, moduleId: moduleId}, groupImgMouseOver)
-                                    /* MOUSE OUT */
-                                    .mouseout({moduleId: moduleId}, groupImgMouseOut)
-                                ;
-
-                                /* Management of the 'Easy !' reaction */
-                                $(zone + moduleId + ' .easy')
-                                    /* MOUSE OVER */
-                                    .mouseover({
-                                        module: module, moduleId: moduleId, reactionName: 'easy',
-                                        className: 'easy_txt', leftReaction: -30
-                                    }, mouseOver)
-                                    /* MOUSE OUT */
-                                    .mouseout({
-                                        module: module, moduleId: moduleId, leftReaction: -20,
-                                        reactionName: 'easy'
-                                    }, mouseOut)
-                                    /* ON CLICK */
-                                    .click({
-                                        module: module, moduleId: moduleId, reactionName: 'easy',
-                                        reactionSelect: Reactions.EASY
-                                    }, onClick)
-                                ;
-
-                                /* Management of the 'I'm getting better !' reaction */
-                                $(zone + moduleId + ' .better')
-                                    /* MOUSE OVER */
-                                    .mouseover({
-                                        module: module, moduleId: moduleId, reactionName: 'better',
-                                        className: 'better_txt', leftReaction: 15
-                                    }, mouseOver)
-                                    /* MOUSE OUT */
-                                    .mouseout({
-                                        module: module, moduleId: moduleId, leftReaction: 25,
-                                        reactionName: 'better'
-                                    }, mouseOut)
-                                    /* ON CLICK */
-                                    .click({
-                                        module: module, moduleId: moduleId, reactionName: 'better',
-                                        reactionSelect: Reactions.BETTER
-                                    }, onClick)
-                                ;
-
-                                var hardSelector = $(zone + moduleId + ' .hard');
-                                var hardLeft = parseInt((hardSelector.css('left')).slice(0, -2), 10);
-
-                                /* Management of the 'So hard...' reaction */
-                                hardSelector
-                                    /* MOUSE OVER */
-                                    .mouseover({
-                                        module: module, moduleId: moduleId, reactionName: 'hard',
-                                        className: 'hard_txt', leftReaction: (hardLeft - 20)
-                                    }, mouseOver)
-                                    /* MOUSE OUT */
-                                    .mouseout({
-                                        module: module, moduleId: moduleId, leftReaction: (hardLeft - 10),
-                                        reactionName: 'hard'
-                                    }, mouseOut)
-                                    /* ON CLICK */
-                                    .click({
-                                        module: module, moduleId: moduleId, reactionName: 'hard',
-                                        reactionSelect: Reactions.HARD
-                                    }, onClick)
-                                ;
-
-                                /* Management of the reaction zone */
-                                $(zone + moduleId + ' .reactions')
-                                    /* MOUSE OVER */
-                                    .mouseover({moduleId: moduleId}, reactionMouseOver)
-                                    /* MOUSE OUT */
-                                    .mouseout({module: module, moduleId: moduleId}, reactionMouseOut)
-                                ;
-                            }
-                        }
-
-                        /* Display difficulty tracks */
-                        difficultylevels.forEach(function(value) {
-                            var position = (courseId === 1 ? " .difficulty_box" : " .activityinstance a");
-                            if (value.difficultyLevel !== '0') {
-                                var difficulty;
-                                switch (parseInt(value.difficultyLevel)) {
-                                    case 1:
-                                        difficulty = 'green';
-                                        break;
-                                    case 2:
-                                        difficulty = 'blue';
-                                        break;
-                                    case 3:
-                                        difficulty = 'red';
-                                        break;
-                                    case 4:
-                                        difficulty = 'black';
-                                        break;
-                                }
-
-                                var difficultyBlock = '<div class="block_point_view track ' + difficulty + 'track"></div>';
-
-                                $('#module-' + value.id + position).prepend(difficultyBlock);
-                            } else {
-                                var difficultyBlockEmpty = '<span class="block_point_view track"></span>';
-                                $('#module-' + value.id + position).prepend(difficultyBlockEmpty);
-                            }
-                        });
-
-                        /* Dont' hide tooltip when reaction are in the top of course*/
-                        $('#region-main > .card').css({'overflow-x': 'unset'});
-
-                        /* Set the colors of difficulty tracks */
-                        $('.greentrack').css({'background-color': trackcolor.greentrack});
-                        $('.bluetrack').css({'background-color': trackcolor.bluetrack});
-                        $('.redtrack').css({'background-color': trackcolor.redtrack});
-                        $('.blacktrack').css({'background-color': trackcolor.blacktrack});
-
-                        /* Add animation to menu button */
-                        $('.block_point_view #menu_point_view_img')
-                            .mouseover(function() {
-                                $(this).css({
-                                    '-webkit-filter': 'invert(100%)',
-                                    '-moz-filter': 'invert(100%)',
-                                    '-o-filter': 'invert(100%)',
-                                    '-ms-filter': 'invert(100%)'
-                                });
-                            })
-                            .mouseout(function() {
-                                $(this).css({
-                                    '-webkit-filter': 'invert(0%)',
-                                    '-moz-filter': 'invert(0%)',
-                                    '-o-filter': 'invert(0%)',
-                                    '-ms-filter': 'invert(0%)'
-                                });
-                            });
+                    }
+                });
+
+                // Initialize reactions state.
+                $get(moduleId, '.reactionnb').each(function() {
+                    var reactionName = $(this).data('reactionname');
+                    var reactionNb = parseInt(module['total' + reactionName]);
+                    updateReactionNb(moduleId, reactionName, reactionNb, uservote === Reactions[reactionName]);
+                });
+                updateGroupImgAndNb(moduleId, pixSrc);
+
+                // Setup animations.
+                setupReactionsAnimation(moduleId, pixSrc);
+            }
+        });
+    }
+
+    /**
+     * Manage a reaction change (user added, removed or updated their vote).
+     * @param {Number} courseId Course ID.
+     * @param {Number} moduleId Module ID.
+     * @param {String} reactionName The reaction being clicked.
+     */
+    function reactionChange(courseId, moduleId, reactionName) {
+
+        var reactionSelect = Reactions[reactionName];
+        var previousReaction = reactionVotedArray[moduleId];
+
+        // If the reaction being clicked is the current one, it is a vote remove.
+        var newVote = (reactionSelect === previousReaction) ? Reactions.none : reactionSelect;
+
+        return ajax.call([
+            {
+                methodname: 'block_point_view_update_db',
+                args: {
+                    func: 'update',
+                    courseid: courseId,
+                    cmid: moduleId,
+                    vote: newVote
+                }
+            }
+        ])[0]
+        .done(function() {
+            reactionVotedArray[moduleId] = newVote; // Set current reaction.
+            if (previousReaction !== Reactions.none) {
+                // User canceled their vote (or updated to another one).
+                var previousReactionName = ['', 'easy', 'better', 'hard'][previousReaction];
+                updateReactionNb(moduleId, previousReactionName, -1, false);
+            }
+            if (newVote !== Reactions.none) {
+                // User added or updated their vote.
+                updateReactionNb(moduleId, reactionName, +1, true); // Add new vote.
+            }
+        })
+        .fail(notification.exception);
+    }
+
+    /**
+     * Update the reactions group image and total number according to current votes.
+     * @param {Number} moduleId Module ID.
+     * @param {Array} pix Array of pictures sources for group images.
+     */
+    function updateGroupImgAndNb(moduleId, pix) {
+        // Build group image name.
+        var groupImg = 'group_';
+        var totalNb = 0;
+        $get(moduleId, '.reactionnb').each(function() {
+            var reactionNb = parseInt($(this).text());
+            if (reactionNb > 0) {
+                groupImg += $(this).data('reactionname').toUpperCase().charAt(0); // Add E, B or H.
+            }
+            totalNb += reactionNb;
+        });
+        // Modify the image source of the reaction group.
+        $get(moduleId, '.group_img').attr('src', pix[groupImg]);
+
+        // Update the total number of votes.
+        var $groupNbWrapper = $get(moduleId, '.group_nb');
+        var $groupNb = $groupNbWrapper.find('span');
+
+        $groupNb
+        .text(totalNb)
+        .attr('title', M.util.get_string('totalreactions', 'block_point_view', totalNb));
+
+        $groupNbWrapper
+        .toggleClass('novote', totalNb === 0)
+        .toggleClass('voted', reactionVotedArray[moduleId] !== Reactions.none);
+
+        // Adjust the size to fit within a fixed space (useful for the green dot).
+        var digits = Math.min(('' + totalNb).length, 5);
+        $groupNb.css({
+            'right': Math.max(0.25 * (digits - 2), 0) + 'em',
+            'transform': 'scaleX(' + (1.0 + 0.03*digits*digits - 0.35 * digits + 0.34) + ')'
+        });
+    }
+
+    /**
+     * Update a reaction number of votes.
+     * @param {Number} moduleId Module ID.
+     * @param {String} reactionName The reaction to update the number of.
+     * @param {Number} diff Difference to apply (e.g. +1 for adding a vote, -1 for removing a vote).
+     * @param {Boolean} isSelected Whether the reaction we are updating is the one now selected by user.
+     */
+    function updateReactionNb(moduleId, reactionName, diff, isSelected) {
+        var $reactionNb = $get(moduleId, '.reactionnb[data-reactionname="' + reactionName + '"]');
+        var nbReaction = parseInt($reactionNb.text()) + diff;
+        $reactionNb
+        .text(nbReaction)
+        .toggleClass('nbselected', isSelected);
+
+        $get(moduleId, '.reaction img[data-reactionname="' + reactionName + '"]')
+        .toggleClass('novote', nbReaction === 0);
+    }
+
+    /**
+     * Set up animations to swap between reactions preview and vote interface.
+     * @param {Number} moduleId Module ID.
+     */
+    function setupReactionsAnimation(moduleId) {
+
+        // Helpers to resize images for animations.
+        var reactionImageSizeForRatio = function(ratio) {
+            return {
+                top: 15 - (10 * ratio),
+                left: 10 - (10 * ratio),
+                height: 20 * ratio
+            };
+        };
+        var groupImageSizeForRatio = function(ratio) {
+            return {
+                left: -10 + (10 * ratio),
+                height: 20 * ratio
+            };
+        };
+
+        // Animation sequence to hide reactions preview and show vote interface.
+        var showReactions = function(moduleId) {
+            $get(moduleId, '.group_img')
+            .css({'pointer-events': 'none'})
+            .animate(groupImageSizeForRatio(0), 300)
+            .hide(0);
+
+            $get(moduleId, '.group_nb').delay(200).hide(300);
+
+            $('#module-' + moduleId + ' .actions').delay(200).hide(300);
+
+            ['easy', 'better', 'hard'].forEach(function(reaction, index) {
+                var delay = 50 + 150 * index; // easy: 50, better: 200, hard: 350.
+
+                $get(moduleId, '.reaction img[data-reactionname="' + reaction + '"]')
+                .delay(delay).animate(reactionImageSizeForRatio(1), 300)
+                .css({'pointer-events': 'auto'});
+
+                $get(moduleId, '.reactionnb[data-reactionname="' + reaction + '"]')
+                .delay(delay+300)
+                .queue(function(next) {
+                    $(this).addClass('shown');
+                    next();
+                });
+            });
+        };
+
+        // Animation sequence to hide vote interface and show reaction preview.
+        var hideReactions = function(moduleId) {
+            ['hard', 'better', 'easy'].forEach(function(reaction, index) {
+                var delay = 50 + 250 * index; // hard: 50, better: 300, easy: 550.
+                $get(moduleId, '.reaction img[data-reactionname="' + reaction + '"]')
+                .css({'pointer-events': 'none'})
+                .delay(delay).animate(reactionImageSizeForRatio(0), 500);
+
+                $get(moduleId, '.reactionnb[data-reactionname="' + reaction + '"]')
+                .delay(delay)
+                .queue(function(next) {
+                    $(this).removeClass('shown');
+                    next();
+                });
+            });
+
+            // Show the reaction group image with nice animation.
+            $get(moduleId, '.group_img')
+            .delay(500)
+            .show(0)
+            .animate(groupImageSizeForRatio(1), 300)
+            .css({'pointer-events': 'auto'});
+
+            $get(moduleId, '.group_nb').delay(600).show(0);
+
+            $('#module-' + moduleId + ' .actions').delay(600).show(300);
+        };
+
+        // Setup some timeouts and locks to trigger animations.
+        var reactionsVisible = false;
+        var groupTimeout = null;
+        var reactionsTimeout = null;
+
+        var triggerHideReactions = function() {
+            reactionsTimeout = null;
+            reactionsVisible = false;
+            hideReactions(moduleId);
+        };
+
+        var triggerShowReactions = function() {
+            groupTimeout = null;
+            reactionsVisible = true;
+            showReactions(moduleId);
+            clearTimeout(reactionsTimeout);
+            reactionsTimeout = setTimeout(triggerHideReactions, 2000); // Hide reactions after 2 seconds if mouse is already out.
+        };
+
+        // Reactions preview interactions.
+        $get(moduleId, '.group_img')
+        .mouseover(function() {
+            $(this).stop().animate(groupImageSizeForRatio(1.15), 100); // Widen image a little on hover.
+            groupTimeout = setTimeout(triggerShowReactions, 300); // Show vote interface after 0.3s hover.
+        })
+        .mouseout(function() {
+            if (!reactionsVisible) {
+                // Cancel mouseover actions.
+                clearTimeout(groupTimeout);
+                $(this).stop().animate(groupImageSizeForRatio(1), 100);
+            }
+        })
+        .click(triggerShowReactions); // Show vote interface instantly on click.
+
+        // Reactions images interactions.
+        $get(moduleId, '.reaction img')
+        .mouseover(function() {
+            $(this).stop().animate(reactionImageSizeForRatio(2), 100); // Widen image a little on hover.
+        })
+        .mouseout(function() {
+            $(this).stop().animate(reactionImageSizeForRatio(1), 100);
+        });
+
+        // Vote interface zone interactions
+        $get(moduleId, '.reactions')
+        .mouseout(function() {
+            clearTimeout(reactionsTimeout);
+            reactionsTimeout = setTimeout(triggerHideReactions, 1000); // Hide vote interface after 1s out of it.
+        })
+        .mouseover(function() {
+            clearTimeout(reactionsTimeout);
+        });
+    }
+
+    return {
+        init: function(courseId) {
+
+            // Wait that the DOM is fully loaded.
+            $(function() {
+
+                var blockData = $('.block_point_view[data-blockdata]').data('blockdata');
+
+                callOnModulesListLoad(function() {
+                    setUpDifficultyTracks(blockData.difficultylevels, blockData.trackcolors);
+                    setUpReactions(courseId, blockData.moduleswithreactions, blockData.reactionstemplate, blockData.pix);
+                });
+
+                // Add shade on hover of a course module.
+                $('.activity')
+                .mouseover(function() {
+                    $(this).css({
+                        'background': 'linear-gradient(to right, rgba(0,0,0,0.04), rgba(0,0,0,0.04), transparent)',
+                        'border-radius': '5px'
                     });
+                })
+                .mouseout(function() {
+                    $(this).css({'background': ''});
+                });
+
             });
         }
     };

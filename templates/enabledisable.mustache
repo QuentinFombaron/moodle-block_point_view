@@ -1,0 +1,49 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_point_view/enabledisable
+
+    Classes required for JS:
+    * enable-disable
+    * reactions
+
+    Data attributes required for JS:
+    * data-enable
+
+    Context variables required for this template:
+    * helpbutton HTML fragment for help button.
+    * enablename id attribute for enable button.
+    * enablelabel Label of enable button.
+    * disablename id attribute for disable button.
+    * disablelabel Label of disable button.
+    * datattr HTML data attributes for both buttons.
+
+    Example context (json):
+    {
+        "helpbutton": "<span></span>",
+        "enablename": "enable_type_quiz",
+        "enablelabel": "Enable all Quizzes",
+        "disablename": "disable_type_quiz",
+        "disablelabel": "Disable all Quizzes",
+        "dataattr": ""
+    }
+}}
+<span class="enable-disable reactions">
+    {{{helpbutton}}}
+    <button id="{{enablename}}" class="btn btn-outline-success" type="button" data-enable="1" {{{dataattr}}}>{{{enablelabel}}}</button>
+    <button id="{{disablename}}" class="btn btn-outline-danger" type="button" data-enable="0" {{{dataattr}}}>{{{disablelabel}}}</button>
+</span>
